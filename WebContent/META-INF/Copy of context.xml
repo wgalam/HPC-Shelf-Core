@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context path="/dbcp" docBase="dbcp">
+    <Resource name="jdbc/Core" auth="Container" type="javax.sql.DataSource" 
+        removeAbandoned="true" removeAbandonedTimeout="30" maxActive="80"   
+        maxIdle="30" maxWait="10000" username="Core" password="d456sd5d2d4"
+        driverClassName="org.postgresql.Driver"
+        url = "jdbc:postgresql://storm.lia.ufc.br/Core" useUnicode="true"
+        characterEncoding="utf-8" characterSetResults="utf8"/>
+</Context>

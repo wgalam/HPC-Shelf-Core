@@ -1,0 +1,92 @@
+//
+// Este arquivo foi gerado pela Arquitetura JavaTM para Implementação de Referência (JAXB) de Bind XML, v2.2.8-b130911.1802 
+// Consulte <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
+// Todas as modificações neste arquivo serão perdidas após a recompilação do esquema de origem. 
+// Gerado em: 2015.12.16 às 03:13:02 PM BRT 
+//
+
+
+package br.ufc.storm.jaxb;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlType;
+
+
+/**
+ * <p>Classe Java de ranking_argument_type complex type.
+ * 
+ * <p>O seguinte fragmento do esquema especifica o conteúdo esperado contido dentro desta classe.
+ * 
+ * <pre>
+ * &lt;complexType name="ranking_argument_type">
+ *   &lt;complexContent>
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *       &lt;attribute name="rank_id" type="{http://www.w3.org/2001/XMLSchema}int" />
+ *       &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}double" />
+ *     &lt;/restriction>
+ *   &lt;/complexContent>
+ * &lt;/complexType>
+ * </pre>
+ * 
+ * 
+ */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "ranking_argument_type")
+public class RankingArgumentType {
+
+    @XmlAttribute(name = "rank_id")
+    protected Integer rankId;
+    @XmlAttribute(name = "value")
+    protected Double value;
+
+    /**
+     * Obtém o valor da propriedade rankId.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Integer }
+     *     
+     */
+    public Integer getRankId() {
+        return rankId;
+    }
+
+    /**
+     * Define o valor da propriedade rankId.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Integer }
+     *     
+     */
+    public void setRankId(Integer value) {
+        this.rankId = value;
+    }
+
+    /**
+     * Obtém o valor da propriedade value.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Double }
+     *     
+     */
+    public Double getValue() {
+        return value;
+    }
+
+    /**
+     * Define o valor da propriedade value.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Double }
+     *     
+     */
+    public void setValue(Double value) {
+        this.value = value;
+    }
+
+}

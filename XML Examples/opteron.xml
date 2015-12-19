@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<root>
+<component>
+    <name>16052014</name>
+    <idac>15</idac>
+    <supertype>10</supertype>
+    <kind>1</kind>
+  </component>
+<component>
+    <name>Troy</name>
+    <idac>5</idac>
+    <supertype>10</supertype>
+    <kind>1</kind>
+  </component>
+</root>

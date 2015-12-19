@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<root>
+	<component type="ac">
+		<name>XEON</name>
+		<idac>0</idac>
+		<supertype>Processor</supertype>
+		<kind>Qualifier</kind>
+	</component>
+<component>
+    <name>Wagner</name>
+    <idac>15</idac>
+    <supertype>20</supertype>
+    <kind>5</kind>
+  </component>
+<component>
+    <name>E5-SERIES</name>
+    <idac>5</idac>
+    <supertype>4</supertype>
+    <kind>1</kind>
+  </component>
+<component>
+    <name>E5-SERIES</name>
+    <idac>5</idac>
+    <supertype>4</supertype>
+    <kind>1</kind>
+  </component>
+<component>
+    <name>E5-SERIES</name>
+    <idac>5</idac>
+    <supertype>4</supertype>
+    <kind>1</kind>
+  </component>
+<component>
+    <name>E5-SERIES</name>
+    <idac>5</idac>
+    <supertype>4</supertype>
+    <kind>1</kind>
+  </component>
+</root>

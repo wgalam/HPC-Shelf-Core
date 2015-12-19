@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:abstract_component kind="1" name="Contrato do cliente" xmlns:tns="http://storm.lia.ufc.br" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://storm.lia.ufc.br ContextualContract.xsd ">
+	<tns:supertype name="Processor"></tns:supertype>
+	<tns:parent name="Processor"></tns:parent>
+</tns:abstract_component>

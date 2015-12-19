@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:context_contract xmlns:tns="http://storm.lia.ufc.br" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://storm.lia.ufc.br ../ContextualContract.xsd ">
+  <tns:context_arguments>
+  	<tns:context_contract>
+  		<tns:abstract_component></tns:abstract_component>
+  	</tns:context_contract></tns:context_arguments>
+  <tns:abstract_component/>
+</tns:context_contract>

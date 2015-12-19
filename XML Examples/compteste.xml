@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<root>
+<component>
+    <name>Multa3</name>
+    <supertype>CENAPAD</supertype>
+    <kind>1</kind>
+    <parameter>
+    	<name>param1</name>
+    	<bound>XEON</bound></parameter>
+</component>
+	<component>
+		<name>Anderson</name>
+		<supertype>Troy</supertype>
+		<kind>1</kind></component>
+	<component>
+		<name>Gabriel</name>
+		<supertype>Anderson</supertype>
+		<kind>1</kind>
+		<parameter>
+			<name>Cueca</name>
+			<bound>Anderson</bound></parameter></component>
+</root>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<root>
+	<context_parameter bound_name="OPTERON" name="Frequency" abstractcomponent_name="OPTERON" context_variable_name="V">
+	</context_parameter>
+</root>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context path="/dbcp" docBase="dbcp">
+    <Resource
+	  name="jdbc/Core"
+	  auth="Container"
+	  type="javax.sql.DataSource"
+	  factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
+	  initialSize="34"
+	  maxActive="377"
+	  maxIdle="233"
+	  minIdle="89"
+	  timeBetweenEvictionRunsMillis="34000"
+	  minEvictableIdleTimeMillis="55000"
+	  validationQuery="SELECT 1"
+	  validationInterval="34000"
+	  testOnBorrow="true"
+	  removeAbandoned="true"
+	  removeAbandonedTimeout="55"
+	  username="Core"
+	  password="d456sd5d2d4"
+	  driverClassName="org.postgresql.Driver"
+	  url="jdbc:postgresql://storm.lia.ufc.br/Core" useUnicode="true"/>
+</Context>
+
+
+
+

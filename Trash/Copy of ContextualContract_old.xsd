@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://storm.lia.ufc.br" elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://storm.lia.ufc.br">
+
+
+    <element name="abstract_component"
+    	type="tns:abstract_component_type">
+    </element>
+    <complexType name="abstract_component_type">
+    	<sequence>
+    		<element name="supertype" type="tns:abstract_component_type"
+    			maxOccurs="unbounded" minOccurs="0">
+    		</element>
+    		<element name="parent" type="tns:abstract_component_type"
+    			maxOccurs="unbounded" minOccurs="0">
+    		</element>
+    		<element name="context_parameter"
+    			type="tns:context_parameter_type" maxOccurs="unbounded"
+    			minOccurs="0">
+    		</element>
+    		<element name="inner_component"
+    			type="tns:inner_component_type" maxOccurs="unbounded"
+    			minOccurs="0">
+    		</element>
+    		<element name="abstract_unit" type="tns:abstract_unit_type"
+    			maxOccurs="unbounded" minOccurs="0">
+    		</element>
+    	</sequence>
+    	<attribute name="name" type="string"></attribute>
+    	<attribute name="kind" type="tns:kind_type"></attribute>
+    </complexType>
+
+    <simpleType name="kind_type">
+    	<restriction base="string"></restriction>
+    </simpleType>
+
+    <complexType name="context_parameter_type">
+    	<sequence>
+    		<element name="context_variable"
+    			type="tns:context_variable_type">
+    		</element>
+    		<element name="quality_parameter" type="tns:quality_parameter_type" maxOccurs="unbounded" minOccurs="0"></element>
+    	</sequence>
+    	<attribute name="bound_name" type="string"></attribute>
+    	<attribute name="name" type="string"></attribute>
+    	<attribute name="abstractcomponent_name" type="string"></attribute>
+    	<attribute name="context_variable_name" type="string"></attribute>
+    </complexType>
+
+    <complexType name="context_argument_type">
+    	<sequence>
+    		<element name="instantiation_type"
+    			type="tns:instantiation_type_type">
+    		</element>
+    		<element name="context_variables"
+    			type="tns:context_variable_type">
+    		</element>
+    		<element name="Value" type="string" maxOccurs="1" minOccurs="0"></element>
+    	</sequence>
+    	<attribute name="it_id" type="string"></attribute>
+    	<attribute name="cp_id" type="string"></attribute>
+    </complexType>
+
+    <complexType name="abstract_unit_type">
+    	<attribute name="au_name" type="string"></attribute>
+    	<attribute name="abstract_component_name" type="string"></attribute>
+    </complexType>
+
+    <complexType name="inner_component_type">
+    	<sequence>
+    		<element name="abstract_component"
+    			type="tns:abstract_component_type" maxOccurs="unbounded" minOccurs="0">
+    		</element>
+    		<element name="abstract_unit" type="tns:abstract_unit_type" maxOccurs="unbounded" minOccurs="0"></element>
+    	</sequence>
+    	<attribute name="name" type="string"></attribute>
+    </complexType>
+
+
+
+    <complexType name="instantiation_type_type">
+    	<sequence>
+    		<element name="context_arguments" type="tns:context_argument_type"></element>
+    	</sequence>
+    	<attribute name="it_name" type="string"></attribute>
+    	<attribute name="ac_id" type="string"></attribute>
+    </complexType>
+    
+    <complexType name="context_variable_type">
+    	<sequence>
+    		<element name="instantiation_type" type="tns:instantiation_type_type"></element>
+    	</sequence>
+    </complexType>
+
+    <complexType name="quality_parameter_type">
+    	<sequence>
+    		<element name="context_argument"
+    			type="tns:context_argument_type">
+    		</element>
+    	</sequence>
+    	<attribute name="behavior" type="string"></attribute>
+    	<attribute name="function" type="string"></attribute>
+    </complexType>
+</schema>

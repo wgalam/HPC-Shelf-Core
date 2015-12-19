@@ -1,0 +1,403 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 9.3.2
+-- Dumped by pg_dump version 9.3.2
+-- Started on 2014-03-28 17:01:03 BRT
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+
+DROP DATABASE "Core";
+--
+-- TOC entry 2014 (class 1262 OID 16394)
+-- Name: Core; Type: DATABASE; Schema: -; Owner: postgres
+--
+
+CREATE DATABASE "Core" WITH TEMPLATE = template0 ENCODING = 'UTF8' LC_COLLATE = 'pt_BR.UTF-8' LC_CTYPE = 'pt_BR.UTF-8';
+
+
+ALTER DATABASE "Core" OWNER TO postgres;
+
+\connect "Core"
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+
+--
+-- TOC entry 5 (class 2615 OID 2200)
+-- Name: public; Type: SCHEMA; Schema: -; Owner: postgres
+--
+
+CREATE SCHEMA public;
+
+
+ALTER SCHEMA public OWNER TO postgres;
+
+--
+-- TOC entry 2015 (class 0 OID 0)
+-- Dependencies: 5
+-- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: postgres
+--
+
+COMMENT ON SCHEMA public IS 'standard public schema';
+
+
+--
+-- TOC entry 179 (class 3079 OID 11791)
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- TOC entry 2017 (class 0 OID 0)
+-- Dependencies: 179
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+SET search_path = public, pg_catalog;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- TOC entry 170 (class 1259 OID 16400)
+-- Name: abstract_component; Type: TABLE; Schema: public; Owner: wagner; Tablespace: 
+--
+
+CREATE TABLE abstract_component (
+    ac_name character varying(40),
+    ac_id integer NOT NULL,
+    supertype_id integer,
+    kind_id integer
+);
+
+
+ALTER TABLE public.abstract_component OWNER TO wagner;
+
+--
+-- TOC entry 177 (class 1259 OID 16463)
+-- Name: abstract_component_ac_id_seq; Type: SEQUENCE; Schema: public; Owner: wagner
+--
+
+CREATE SEQUENCE abstract_component_ac_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.abstract_component_ac_id_seq OWNER TO wagner;
+
+--
+-- TOC entry 2018 (class 0 OID 0)
+-- Dependencies: 177
+-- Name: abstract_component_ac_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: wagner
+--
+
+ALTER SEQUENCE abstract_component_ac_id_seq OWNED BY abstract_component.ac_id;
+
+
+--
+-- TOC entry 172 (class 1259 OID 16415)
+-- Name: ac_seq; Type: SEQUENCE; Schema: public; Owner: wagner
+--
+
+CREATE SEQUENCE ac_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.ac_seq OWNER TO wagner;
+
+--
+-- TOC entry 175 (class 1259 OID 16429)
+-- Name: component_kind; Type: TABLE; Schema: public; Owner: wagner; Tablespace: 
+--
+
+CREATE TABLE component_kind (
+    kind_id integer NOT NULL,
+    kind_name character varying(20)
+);
+
+
+ALTER TABLE public.component_kind OWNER TO wagner;
+
+--
+-- TOC entry 171 (class 1259 OID 16405)
+-- Name: context_parameter; Type: TABLE; Schema: public; Owner: wagner; Tablespace: 
+--
+
+CREATE TABLE context_parameter (
+    cp_name character varying(40),
+    id_bound integer,
+    cp_id integer NOT NULL,
+    ac_id integer
+);
+
+
+ALTER TABLE public.context_parameter OWNER TO wagner;
+
+--
+-- TOC entry 178 (class 1259 OID 16477)
+-- Name: context_parameter_cp_id_seq; Type: SEQUENCE; Schema: public; Owner: wagner
+--
+
+CREATE SEQUENCE context_parameter_cp_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.context_parameter_cp_id_seq OWNER TO wagner;
+
+--
+-- TOC entry 2019 (class 0 OID 0)
+-- Dependencies: 178
+-- Name: context_parameter_cp_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: wagner
+--
+
+ALTER SEQUENCE context_parameter_cp_id_seq OWNED BY context_parameter.cp_id;
+
+
+--
+-- TOC entry 173 (class 1259 OID 16423)
+-- Name: exemplo_id_seq; Type: SEQUENCE; Schema: public; Owner: wagner
+--
+
+CREATE SEQUENCE exemplo_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.exemplo_id_seq OWNER TO wagner;
+
+--
+-- TOC entry 174 (class 1259 OID 16425)
+-- Name: id_seq; Type: SEQUENCE; Schema: public; Owner: wagner
+--
+
+CREATE SEQUENCE id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.id_seq OWNER TO wagner;
+
+--
+-- TOC entry 176 (class 1259 OID 16440)
+-- Name: instantiation_type; Type: TABLE; Schema: public; Owner: wagner; Tablespace: 
+--
+
+CREATE TABLE instantiation_type (
+    it_id integer NOT NULL,
+    it_value character(1),
+    ac_id integer
+);
+
+
+ALTER TABLE public.instantiation_type OWNER TO wagner;
+
+--
+-- TOC entry 1883 (class 2604 OID 16465)
+-- Name: ac_id; Type: DEFAULT; Schema: public; Owner: wagner
+--
+
+ALTER TABLE ONLY abstract_component ALTER COLUMN ac_id SET DEFAULT nextval('abstract_component_ac_id_seq'::regclass);
+
+
+--
+-- TOC entry 1884 (class 2604 OID 16479)
+-- Name: cp_id; Type: DEFAULT; Schema: public; Owner: wagner
+--
+
+ALTER TABLE ONLY context_parameter ALTER COLUMN cp_id SET DEFAULT nextval('context_parameter_cp_id_seq'::regclass);
+
+
+--
+-- TOC entry 2001 (class 0 OID 16400)
+-- Dependencies: 170
+-- Data for Name: abstract_component; Type: TABLE DATA; Schema: public; Owner: wagner
+--
+
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, kind_id) VALUES ('LinearSystemSolver', 1, NULL, NULL);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, kind_id) VALUES ('CENAPAD', 2, NULL, NULL);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, kind_id) VALUES ('PROCESSOR', 3, NULL, 1);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, kind_id) VALUES ('XEON', 4, 3, 1);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, kind_id) VALUES ('E5-SERIES', 5, 4, 1);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, kind_id) VALUES ('E5-2680', 6, 5, 1);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, kind_id) VALUES ('E5-2600', 7, 5, 1);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, kind_id) VALUES ('E5-2670', 8, 5, 1);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, kind_id) VALUES ('E5-2690', 9, 5, 1);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, kind_id) VALUES ('OPTERON', 10, 3, 1);
+
+
+--
+-- TOC entry 2020 (class 0 OID 0)
+-- Dependencies: 177
+-- Name: abstract_component_ac_id_seq; Type: SEQUENCE SET; Schema: public; Owner: wagner
+--
+
+SELECT pg_catalog.setval('abstract_component_ac_id_seq', 10, true);
+
+
+--
+-- TOC entry 2021 (class 0 OID 0)
+-- Dependencies: 172
+-- Name: ac_seq; Type: SEQUENCE SET; Schema: public; Owner: wagner
+--
+
+SELECT pg_catalog.setval('ac_seq', 1, false);
+
+
+--
+-- TOC entry 2006 (class 0 OID 16429)
+-- Dependencies: 175
+-- Data for Name: component_kind; Type: TABLE DATA; Schema: public; Owner: wagner
+--
+
+INSERT INTO component_kind (kind_id, kind_name) VALUES (1, 'Qualifier');
+INSERT INTO component_kind (kind_id, kind_name) VALUES (2, 'Platform Profile');
+INSERT INTO component_kind (kind_id, kind_name) VALUES (3, 'Platform Category');
+INSERT INTO component_kind (kind_id, kind_name) VALUES (4, 'Platform');
+
+
+--
+-- TOC entry 2002 (class 0 OID 16405)
+-- Dependencies: 171
+-- Data for Name: context_parameter; Type: TABLE DATA; Schema: public; Owner: wagner
+--
+
+INSERT INTO context_parameter (cp_name, id_bound, cp_id, ac_id) VALUES ('HasAcelerator', 1, 1, NULL);
+INSERT INTO context_parameter (cp_name, id_bound, cp_id, ac_id) VALUES ('number_of_processors', NULL, 2, 6);
+INSERT INTO context_parameter (cp_name, id_bound, cp_id, ac_id) VALUES ('processor_model', NULL, 3, 6);
+INSERT INTO context_parameter (cp_name, id_bound, cp_id, ac_id) VALUES ('number_of_cores', NULL, 4, 6);
+INSERT INTO context_parameter (cp_name, id_bound, cp_id, ac_id) VALUES ('manufacturer', NULL, 5, 6);
+INSERT INTO context_parameter (cp_name, id_bound, cp_id, ac_id) VALUES ('clock', NULL, 6, 6);
+
+
+--
+-- TOC entry 2022 (class 0 OID 0)
+-- Dependencies: 178
+-- Name: context_parameter_cp_id_seq; Type: SEQUENCE SET; Schema: public; Owner: wagner
+--
+
+SELECT pg_catalog.setval('context_parameter_cp_id_seq', 6, true);
+
+
+--
+-- TOC entry 2023 (class 0 OID 0)
+-- Dependencies: 173
+-- Name: exemplo_id_seq; Type: SEQUENCE SET; Schema: public; Owner: wagner
+--
+
+SELECT pg_catalog.setval('exemplo_id_seq', 1, false);
+
+
+--
+-- TOC entry 2024 (class 0 OID 0)
+-- Dependencies: 174
+-- Name: id_seq; Type: SEQUENCE SET; Schema: public; Owner: wagner
+--
+
+SELECT pg_catalog.setval('id_seq', 1, false);
+
+
+--
+-- TOC entry 2007 (class 0 OID 16440)
+-- Dependencies: 176
+-- Data for Name: instantiation_type; Type: TABLE DATA; Schema: public; Owner: wagner
+--
+
+
+
+--
+-- TOC entry 1886 (class 2606 OID 16486)
+-- Name: pk_ac_id; Type: CONSTRAINT; Schema: public; Owner: wagner; Tablespace: 
+--
+
+ALTER TABLE ONLY abstract_component
+    ADD CONSTRAINT pk_ac_id PRIMARY KEY (ac_id);
+
+
+--
+-- TOC entry 1888 (class 2606 OID 16484)
+-- Name: pk_cp_id; Type: CONSTRAINT; Schema: public; Owner: wagner; Tablespace: 
+--
+
+ALTER TABLE ONLY context_parameter
+    ADD CONSTRAINT pk_cp_id PRIMARY KEY (cp_id);
+
+
+--
+-- TOC entry 1890 (class 2606 OID 16433)
+-- Name: pk_id_kind; Type: CONSTRAINT; Schema: public; Owner: wagner; Tablespace: 
+--
+
+ALTER TABLE ONLY component_kind
+    ADD CONSTRAINT pk_id_kind PRIMARY KEY (kind_id);
+
+
+--
+-- TOC entry 1892 (class 2606 OID 16444)
+-- Name: pk_it_id; Type: CONSTRAINT; Schema: public; Owner: wagner; Tablespace: 
+--
+
+ALTER TABLE ONLY instantiation_type
+    ADD CONSTRAINT pk_it_id PRIMARY KEY (it_id);
+
+
+--
+-- TOC entry 1893 (class 2606 OID 16488)
+-- Name: fk_it_ac; Type: FK CONSTRAINT; Schema: public; Owner: wagner
+--
+
+ALTER TABLE ONLY instantiation_type
+    ADD CONSTRAINT fk_it_ac FOREIGN KEY (ac_id) REFERENCES abstract_component(ac_id);
+
+
+--
+-- TOC entry 2016 (class 0 OID 0)
+-- Dependencies: 5
+-- Name: public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM postgres;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+-- Completed on 2014-03-28 17:01:03 BRT
+
+--
+-- PostgreSQL database dump complete
+--
+
