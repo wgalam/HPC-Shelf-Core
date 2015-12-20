@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.ufc.storm.exception.DBHandlerException;
 import br.ufc.storm.jaxb.ContextContract;
 import br.ufc.storm.jaxb.ContextParameterType;
 import br.ufc.storm.jaxb.CostParameterType;
@@ -18,16 +19,17 @@ public class ResolutionHandler extends DBHandler {
 	private static final String SELECT_CONTEXT_CONTRACT_BY_AC_ID = "select cc_id from context_contract where ac_id = ?;";
 	private static final String SELECT_PLATFORM_BY_AC_ID = "select * from context_contract A, platform_owner B where A.cc_id = B.platform_cc_id and A.ac_id = ? and type_id = 1;";
 	private final static String SELECT_ABSTRACT_COMPONENT_BY_SUPERTYPE_ID = "select ac_name, ac_id, supertype_id, enabled from abstract_component WHERE supertype_id = ?;";
-	
+
 	/**
 	 * This method generates a list os all components candidates to a contract but only in the highest level, it will be refined.
 	 * @param supertypeID
 	 * @param requiredID
 	 * @param resolutionTree 
 	 * @return
+	 * @throws DBHandlerException 
 	 */
 
-	public static List<ContextContract> generateCandidates(int supertypeID, int requiredID, ResolutionNode resolutionTree){
+	public static List<ContextContract> generateCandidates(int supertypeID, int requiredID, ResolutionNode resolutionTree) throws DBHandlerException{
 		PreparedStatement prepared;
 		ResultSet resultSet;
 		List<ContextContract> list = new ArrayList<ContextContract>();
@@ -63,12 +65,13 @@ public class ResolutionHandler extends DBHandler {
 				history = aux;
 				aux = supertype;
 			}while(resultSet!= null && history != supertypeID );//supertype != supertypeID && supertype != 0
+			return list;
 		} catch (SQLException e) { 
-			e.printStackTrace(); 
-		} finally { 
-			closeConnnection(con); 
+			throw new DBHandlerException("There was an error with your query for context contract with ac_id = "+aux+" :"+e.getMessage());
+		} catch (DBHandlerException e) {
+			throw new DBHandlerException("There was an error with your query for context contract with ac_id = "+aux+" :"+e.getMessage());
 		} 
-		return list;
+
 	}
 
 	/**
@@ -76,42 +79,43 @@ public class ResolutionHandler extends DBHandler {
 	 * @param supertypeID
 	 * @param resolutionTree
 	 * @return
+	 * @throws DBHandlerException 
 	 */
 
-	public static List<ContextContract> generateCompliantPlatformCandidates(int requiredID, ResolutionNode resolutionTree){
-		PreparedStatement prepared;
-		ResultSet resultSet;
-		List<ContextContract> list = new ArrayList<ContextContract>();
-		Connection con = null; 
-		List <ResolutionNode> subtype = new ArrayList<ResolutionNode>();
+	public static List<ContextContract> generateCompliantPlatformCandidates(int requiredID, ResolutionNode resolutionTree) throws DBHandlerException{
 		try {	
-			con = getConnection();
-			prepared = con.prepareStatement(SELECT_PLATFORM_BY_AC_ID);
+			List <ResolutionNode> subtype = new ArrayList<ResolutionNode>();
+			List<ContextContract> list = new ArrayList<ContextContract>();
+			Connection con = getConnection();
+			PreparedStatement prepared = con.prepareStatement(SELECT_PLATFORM_BY_AC_ID);
 			prepared.setInt(1, requiredID); 
-			resultSet = prepared.executeQuery(); 
+			ResultSet resultSet = prepared.executeQuery(); 
 			while(resultSet.next()) { 
 				Integer cc_id = resultSet.getInt("platform_cc_id");
-				list.add(ContextContractHandler.getContextContract(cc_id)); 
+				try {
+					list.add(ContextContractHandler.getContextContract(cc_id));
+				} catch (DBHandlerException e) {
+					throw new RuntimeException("Platform can not be catched with ac_id "+requiredID);
+				} 
 			} 
 			subtype = resolutionTree.findNode(requiredID).getSubtype();
 			for(ResolutionNode rn:subtype){
 				list.addAll(generateCompliantPlatformCandidates(rn.getAc_id(), resolutionTree));
 			}
+			return list;
 		} catch (SQLException e) {
-			e.printStackTrace();
-		}finally { 
-			closeConnnection(con); 
-		} 
-
-		return list;
+			throw new DBHandlerException("An error occurred while trying to generate a compliant platform");
+		}
+		
 	}
 
 	/**
 	 * This method generates a resolution tree from an specified node 
 	 * All abstract components must be a subtype of root or another subtype off root, because if not, this component won't be catched.
 	 * @return
+	 * @throws DBHandlerException 
 	 */
-	public static ResolutionNode generateResolutionTree(Integer i, ResolutionNode tree, List<ContextParameterType> cps, List<QualityParameterType> qps, List<CostParameterType> cops, List<RankingParameterType> rps, String parentPath){
+	public static ResolutionNode generateResolutionTree(Integer i, ResolutionNode tree, List<ContextParameterType> cps, List<QualityParameterType> qps, List<CostParameterType> cops, List<RankingParameterType> rps, String parentPath) throws DBHandlerException{
 		Connection con;
 		try {
 			con = DBHandler.getConnection();
@@ -154,8 +158,9 @@ public class ResolutionHandler extends DBHandler {
 	/**
 	 * This method generates all resolution tree of abstract components
 	 * @return
+	 * @throws DBHandlerException 
 	 */
-	public static ResolutionNode generateResolutionTree(){
+	public static ResolutionNode generateResolutionTree() throws DBHandlerException{
 		Connection con = null;
 		try {
 			con = getConnection();

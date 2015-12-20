@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import br.ufc.storm.exception.DBHandlerException;
 import br.ufc.storm.jaxb.AbstractComponentType;
 import br.ufc.storm.jaxb.ContextContract;
 
@@ -38,8 +39,18 @@ public class PlatformHandler extends DBHandler {
 				closeConnnection(con);
 				return null;
 			}
-			cc.setAbstractComponent(AbstractComponentHandler.getAbstractComponent(cc.getAbstractComponent().getIdAc()));
-			cc.getContextArguments().addAll(ContextArgumentHandler.getContextArguments(cc.getCcId()));
+			try {
+				cc.setAbstractComponent(AbstractComponentHandler.getAbstractComponent(cc.getAbstractComponent().getIdAc()));
+			} catch (DBHandlerException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			try {
+				cc.getContextArguments().addAll(ContextArgumentHandler.getContextArguments(cc.getCcId()));
+			} catch (DBHandlerException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			closeConnnection(con);
 			return cc; 
 		} catch (SQLException e) { 

@@ -23,7 +23,7 @@ public class ContextParameterHandler extends DBHandler {
 	private final static String SELECT_CONTEXT_PARAMETER = " select * from context_parameter A, context_parameter_bound B where A.cp_id = ? AND A.cp_id = B.cp_id;";
 	private final static String SELECT_CONTEXT_PARAMETER_ID = " select cp_id from context_parameter where cp_name = ?;";
 	private static final String SELECT_VARIABLE_CONTEXT_CONTRACT = "select A.cc_id from closed_arguments_context_contract A, context_argument B WHERE A.ca_id = B.ca_id AND B.variable_cp_id = ? AND B.cc_id = ?;";
-	
+
 	/**
 	 * This method should test if a component do not generate infinite loops in composition walk
 	 * 
@@ -44,14 +44,13 @@ public class ContextParameterHandler extends DBHandler {
 	 * @param abstractcomponent_name Abstract component name
 	 * @param context_variable_name Context variable name
 	 * @return Context parameter id from added context parameter
+	 * @throws StormException 
+	 * @throws DBHandlerException 
 	 */
 
-	public static int addContextParameter(String name, String bound_name, String abstractcomponent_name, String context_variable_name, Connection con){
-		int cp_id = -1;
+	public static int addContextParameter(String name, String bound_name, String abstractcomponent_name, String context_variable_name) throws StormException, DBHandlerException{
 		try { 
-			if(con == null){
-				throw new DBHandlerException("Null database connection");
-			}
+			Connection con = getConnection();
 			if(validateContexParameter(AbstractComponentHandler.getAbstractComponentID(abstractcomponent_name), AbstractComponentHandler.getAbstractComponentID(bound_name))==false){
 				throw new StormException("Composition tree violated");
 			}
@@ -59,31 +58,26 @@ public class ContextParameterHandler extends DBHandler {
 			prepared.setString(1, bound_name);
 			prepared.setString(2, name);
 			prepared.setString(3, abstractcomponent_name);
-			//			prepared.setString(4, context_variable_name);
 			ResultSet result = prepared.executeQuery();
 			if(result.next()){
-				cp_id = result.getInt("cp_id");
+				return result.getInt("cp_id");
+			}else{
+				throw new DBHandlerException("Something goes wrong while trying insert context paramente: ");
 			}
-
 		} catch (SQLException e) {
-			e.printStackTrace();
-			return -1;
-		} catch (StormException e) {
-			//			closeConnnection(con);
-			return -1;
-		} catch (DBHandlerException e) {
-			e.printStackTrace();
+			throw new DBHandlerException("An error occurred while trying add context parameter: "+e.getMessage());
 		} 
-		return cp_id;//getContextParameterID(name)
+
 	}
 
 	/**
 	 * This method gets a context parameter id given a context parameter name
 	 * @param cp_name Context parameter name
 	 * @return context parameter id
+	 * @throws DBHandlerException 
 	 */
 
-	public static int getContextParameterID(String cp_name) {
+	public static int getContextParameterID(String cp_name) throws DBHandlerException {
 		Connection con = null; 
 		int CP_id = -2;
 		try { 
@@ -93,17 +87,22 @@ public class ContextParameterHandler extends DBHandler {
 			ResultSet resultSet = prepared.executeQuery(); 
 			if(resultSet.next()) { 
 				CP_id = resultSet.getInt("cp_id"); 
+			}else{
+				throw new DBHandlerException("Context Parameter not found with cp_name = "+cp_name);
 			}
 		} catch (SQLException e) { 
-			e.printStackTrace(); 
-			return -1;
-		} finally { 
-			DBHandler.closeConnnection(con); 
-		} 
+			throw new DBHandlerException("An error occurred while finding context parameter: "+e.getMessage());
+		}
 		return CP_id;
 	}
 
-	public static ContextParameterType getContextParameter(int cp_id) {
+	/**
+	 * 
+	 * @param cp_id
+	 * @return
+	 * @throws DBHandlerException 
+	 */
+	public static ContextParameterType getContextParameter(int cp_id) throws DBHandlerException {
 		Connection con = null; 
 		ContextParameterType cp = new ContextParameterType();
 		try { 
@@ -115,13 +114,11 @@ public class ContextParameterHandler extends DBHandler {
 				cp.setCpId(cp_id);
 				cp.setName(resultSet.getString("cp_name"));
 			}
+			return cp;
 		} catch (SQLException e) { 
-			e.printStackTrace(); 
-			cp = null;
-		} finally { 
-			DBHandler.closeConnnection(con); 
+			throw new DBHandlerException("An error occurred while trying get context parameter: "+e.getMessage());
 		} 
-		return cp;
+		
 	}
 
 
@@ -129,9 +126,10 @@ public class ContextParameterHandler extends DBHandler {
 	 * This method gets a context parameters from a given abstract component id
 	 * @param ac_id Abstract component id
 	 * @return Array of context parameters
+	 * @throws DBHandlerException 
 	 */
 
-	public static List<ContextParameterType> getAllContextParameterFromAbstractComponent(int ac_id, Connection con) {
+	public static List<ContextParameterType> getAllContextParameterFromAbstractComponent(int ac_id, Connection con) throws DBHandlerException {
 		//		TODO: Validar se não vai fechar um ciclo entre limites e componentes. Criar uma tabela para validar esta possibilidade, se fechar ciclo, disparar uma exception.
 
 		List<ContextParameterType> cpl = new ArrayList<ContextParameterType>();
@@ -147,7 +145,7 @@ public class ContextParameterHandler extends DBHandler {
 
 				try{
 					if(bound_id != ac_id){
-						cp.setBound(ContextContractHandler.getContextContractIncomplete(bound_id, con));
+						cp.setBound(ContextContractHandler.getContextContractIncomplete(bound_id));
 						//						System.out.println(cp.getBound().getAbstractComponent().getIdAc()+"5555555555555");
 						//TODO: O Limite não precisa estar completo, basta ter o componente abstrato com id
 						//						cp.setBound(DBHandler.getContextContract(bound_id));
@@ -176,8 +174,9 @@ public class ContextParameterHandler extends DBHandler {
 	 * @param cp_id
 	 * @param cc_id
 	 * @return
+	 * @throws DBHandlerException 
 	 */
-	public static ContextContract getVariableContract(int cp_id, int cc_id){
+	public static ContextContract getVariableContract(int cp_id, int cc_id) throws DBHandlerException{
 		ContextContract cc = null;
 		Connection con = null; 
 		try { 

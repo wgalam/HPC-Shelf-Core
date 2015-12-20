@@ -2,6 +2,7 @@ package br.ufc.storm.webservices;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -63,8 +64,15 @@ public class CoreServices {
 	 */
 
 	public String getAbstractComponentByID(int id){
-		AbstractComponentType ac = AbstractComponentHandler.getAbstractComponentPartial(id);
-		return XMLHandler.getAbstractComponent(ac.getName());
+		try {
+			AbstractComponentType ac = AbstractComponentHandler.getAbstractComponentPartial(id);
+			return XMLHandler.getAbstractComponent(ac.getName());
+		} catch (SQLException e) {
+			return null;
+		} catch (DBHandlerException e) {
+			return null;
+		}
+		
 	}
 
 	/**
@@ -84,7 +92,11 @@ public class CoreServices {
 	 */
 
 	public String getProfile(int id){
-		return XMLHandler.getContextContract(id);
+		try {
+			return XMLHandler.getContextContract(id);
+		} catch (DBHandlerException e) {
+			return null;
+		}
 	}
 
 	/**
@@ -146,7 +158,11 @@ public class CoreServices {
 	 */
 
 	public String getContextContract(int id){
-		return XMLHandler.getContextContract(id);
+		try {
+			return XMLHandler.getContextContract(id);
+		} catch (DBHandlerException e) {
+			return null;
+		}
 	}
 
 
@@ -201,9 +217,9 @@ public class CoreServices {
 	 * @return True if operation is well successful
 	 */
 	public boolean setObsolete(String cmp){
-		if(AbstractComponentHandler.setObsolete(cmp)){
-			return true;
-		}else{
+		try {
+			return AbstractComponentHandler.setObsolete(cmp);
+		} catch (SQLException e) {
 			return false;
 		}
 	}
@@ -216,7 +232,7 @@ public class CoreServices {
 		return XMLHandler.listComponent();
 	}
 
-	public static String listContract(int ac_id){
+	public static String listContract(int ac_id) throws DBHandlerException{
 		
 		return XMLHandler.listContract(ac_id);
 	}
@@ -227,7 +243,13 @@ public class CoreServices {
 	 * @return List of components
 	 */
 	public String resolve(String cmp){
-		return XMLHandler.resolve(cmp);
+		try {
+			return XMLHandler.resolve(cmp);
+		} catch (DBHandlerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	/**

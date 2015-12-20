@@ -30,6 +30,7 @@ import org.xml.sax.SAXException;
 
 import br.ufc.storm.control.Resolution;
 import br.ufc.storm.exception.DBHandlerException;
+import br.ufc.storm.exception.XMLException;
 import br.ufc.storm.io.FileHandler;
 import br.ufc.storm.jaxb.AbstractComponentType;
 import br.ufc.storm.jaxb.AbstractUnitType;
@@ -100,7 +101,7 @@ public class XMLHandler {
 	}
 
 
-	public static String resolve(String file){
+	public static String resolve(String file) throws DBHandlerException{
 		ContextContract cc = new ContextContract();
 		JAXBContext context;
 		try {
@@ -211,9 +212,22 @@ public class XMLHandler {
 			return false;
 		}
 		if(ac.getSupertype().getIdAc()==null){
-			ac.getSupertype().setIdAc(AbstractComponentHandler.getAbstractComponentID(ac.getSupertype().getName()));
+			try {
+				ac.getSupertype().setIdAc(AbstractComponentHandler.getAbstractComponentID(ac.getSupertype().getName()));
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-		AbstractComponentHandler.addAbstractComponent(ac);
+		try {
+			AbstractComponentHandler.addAbstractComponent(ac);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (XMLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		//			Adding context parameter this abstract component has
 
@@ -226,9 +240,10 @@ public class XMLHandler {
 	 * This method generates a XML file with an abstract component
 	 * @param ac_name Abstract component name
 	 * @return XML file content with abstract component values
+	 * @throws DBHandlerException 
 	 */	
 
-	public static String getContextContract(int cc_id){
+	public static String getContextContract(int cc_id) throws DBHandlerException{
 		ContextContract cc = null;
 		cc = ContextContractHandler.getContextContract(cc_id);
 		JAXBContext context;
@@ -275,8 +290,10 @@ public class XMLHandler {
 	 * @param cmp
 	 * @param con
 	 * @return
+	 * @throws XMLException 
+	 * @throws DBHandlerException 
 	 */
-	public static boolean addContextContract(String cmp, Connection con){
+	public static boolean addContextContract(String cmp, Connection con) throws XMLException, DBHandlerException{
 		ContextContract cc = null;
 		JAXBContext context;
 		try {
@@ -285,11 +302,14 @@ public class XMLHandler {
 			Unmarshaller unmarshaller = context.createUnmarshaller();
 			JAXBElement<ContextContract> element = (JAXBElement<ContextContract>) unmarshaller.unmarshal(new InputSource(new java.io.StringReader(cmp)));
 			cc = element.getValue();
+			ContextContractHandler.addContextContract(cc);
+			return true;
 		} catch (JAXBException e) {
-			e.printStackTrace();
-			return false;
+			throw new XMLException("Can not add context contract, problem JAXB translator");
+		} catch (SQLException e) {
+			throw new DBHandlerException("Can not add context contract, problem in database");
 		}
-		return ContextContractHandler.addContextContract(cc);
+		
 	}
 
 	/**
@@ -300,7 +320,15 @@ public class XMLHandler {
 
 	public static String getAbstractComponent(String ac_name){
 		AbstractComponentType abscom = null;
-		abscom = AbstractComponentHandler.getAbstractComponent(AbstractComponentHandler.getAbstractComponentID(ac_name));
+		try {
+			abscom = AbstractComponentHandler.getAbstractComponent(AbstractComponentHandler.getAbstractComponentID(ac_name));
+		} catch (DBHandlerException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		System.out.println(abscom.toString());
 		JAXBContext context;
 		java.io.StringWriter sw = new StringWriter();
@@ -373,7 +401,11 @@ public class XMLHandler {
 
 	public static String getContextParameters(String ac_name){
 		AbstractComponentType ac = new AbstractComponentType();
-		ac.setIdAc(AbstractComponentHandler.getAbstractComponentID(ac_name));
+		try {
+			ac.setIdAc(AbstractComponentHandler.getAbstractComponentID(ac_name));
+		} catch (SQLException e2) {
+			
+		}
 		Connection con;
 		List<ContextParameterType> cp = null;
 		try {
@@ -537,14 +569,21 @@ public class XMLHandler {
 			e.printStackTrace();
 		}
 		//TODO: Verificar se existe unidade concreta, se existir, atualizar
-		String path = br.ufc.storm.sql.ConcreteUnitHandler.addConcreteUnitFile(uft);
-		System.out.println(path);
-		if(uft.getPath()!= null){
-			uft.setPath(path.replace('.', '/')+"/");
-			if(FileHandler.addFile(data, uft.getPath()+uft.getFilename()+"."+uft.getExtension())){
-				return true;
+		String path;
+		try {
+			path = br.ufc.storm.sql.ConcreteUnitHandler.addConcreteUnitFile(uft);
+			System.out.println(path);
+			if(uft.getPath()!= null){
+				uft.setPath(path.replace('.', '/')+"/");
+				if(FileHandler.addFile(data, uft.getPath()+uft.getFilename()+"."+uft.getExtension())){
+					return true;
+				}
 			}
+		} catch (DBHandlerException | SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		
 		return false;
 
 	}
@@ -666,22 +705,28 @@ public class XMLHandler {
 		return newComponent;
 	}
 
-	public static String listContract(int ac_id){
-		ContractList list = ContextContractHandler.listContract(ac_id);
-		JAXBContext context;
-		java.io.StringWriter sw = new StringWriter();
+	public static String listContract(int ac_id) throws DBHandlerException{
+		ContractList list;
 		try {
-			context = JAXBContext.newInstance(br.ufc.storm.jaxb.ObjectFactory.class.getPackage().getName(),
-					br.ufc.storm.jaxb.ObjectFactory.class.getClassLoader());
-			Marshaller marshaller = context.createMarshaller();
-			marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
-			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-			JAXBElement<ContractList> element = new ObjectFactory().createContractList(list);
-			marshaller.marshal(element, sw);
-		} catch (JAXBException e) {
-			e.printStackTrace();
+			list = ContextContractHandler.listContract(ac_id);
+			JAXBContext context;
+			java.io.StringWriter sw = new StringWriter();
+			try {
+				context = JAXBContext.newInstance(br.ufc.storm.jaxb.ObjectFactory.class.getPackage().getName(),
+						br.ufc.storm.jaxb.ObjectFactory.class.getClassLoader());
+				Marshaller marshaller = context.createMarshaller();
+				marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+				marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+				JAXBElement<ContractList> element = new ObjectFactory().createContractList(list);
+				marshaller.marshal(element, sw);
+			} catch (JAXBException e) {
+				e.printStackTrace();
+			}
+			return sw.toString();
+		} catch (DBHandlerException e1) {
+			throw new DBHandlerException(e1.getMessage());
 		}
-		return sw.toString();
+		
 	}
 
 	public static boolean addContextContractFromXML(String file) {

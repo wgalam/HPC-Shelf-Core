@@ -13,9 +13,9 @@ import br.ufc.storm.jaxb.QualityArgumentType;
 import br.ufc.storm.jaxb.QualityParameterType;
 import br.ufc.storm.model.ResolutionNode;
 import br.ufc.storm.sql.ContextContractHandler;
-import br.ufc.storm.sql.DBHandler;
 import br.ufc.storm.sql.ResolutionHandler;
 import br.ufc.storm.xml.XMLHandler;
+import br.ufc.storm.exception.DBHandlerException;
 import br.ufc.storm.exception.ResolveException;
 
 public class Resolution{
@@ -23,8 +23,9 @@ public class Resolution{
 	/**
 	 * Only for tests purpose
 	 * @param args
+	 * @throws DBHandlerException 
 	 */
-	public static void main(String args[]){
+	public static void main(String args[]) throws DBHandlerException{
 
 		ContextContract cc = new ContextContract();
 		AbstractComponentType ac = new AbstractComponentType();
@@ -58,9 +59,10 @@ public class Resolution{
 	 * @param resolutionTree
 	 * @param applicationPlatform
 	 * @return
+	 * @throws DBHandlerException 
 	 */
 
-	public static CandidateListType resolve(ContextContract application, ResolutionNode resolutionTree, ContextContract applicationPlatform){
+	public static CandidateListType resolve(ContextContract application, ResolutionNode resolutionTree, ContextContract applicationPlatform) throws DBHandlerException{
 		if(resolutionTree==null){
 			resolutionTree = ResolutionHandler.generateResolutionTree();
 		}
@@ -182,8 +184,9 @@ public class Resolution{
 	 * @param list
 	 * @param innerComponent
 	 * @return
+	 * @throws DBHandlerException 
 	 */
-	public static List<ContextContract> applyInnerComponents(List<ContextContract> list, ContextContract innerComponent){
+	public static List<ContextContract> applyInnerComponents(List<ContextContract> list, ContextContract innerComponent) throws DBHandlerException{
 		for(ContextContract candidate:list){
 			candidate.getInnerComponents().add(ContextContractHandler.getContextContract(innerComponent.getCcId()));
 		}
@@ -198,8 +201,9 @@ public class Resolution{
 	 * @param parentAc
 	 * @param resolution
 	 * @return
+	 * @throws DBHandlerException 
 	 */
-	public static boolean componentSubTypeRecursiveTest(ContextContract applicationContract, ContextContract candidate, Integer cp_id, AbstractComponentType parentAc, ResolutionNode resolutionTree){
+	public static boolean componentSubTypeRecursiveTest(ContextContract applicationContract, ContextContract candidate, Integer cp_id, AbstractComponentType parentAc, ResolutionNode resolutionTree) throws DBHandlerException{
 		boolean subtype = true;
 		ContextContract bound;
 
@@ -510,8 +514,9 @@ public class Resolution{
 	 * @param cp_id
 	 * @param resolutionTree 
 	 * @return
+	 * @throws DBHandlerException 
 	 */
-	public static ContextContract getBoundFromContextParameter(AbstractComponentType ac, int cp_id, ResolutionNode resolutionTree){
+	public static ContextContract getBoundFromContextParameter(AbstractComponentType ac, int cp_id, ResolutionNode resolutionTree) throws DBHandlerException{
 		for(ContextParameterType cp:resolutionTree.findNode(ac.getIdAc()).getCps()){
 			if(cp.getCpId()==cp_id){
 				return ContextContractHandler.getContextContract(cp.getBound().getCcId());

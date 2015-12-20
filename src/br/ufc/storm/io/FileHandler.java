@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
+import br.ufc.storm.exception.DBHandlerException;
 import br.ufc.storm.properties.PropertiesHandler;
 
 public class FileHandler {
@@ -69,7 +70,7 @@ public class FileHandler {
 		return new String(data);
 	}
 	
-	public static byte[] getUnitFile(int ufid){
+	public static byte[] getUnitFile(int ufid) throws DBHandlerException{
 		byte[] data = null;
 		try {
 			data = Files.readAllBytes(Paths.get(br.ufc.storm.sql.ConcreteUnitHandler.getUnitFilePath(ufid)));

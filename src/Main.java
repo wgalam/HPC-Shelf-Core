@@ -23,6 +23,7 @@ import br.ufc.storm.sql.DBHandler;
 import br.ufc.storm.webservices.CoreServices;
 import br.ufc.storm.xml.XMLHandler;
 import br.ufc.storm.sql.ConcreteUnitHandler;
+import br.ufc.storm.sql.ContextContractHandler;
 import br.ufc.storm.control.FunctionHandler;
 import br.ufc.storm.control.Resolution;
 import br.ufc.storm.exception.DBHandlerException;
@@ -30,7 +31,7 @@ import br.ufc.storm.io.FileHandler;
 
 public class Main {
 	public static void main(String[] args) throws IOException {
-		System.out.println(CoreServices.listContract(19));
+//		System.out.println(CoreServices.listContract(19));
 		/*AbstractUnitType cut = UnitHandler.getAbstractUnit(25);
 		System.out.println(cut.getAuId()+" Abstract component id: "+cut.getAcId()+" Abstract unit name: "+cut.getAuName());
 		*/
@@ -48,12 +49,6 @@ public class Main {
 //			System.out.println(new String(UnitHandler.getUnitFile(uf.getFileId())));
 //		}
 //		
-			
-		
-		
-		
-		
-//		System.out.println(XMLHandler.getContextContract(35));
 		//System.out.println(DBHandler.generateResolutionTree().findNode("root.Software.Solver").getAc_id());
 //		System.out.println(XMLHandler.listComponent());
 		
