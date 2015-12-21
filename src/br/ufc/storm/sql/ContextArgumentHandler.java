@@ -32,16 +32,20 @@ public class ContextArgumentHandler extends DBHandler {
 	 * @throws SQLException 
 	 * @throws DBHandlerException 
 	 */
-	public static boolean hasContextArgumentAValue(int cp_id, int cc_id) throws SQLException, DBHandlerException{
-		Connection con = getConnection(); 
-		PreparedStatement prepared = con.prepareStatement(SELECT_VARIABLE_HAS_VALUE); 
-		prepared.setInt(1, cp_id);
-		prepared.setInt(2, cc_id);
-		ResultSet resultSet = prepared.executeQuery(); 
-		if(resultSet.next()) { 
-			return resultSet.getBoolean("hasValue"); 
-		}else{
-			throw new DBHandlerException("There no exists the context argument with Context Parameter id equals to "+cp_id+" and context contract equals to "+cc_id);
+	public static boolean hasContextArgumentAValue(int cp_id, int cc_id) throws DBHandlerException{
+		try {
+			Connection con = getConnection(); 
+			PreparedStatement prepared = con.prepareStatement(SELECT_VARIABLE_HAS_VALUE);
+			prepared.setInt(1, cp_id);
+			prepared.setInt(2, cc_id);
+			ResultSet resultSet = prepared.executeQuery();
+			if(resultSet.next()) {
+				return resultSet.getBoolean("hasValue"); 
+			}else{
+				throw new DBHandlerException("There no exists the context argument with Context Parameter id equals to "+cp_id+" and context contract equals to "+cc_id);
+			}
+		} catch (SQLException e) {
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
 		}
 	}
 
@@ -55,32 +59,37 @@ public class ContextArgumentHandler extends DBHandler {
 	 * @throws SQLException 
 	 */
 
-	public static boolean addContextArgument(ContextArgumentType cat) throws SQLException{
-		Connection con = getConnection();
-		PreparedStatement prepared = con.prepareStatement(INSERT_CONTEXT_ARGUMENT); 
-		prepared.setInt(1, cat.getCcId()); 
-		prepared.setInt(2, cat.getVariableCpId()); 
-		if(cat.getValue()!=null){
-			prepared.setBoolean(3, true);
-		}else{
-			prepared.setBoolean(3, false);
-		}
-		prepared.executeQuery(); 
-		if(cat.getValue()!=null){
-			addContextArgumentValue(cat.getCaId(),cat.getValue());
-			//				Adicionar valor na respectiva tabela
-		}else{
-			if(cat.getContextContract()!=null){
-				//					TODO: Falta testar
-				addContextArgumentContextContract(cat.getCaId(),cat.getContextContract());
-				//					Adicionar contrato na respectiva tabela
+	public static boolean addContextArgument(ContextArgumentType cat) throws DBHandlerException{
+
+		try {
+			Connection con = getConnection();
+			PreparedStatement prepared = con.prepareStatement(INSERT_CONTEXT_ARGUMENT); 
+			prepared.setInt(1, cat.getCcId());
+			prepared.setInt(2, cat.getVariableCpId()); 
+			if(cat.getValue()!=null){
+				prepared.setBoolean(3, true);
 			}else{
-				//					TODO: Falta testar
-				addContextArgumentVariableReference(cat.getVariableCpId(),cat.getCpId());
-				//					Adicionar referência à variável
+				prepared.setBoolean(3, false);
 			}
-		}
-		return true;
+			prepared.executeQuery(); 
+			if(cat.getValue()!=null){
+				addContextArgumentValue(cat.getCaId(),cat.getValue());
+				//				Adicionar valor na respectiva tabela
+			}else{
+				if(cat.getContextContract()!=null){
+					//					TODO: Falta testar
+					addContextArgumentContextContract(cat.getCaId(),cat.getContextContract());
+					//					Adicionar contrato na respectiva tabela
+				}else{
+					//					TODO: Falta testar
+					addContextArgumentVariableReference(cat.getVariableCpId(),cat.getCpId());
+					//					Adicionar referência à variável
+				}
+			}
+			return true;
+		} catch (SQLException e) {
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+		} 
 	}
 
 	/**
@@ -92,12 +101,18 @@ public class ContextArgumentHandler extends DBHandler {
 	 * @throws SQLException 
 	 */
 	//TODO: Testar
-	private static void addContextArgumentVariableReference(Integer var_id, Integer cpId) throws SQLException {
-		Connection con = getConnection();
-		PreparedStatement prepared = con.prepareStatement(INSERT_CONTEXT_ARGUMENT_REFERENCE); 
-		prepared.setInt(1, var_id);
-		prepared.setInt(2, cpId);
-		prepared.executeQuery();
+	private static void addContextArgumentVariableReference(Integer var_id, Integer cpId) throws DBHandlerException {
+
+		try {
+			Connection con = getConnection();
+			PreparedStatement prepared = con.prepareStatement(INSERT_CONTEXT_ARGUMENT_REFERENCE); 
+			prepared.setInt(1, var_id);
+			prepared.setInt(2, cpId);
+			prepared.executeQuery();
+		} catch (SQLException e) {
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+		}
+
 	}
 
 	/**
@@ -108,11 +123,17 @@ public class ContextArgumentHandler extends DBHandler {
 	 * @throws SQLException 
 	 */
 	//	TODO: Testar
-	private static void addContextArgumentContextContract(int ca_id, ContextContract contextContract) throws SQLException {
-		PreparedStatement prepared = getConnection().prepareStatement(INSERT_CONTEXT_ARGUMENT_CONTEXT_CONTRACT); 
-		prepared.setInt(1, ca_id);
-		prepared.setInt(2, contextContract.getCcId());
-		prepared.executeQuery();
+	private static void addContextArgumentContextContract(int ca_id, ContextContract contextContract) throws DBHandlerException {
+
+		try {
+			PreparedStatement prepared = getConnection().prepareStatement(INSERT_CONTEXT_ARGUMENT_CONTEXT_CONTRACT); 
+			prepared.setInt(1, ca_id);
+			prepared.setInt(2, contextContract.getCcId());
+			prepared.executeQuery();
+		} catch (SQLException e) {
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+		}
+
 	}
 
 	/**
@@ -123,12 +144,18 @@ public class ContextArgumentHandler extends DBHandler {
 	 * @return
 	 * @throws SQLException 
 	 */
-	private static void addContextArgumentValue(int cat_id, ContextArgumentValueType cavt) throws SQLException {
-		PreparedStatement prepared = getConnection().prepareStatement(INSERT_CONTEXT_ARGUMENT_VALUE); 
-		prepared.setInt(1, cat_id);
-		prepared.setString(2, cavt.getDataType());
-		prepared.setString(3, cavt.getValue());
-		prepared.executeQuery();
+	private static void addContextArgumentValue(int cat_id, ContextArgumentValueType cavt) throws DBHandlerException {
+
+		try {
+			PreparedStatement prepared = getConnection().prepareStatement(INSERT_CONTEXT_ARGUMENT_VALUE); 
+			prepared.setInt(1, cat_id);
+			prepared.setString(2, cavt.getDataType());
+			prepared.setString(3, cavt.getValue());
+			prepared.executeQuery();
+		} catch (SQLException e) {
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+		}
+
 	}
 
 	/**
@@ -138,49 +165,55 @@ public class ContextArgumentHandler extends DBHandler {
 	 * @throws SQLException 
 	 * @throws DBHandlerException 
 	 */
-	public static ArrayList<ContextArgumentType> getContextArguments(int cc_id) throws SQLException, DBHandlerException{
-		Connection con = getConnection();
-		ArrayList<ContextArgumentType> cpl = new ArrayList<ContextArgumentType>(); 
-		PreparedStatement prepared = con.prepareStatement(SELECT_CONTEXT_ARGUMENT_BY_ID); 
-		prepared.setInt(1, cc_id);
-		ResultSet resultSet = prepared.executeQuery(); 
-		while (resultSet.next()) {
-			ContextArgumentType ca = new ContextArgumentType();
-			ca.setCcId(cc_id);
-			ca.setVariableCpId(resultSet.getInt("variable_cp_id"));
-			ca.setBoundCcId(resultSet.getInt("bound_id"));
-			ca.setCaId(resultSet.getInt("ca_id"));
-			ca.setKind(resultSet.getInt("kind_id"));
-			Object o;
-			o = getContextArgumentValue(ca.getVariableCpId(), ca.getCcId());
-			if(o instanceof ContextContract){
-				ca.setContextContract((ContextContract) o);
-			}else if(o instanceof String){
-				ContextArgumentValueType value = new ContextArgumentValueType();
-				value.setDataType("String");
-				value.setValue((String)o);
-				ca.setValue(value);
-			}else if(o instanceof Double){
-				ContextArgumentValueType value = new ContextArgumentValueType();
-				value.setDataType("Double");
-				value.setValue((String)o);
-				ca.setValue(value);
-			}else if(o instanceof Integer){
-				ContextArgumentValueType value = new ContextArgumentValueType();
-				value.setDataType("Integer");
-				value.setValue((String)o);
-				ca.setValue(value);
-			}else if(o instanceof Float){
-				ContextArgumentValueType value = new ContextArgumentValueType();
-				value.setDataType("Float");
-				value.setValue((String)o);
-				ca.setValue(value);
-			}else{
-				throw new DBHandlerException("Context argument data type not recognized"); 
-			}
-			cpl.add(ca);
-		} 
-		return cpl; 
+	public static ArrayList<ContextArgumentType> getContextArguments(int cc_id) throws DBHandlerException{
+
+		try {
+			Connection con = getConnection();
+			ArrayList<ContextArgumentType> cpl = new ArrayList<ContextArgumentType>(); 
+			PreparedStatement prepared = con.prepareStatement(SELECT_CONTEXT_ARGUMENT_BY_ID); 
+			prepared.setInt(1, cc_id);
+			ResultSet resultSet = prepared.executeQuery(); 
+			while (resultSet.next()) {
+				ContextArgumentType ca = new ContextArgumentType();
+				ca.setCcId(cc_id);
+				ca.setVariableCpId(resultSet.getInt("variable_cp_id"));
+				ca.setBoundCcId(resultSet.getInt("bound_id"));
+				ca.setCaId(resultSet.getInt("ca_id"));
+				ca.setKind(resultSet.getInt("kind_id"));
+				Object o;
+				o = getContextArgumentValue(ca.getVariableCpId(), ca.getCcId());
+				if(o instanceof ContextContract){
+					ca.setContextContract((ContextContract) o);
+				}else if(o instanceof String){
+					ContextArgumentValueType value = new ContextArgumentValueType();
+					value.setDataType("String");
+					value.setValue((String)o);
+					ca.setValue(value);
+				}else if(o instanceof Double){
+					ContextArgumentValueType value = new ContextArgumentValueType();
+					value.setDataType("Double");
+					value.setValue((String)o);
+					ca.setValue(value);
+				}else if(o instanceof Integer){
+					ContextArgumentValueType value = new ContextArgumentValueType();
+					value.setDataType("Integer");
+					value.setValue((String)o);
+					ca.setValue(value);
+				}else if(o instanceof Float){
+					ContextArgumentValueType value = new ContextArgumentValueType();
+					value.setDataType("Float");
+					value.setValue((String)o);
+					ca.setValue(value);
+				}else{
+					throw new DBHandlerException("Context argument data type not recognized"); 
+				}
+				cpl.add(ca);
+			} 
+			return cpl;
+		} catch (SQLException e) {
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+		}
+
 	}
 
 	/**
@@ -190,77 +223,83 @@ public class ContextArgumentHandler extends DBHandler {
 	 * @return
 	 * @throws SQLException 
 	 */
-//TODO: Grade chance de estar errado o último teste, revisar e testar
-	public static Object getContextArgumentValue(int cp_id, int cc_id) throws DBHandlerException, SQLException{
-		boolean hasValue = false, shared = false;
-		int ca_id = 0;
-		Connection con = getConnection();
-		PreparedStatement prepared = con.prepareStatement(SELECT_VARIABLE_SHARED); 
-		prepared.setInt(1, cp_id);
-		ResultSet resultSet = prepared.executeQuery(); 
-		if(resultSet.next()) { 
-			shared = resultSet.getBoolean("isShared");
-		}else{
-			throw new DBHandlerException("Value of isShared not defined with cpId equals to "+cp_id+"and context contract id equals to "+cc_id);
-		}
-		if(shared){
-			prepared = con.prepareStatement(SELECT_SHARED_VARIABLE_CP); 
+	//TODO: Grade chance de estar errado o último teste, revisar e testar
+	public static Object getContextArgumentValue(int cp_id, int cc_id) throws DBHandlerException{
+
+		try {
+			boolean hasValue = false, shared = false;
+			int ca_id = 0;
+			Connection con = getConnection();
+			PreparedStatement prepared = con.prepareStatement(SELECT_VARIABLE_SHARED); 
 			prepared.setInt(1, cp_id);
-			resultSet = prepared.executeQuery();
-			if(resultSet.next()){
-				return getContextArgumentValue(resultSet.getInt("refers_to_var"),cc_id);
+			ResultSet resultSet = prepared.executeQuery(); 
+			if(resultSet.next()) { 
+				shared = resultSet.getBoolean("isShared");
 			}else{
-				throw new DBHandlerException("Shared variable not found with cpId equals to "+cp_id+"and context contract id equals to "+cc_id);
+				throw new DBHandlerException("Value of isShared not defined with cpId equals to "+cp_id+"and context contract id equals to "+cc_id);
 			}
-		}else{
-			prepared = con.prepareStatement(SELECT_VARIABLE_HAS_VALUE);
-			prepared.setInt(1, cp_id);
-			prepared.setInt(2, cc_id);
-			resultSet = prepared.executeQuery();
-			if(resultSet.next()){
-				hasValue = resultSet.getBoolean("hasValue");
-				ca_id = resultSet.getInt("ca_id");
-			}else{
-				throw new DBHandlerException("Error getting variable flag with cpId equals to "+cp_id+"and context contract id equals to "+cc_id);
-			}
-			if(hasValue){
-				prepared = con.prepareStatement(SELECT_VARIABLE_VALUE); 
-				prepared.setInt(1, ca_id);
+			if(shared){
+				prepared = con.prepareStatement(SELECT_SHARED_VARIABLE_CP); 
+				prepared.setInt(1, cp_id);
 				resultSet = prepared.executeQuery();
 				if(resultSet.next()){
-					Object o;
-					String type = resultSet.getString("data_type");
-					String s = resultSet.getString("value");
-					switch (type) {
-					case "Integer":
-						o = Integer.parseInt(s);
-						break;
-					case "String":
-						o = s;
-						break;
-					case "Float":
-						o = Float.parseFloat(s);
-						break;
-					case "Double":
-						o = Double.parseDouble(s);
-						break;
-					default:
-						throw new DBHandlerException("Context argument value not recognized");
-					}
-					return s;
-				}
-			}else{
-				prepared = con.prepareStatement(SELECT_CLOSED_ARGUMENT_CC); 
-				prepared.setInt(1, ca_id);
-				resultSet = prepared.executeQuery();
-				if(resultSet.next()){
-					return ContextContractHandler.getContextContract(resultSet.getInt("cc_id"));
+					return getContextArgumentValue(resultSet.getInt("refers_to_var"),cc_id);
 				}else{
-					throw new DBHandlerException("Can not get closed argument with cpId equals to "+cp_id+"and context contract id equals to "+cc_id);
+					throw new DBHandlerException("Shared variable not found with cpId equals to "+cp_id+"and context contract id equals to "+cc_id);
+				}
+			}else{
+				prepared = con.prepareStatement(SELECT_VARIABLE_HAS_VALUE);
+				prepared.setInt(1, cp_id);
+				prepared.setInt(2, cc_id);
+				resultSet = prepared.executeQuery();
+				if(resultSet.next()){
+					hasValue = resultSet.getBoolean("hasValue");
+					ca_id = resultSet.getInt("ca_id");
+				}else{
+					throw new DBHandlerException("Error getting variable flag with cpId equals to "+cp_id+"and context contract id equals to "+cc_id);
+				}
+				if(hasValue){
+					prepared = con.prepareStatement(SELECT_VARIABLE_VALUE); 
+					prepared.setInt(1, ca_id);
+					resultSet = prepared.executeQuery();
+					if(resultSet.next()){
+						Object o;
+						String type = resultSet.getString("data_type");
+						String s = resultSet.getString("value");
+						switch (type) {
+						case "Integer":
+							o = Integer.parseInt(s);
+							break;
+						case "String":
+							o = s;
+							break;
+						case "Float":
+							o = Float.parseFloat(s);
+							break;
+						case "Double":
+							o = Double.parseDouble(s);
+							break;
+						default:
+							throw new DBHandlerException("Context argument value not recognized");
+						}
+						return s;
+					}
+				}else{
+					prepared = con.prepareStatement(SELECT_CLOSED_ARGUMENT_CC); 
+					prepared.setInt(1, ca_id);
+					resultSet = prepared.executeQuery();
+					if(resultSet.next()){
+						return ContextContractHandler.getContextContract(resultSet.getInt("cc_id"));
+					}else{
+						throw new DBHandlerException("Can not get closed argument with cpId equals to "+cp_id+"and context contract id equals to "+cc_id);
+					}
 				}
 			}
+			return null;
+		} catch (SQLException e) {
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
 		}
-				return null;
+
 	}
 
 

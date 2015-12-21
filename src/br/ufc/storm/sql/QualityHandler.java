@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import br.ufc.storm.exception.DBHandlerException;
 import br.ufc.storm.jaxb.QualityFunctionTermType;
 import br.ufc.storm.jaxb.QualityFunctionType;
 import br.ufc.storm.jaxb.QualityParameterType;
@@ -22,12 +23,12 @@ public class QualityHandler extends DBHandler{
 	/**
 	 * 
 	 * @return
+	 * @throws DBHandlerException 
 	 */
-	public static int addQualityFunction(QualityFunctionType qf){
-		Connection con = null; 
+	public static int addQualityFunction(QualityFunctionType qf) throws DBHandlerException{
 		int function_id = 0;
 		try { 
-			con = getConnection(); 
+			Connection con = getConnection(); 
 			con.setAutoCommit(false);
 			PreparedStatement prepared = con.prepareStatement(INSERT_QUALITY_FUNCTION); 
 			prepared.setInt(1, qf.getCcId());
@@ -40,36 +41,39 @@ public class QualityHandler extends DBHandler{
 			ResultSet resultSet = prepared.executeQuery(); 
 			if(resultSet.next()){
 				function_id = resultSet.getInt("qf_id");
-				if(function_id != -1){
-					for(QualityFunctionTermType cp: qf.getFunctionParameters()){
-						prepared = con.prepareStatement(INSERT_QUALITY_PARAMETER); 
-						prepared.setInt(1, function_id); 
-						prepared.setInt(2, cp.getOrder()); 
-						prepared.setInt(3, cp.getCpId());
-						prepared.execute();
-					}
+				//				if(function_id != -1){
+				for(QualityFunctionTermType cp: qf.getFunctionParameters()){
+					prepared = con.prepareStatement(INSERT_QUALITY_PARAMETER); 
+					prepared.setInt(1, function_id); 
+					prepared.setInt(2, cp.getOrder()); 
+					prepared.setInt(3, cp.getCpId());
+					prepared.execute();
 				}
+				//				}
+				con.commit();
+				return function_id;	
+			}else{
+				throw new DBHandlerException("Quality function can not be created, error trying retrieve qf id");
 			}
-			con.commit();
 		} catch (SQLException e) { 
-			e.printStackTrace(); 
-		} finally { 
-			closeConnnection(con); 
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
 		} 
-		return function_id;
+
 	}
 
 
-	
+	/**
+	 * 
+	 * @param ac_id
+	 * @param connection
+	 * @return
+	 * @throws DBHandlerException
+	 */
 
-	public static ArrayList<QualityParameterType> getQualityParameters(int ac_id, Connection connection){
-		ArrayList<QualityParameterType> cps= new ArrayList<QualityParameterType>();
-		Connection con = connection;
-
-		try { 
-			if(con==null){
-				con = getConnection(); 
-			}
+	public static ArrayList<QualityParameterType> getQualityParameters(int ac_id) throws DBHandlerException{
+		try{	
+			ArrayList<QualityParameterType> cps= new ArrayList<QualityParameterType>();
+			Connection con = getConnection();
 			PreparedStatement prepared = con.prepareStatement(SELECT_QUALITY_PARAMETER); 
 			prepared.setInt(1, ac_id);
 			ResultSet resultSet = prepared.executeQuery(); 
@@ -80,69 +84,64 @@ public class QualityHandler extends DBHandler{
 				qp.setKindId(resultSet.getInt("kind_id"));
 				cps.add(qp);
 			}
+			return cps;
 		} catch (SQLException e) { 
-			System.out.println("Erro ao tentar buscar por parametros de qualidade do componente abstrato"+ac_id);
-			e.printStackTrace(); 
-		} finally { 
-			//	closeConnnection(con); 
-		} 		
-		return cps;
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+		} 	
 	}
 
 	/**
 	 * 
 	 * @return
+	 * @throws DBHandlerException 
 	 */
-	public static QualityFunctionType getQualityFunction(int cp_id, int cc_id){
-		QualityFunctionType qf = null;
-		Connection con = null; 
+	public static QualityFunctionType getQualityFunction(int cp_id, int cc_id) throws DBHandlerException{
 		try { 
-			con = getConnection(); 
+			Connection con = getConnection(); 
 			PreparedStatement prepared = con.prepareStatement(SELECT_QUALITY_FUNCTION);
 			prepared.setInt(1, cp_id);
 			prepared.setInt(2, cc_id);
 			ResultSet resultSet = prepared.executeQuery();
 			if(resultSet.next()) {
-				qf = new QualityFunctionType();
+				QualityFunctionType qf = new QualityFunctionType();
 				qf.setFunctionId(resultSet.getInt("qf_id"));
 				qf.setFunctionName(resultSet.getString("function_name"));
 				qf.setFunctionValue(resultSet.getString("function_value"));
+				return qf;
+			}else{
+				throw new DBHandlerException("Quality function not found with cp_id = "+cp_id);
 			}
+
 		} catch (SQLException e) { 
-			e.printStackTrace(); 
-			qf = null;
-		} finally { 
-			closeConnnection(con); 
-		} 		
-		return qf;		
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+		}		
+
 	}
-	
+	/**
+	 * 
+	 * @param qf_id
+	 * @return
+	 * @throws DBHandlerException
+	 */
 	@SuppressWarnings("unchecked")
-	public static ArrayList<QualityFunctionTermType> getQualityFunctionParameter(int qf_id){
+	public static ArrayList<QualityFunctionTermType> getQualityFunctionParameter(int qf_id) throws DBHandlerException{
 		ArrayList<QualityFunctionTermType> cps= new ArrayList<QualityFunctionTermType>();
-		Connection con = null;
 		try { 
-			con = getConnection(); 
+			Connection con = getConnection(); 
 			PreparedStatement prepared = con.prepareStatement(SELECT_QUALITY_FUNCTION_TERMS); 
 			prepared.setInt(1, qf_id);
-			System.out.println(prepared);
 			ResultSet resultSet = prepared.executeQuery(); 
-			System.out.println(resultSet.toString());
 			while(resultSet.next()){ 
 				QualityFunctionTermType qftt = new QualityFunctionTermType();
 				qftt.setCpId(resultSet.getInt("cp_id"));
 				qftt.setOrder(resultSet.getInt("term_order"));
 				cps.add(qftt);
 			}
+			Collections.sort (cps, new ComparatorQualityTerms(true));
+			return cps;
 		} catch (SQLException e) { 
-			e.printStackTrace(); 
-			return null;
-		} finally { 
-			closeConnnection(con); 
-		} 		
-		//Sorting the resulting list by order
-		Collections.sort (cps, new ComparatorQualityTerms(true));
-		return cps;
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+		}	
 	}
 }
 

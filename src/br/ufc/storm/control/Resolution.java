@@ -16,6 +16,7 @@ import br.ufc.storm.sql.ContextContractHandler;
 import br.ufc.storm.sql.ResolutionHandler;
 import br.ufc.storm.xml.XMLHandler;
 import br.ufc.storm.exception.DBHandlerException;
+import br.ufc.storm.exception.FunctionException;
 import br.ufc.storm.exception.ResolveException;
 
 public class Resolution{
@@ -46,11 +47,18 @@ public class Resolution{
 
 
 		System.out.println("Aguarde buscando componentes...");
-		CandidateListType resolve = resolve(cc, null, null);
-		int cont = 0;
-		for(ContextContract a:resolve.getCandidate()){
-			System.out.println("Candidato compatível ("+cont+++"): "+XMLHandler.getContextContract(a));
+		CandidateListType resolve;
+		try {
+			resolve = resolve(cc, null, null);
+			int cont = 0;
+			for(ContextContract a:resolve.getCandidate()){
+				System.out.println("Candidato compatível ("+cont+++"): "+XMLHandler.getContextContract(a));
+			}
+		} catch (ResolveException e) {
+			System.out.println("Erro enquanto estava resolvendo um contrato");
+			e.printStackTrace();
 		}
+
 	}
 
 	/**
@@ -59,25 +67,46 @@ public class Resolution{
 	 * @param resolutionTree
 	 * @param applicationPlatform
 	 * @return
-	 * @throws DBHandlerException 
+	 * @throws ResolveException 
 	 */
-
-	public static CandidateListType resolve(ContextContract application, ResolutionNode resolutionTree, ContextContract applicationPlatform) throws DBHandlerException{
+//Método está errado, só está encontrando um componente
+	revisar
+	public static CandidateListType resolve(ContextContract application, ResolutionNode resolutionTree, ContextContract applicationPlatform) throws ResolveException{
 		if(resolutionTree==null){
-			resolutionTree = ResolutionHandler.generateResolutionTree();
+			try {
+				resolutionTree = ResolutionHandler.generateResolutionTree();
+			} catch (DBHandlerException e) {
+				throw new ResolveException("Can not create resolution tree: "+e.getMessage());
+			}
 		}
-		ContextContractHandler.completeContextContract(application);
+		try {
+			ContextContractHandler.completeContextContract(application);
+		} catch (DBHandlerException e1) {
+			throw new ResolveException("Can not complete context contract data: "+e1.getMessage());
+		}
 		CandidateListType candidateList = new CandidateListType();
 		CandidateListType newCandidateList = new CandidateListType();
-		List<ContextContract> concreteComponentCandidatesList = ResolutionHandler.generateCandidates(application.getAbstractComponent().getSupertype().getIdAc(), application.getAbstractComponent().getIdAc(), resolutionTree);
+		List<ContextContract> concreteComponentCandidatesList;
+		try {
+			concreteComponentCandidatesList = ResolutionHandler.generateCandidates(application.getAbstractComponent().getSupertype().getIdAc(), application.getAbstractComponent().getIdAc(), resolutionTree);
+		} catch (DBHandlerException e1) {
+			return new CandidateListType();
+		}
 		if(concreteComponentCandidatesList.size() > 0){
 			for(ContextContract candidate:concreteComponentCandidatesList){
 				try {
 					if(componentSubTypeRecursiveTest(application, candidate, null, application.getAbstractComponent(),resolutionTree)){
 						if(candidate.getPlatform() == null){
-							throw new ResolveException("Candidate platform missing, unable to resolve compliant execution environment");
+							//Will test the next software contract
+//							continue;
 						}
-						List<ContextContract> componentCandidatePlatformlist = ResolutionHandler.generateCompliantPlatformCandidates(candidate.getPlatform().getAbstractComponent().getIdAc(), resolutionTree);
+						List<ContextContract> componentCandidatePlatformlist;
+						try {
+							componentCandidatePlatformlist = ResolutionHandler.generateCompliantPlatformCandidates(candidate.getPlatform().getAbstractComponent().getIdAc(), resolutionTree);
+						} catch (DBHandlerException e3) {
+							//Will test the next software contract
+							continue;
+						}
 						if(componentCandidatePlatformlist.size() > 0){
 							for(int i = 0; i < componentCandidatePlatformlist.size(); i++){
 
@@ -115,21 +144,38 @@ public class Resolution{
 							//----------------------------------------------------------------------------------------------------------------------------------------------
 
 							for(ContextContract cc:candidateList.getCandidate()){
-								FunctionHandler.calulateContextContractQualityArguments(cc.getPlatform(), resolutionTree); //calcula parametros de qualidade
+								try {
+									FunctionHandler.calulateContextContractQualityArguments(cc.getPlatform(), resolutionTree);
+								} catch (FunctionException e2) {
+									//Will test the next software contract
+									continue;
+								} //calcula parametros de qualidade
 								if(Resolution.isSubTypeByQuality(application.getPlatform(), cc.getPlatform(), null, resolutionTree)){
-									FunctionHandler.calulateContextContractCostArguments(cc.getPlatform(), resolutionTree); //calcula parametros de custo
+									try {
+										FunctionHandler.calulateContextContractCostArguments(cc.getPlatform(), resolutionTree);
+									} catch (FunctionException e1) {
+										//Will test the next software contract
+										continue;
+									} //calcula parametros de custo
 									if(Resolution.isSubTypeByCost(application.getPlatform(), cc.getPlatform(), null, resolutionTree)){
-										FunctionHandler.calulateContextContractRankingArguments(cc.getPlatform(), resolutionTree); //calcula parametros de custo
+										try {
+											FunctionHandler.calulateContextContractRankingArguments(cc.getPlatform(), resolutionTree);
+										} catch (FunctionException e) {
+											//Will test the next software contract
+											continue;
+										} //calcula parametros de custo
 										newCandidateList.getCandidate().add(cc);									
 									}
 								}
 							}
 						}
 					}
-
-				} catch (ResolveException e) {
-					e.printStackTrace();
+				} catch (DBHandlerException e) {
+					//Will test the next software contract
+//					continue;
 				}
+
+
 			}
 		}
 		return newCandidateList;

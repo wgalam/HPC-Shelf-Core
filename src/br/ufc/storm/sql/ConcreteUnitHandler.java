@@ -30,12 +30,20 @@ public class ConcreteUnitHandler extends DBHandler {
 	 * @throws SQLException 
 	 */
 
-	public static void addConcreteUnit(String contextContract_id, String au_id) throws SQLException {
-		Connection con = getConnection(); 
-		PreparedStatement prepared = con.prepareStatement(INSERT_CONCRETE_UNIT); 
-		prepared.setInt(1, Integer.parseInt(contextContract_id)); 
-		prepared.setInt(2, Integer.parseInt(au_id)); 
-		prepared.executeUpdate(); 
+	public static void addConcreteUnit(String contextContract_id, String au_id) throws DBHandlerException {
+
+		try {
+			Connection con = getConnection(); 
+			PreparedStatement prepared = con.prepareStatement(INSERT_CONCRETE_UNIT); 
+			prepared.setInt(1, Integer.parseInt(contextContract_id));
+			prepared.setInt(2, Integer.parseInt(au_id)); 
+			prepared.executeUpdate(); 
+		} catch (NumberFormatException e) {
+			throw new DBHandlerException("A error occurred while parsing int: "+e.getMessage());
+		} catch (SQLException e) {
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+		} 
+
 	}
 
 	/**
@@ -46,20 +54,26 @@ public class ConcreteUnitHandler extends DBHandler {
 	 * @throws SQLException 
 	 */
 
-	public static ConcreteUnitType getConcreteUnit(int uid) throws DBHandlerException, SQLException{
-		Connection con = getConnection(); 
-		PreparedStatement prepared = con.prepareStatement(SELECT_CONCRETE_UNIT); 
-		prepared.setInt(1, uid); 
-		ResultSet resultSet = prepared.executeQuery(); 
-		if(resultSet.next()) { 
-			ConcreteUnitType cut = new ConcreteUnitType();
-			cut.setUId(resultSet.getInt("unit_id"));
-			cut.setAuId(resultSet.getInt("au_id"));
-			cut.setCcId(resultSet.getInt("cc_id"));
-			return cut;
-		}else{
-			throw new DBHandlerException("Concrete unit not found");
-		}
+	public static ConcreteUnitType getConcreteUnit(int uid) throws DBHandlerException{
+
+		try {
+			Connection con = getConnection(); 
+			PreparedStatement prepared = con.prepareStatement(SELECT_CONCRETE_UNIT); 
+			prepared.setInt(1, uid);
+			ResultSet resultSet = prepared.executeQuery(); 
+			if(resultSet.next()) { 
+				ConcreteUnitType cut = new ConcreteUnitType();
+				cut.setUId(resultSet.getInt("unit_id"));
+				cut.setAuId(resultSet.getInt("au_id"));
+				cut.setCcId(resultSet.getInt("cc_id"));
+				return cut;
+			}else{
+				throw new DBHandlerException("Concrete unit not found");
+			}
+		} catch (SQLException e) {
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+		} 
+
 	}
 
 	/**
@@ -70,17 +84,23 @@ public class ConcreteUnitHandler extends DBHandler {
 	 * @throws SQLException 
 	 */
 
-	public static int getConcreteUnitID(String abstractUnitName) throws DBHandlerException, SQLException{
-		Connection con = null; 
-		con = getConnection(); 
-		PreparedStatement prepared = con.prepareStatement(SELECT_CONCRETE_UNIT_ID); 
-		prepared.setString(1, abstractUnitName); 
-		ResultSet resultSet = prepared.executeQuery(); 
-		if(resultSet.next()) { 
-			return resultSet.getInt("unit_id"); 
-		}else{
-			throw new DBHandlerException("Concrete unit not found");
-		}
+	public static int getConcreteUnitID(String abstractUnitName) throws DBHandlerException{
+
+		try {
+			Connection con = null; 
+			con = getConnection(); 
+			PreparedStatement prepared = con.prepareStatement(SELECT_CONCRETE_UNIT_ID); 
+			prepared.setString(1, abstractUnitName);
+			ResultSet resultSet = prepared.executeQuery(); 
+			if(resultSet.next()) { 
+				return resultSet.getInt("unit_id"); 
+			}else{
+				throw new DBHandlerException("Concrete unit not found");
+			}
+		} catch (SQLException e) {
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+		} 
+
 	}
 
 	/**
@@ -90,27 +110,33 @@ public class ConcreteUnitHandler extends DBHandler {
 	 * @throws SQLException 
 	 */
 
-	public static List<UnitFileType> getUnitFiles(int unit_id) throws SQLException{
-		Connection con = null; 
-		ArrayList<UnitFileType> list = new ArrayList<UnitFileType>();
+	public static List<UnitFileType> getUnitFiles(int unit_id) throws DBHandlerException{
 
-		con = getConnection(); 
-		PreparedStatement prepared = con.prepareStatement(SELECT_UNIT_FILES); 
-		prepared.setInt(1, unit_id); 
-		ResultSet resultSet = prepared.executeQuery(); 
-		while(resultSet.next()) { 
-			UnitFileType uft = new UnitFileType();
-			uft.setBuildCfg(resultSet.getString("build_cfg"));
-			uft.setExtension(resultSet.getString("file_extension"));
-			uft.setFilename(resultSet.getString("file_name"));
-			uft.setFiletype(resultSet.getInt("file_type"));
-			uft.setPath(resultSet.getString("path"));
-			uft.setVersion(resultSet.getInt("current_version"));
-			uft.setUid(unit_id);
-			uft.setFileId(resultSet.getInt("file_id"));
-			list.add(uft); 
-		}
-		return list;
+		try {
+			Connection con = null; 
+			ArrayList<UnitFileType> list = new ArrayList<UnitFileType>();
+
+			con = getConnection(); 
+			PreparedStatement prepared = con.prepareStatement(SELECT_UNIT_FILES); 
+			prepared.setInt(1, unit_id);
+			ResultSet resultSet = prepared.executeQuery(); 
+			while(resultSet.next()) { 
+				UnitFileType uft = new UnitFileType();
+				uft.setBuildCfg(resultSet.getString("build_cfg"));
+				uft.setExtension(resultSet.getString("file_extension"));
+				uft.setFilename(resultSet.getString("file_name"));
+				uft.setFiletype(resultSet.getInt("file_type"));
+				uft.setPath(resultSet.getString("path"));
+				uft.setVersion(resultSet.getInt("current_version"));
+				uft.setUid(unit_id);
+				uft.setFileId(resultSet.getInt("file_id"));
+				list.add(uft); 
+			}
+			return list;
+		} catch (SQLException e) {
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+		} 
+
 	}
 
 	/**
@@ -131,16 +157,17 @@ public class ConcreteUnitHandler extends DBHandler {
 			if(resultSet.next()) {
 				try {
 					file = PropertiesHandler.getProperty("core.library.path")+"/"+resultSet.getString("path").replace('.', '/')+"/"+resultSet.getString("file_name")+"."+resultSet.getString("file_extension");
+					return file;
 				} catch (IOException e) {
-					e.printStackTrace();
+					throw new DBHandlerException("An I/O error occurred: "+e.getMessage());
 				}
 			}else{
 				throw new DBHandlerException("Unit file not found");
 			}
 		}catch(SQLException e){
-			e.printStackTrace();
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
 		}
-		return file;
+
 	}
 
 	/**
@@ -152,27 +179,33 @@ public class ConcreteUnitHandler extends DBHandler {
 	 * @throws SQLException 
 	 */
 
-	public static String addConcreteUnitFile(UnitFileType uft) throws DBHandlerException, SQLException {
-		Connection con = getConnection();  
-		PreparedStatement prepared = con.prepareStatement(SELECT_UNIT_PATH);
-		prepared.setInt(1, uft.getUid());
-		ResultSet resultSet = prepared.executeQuery(); 
-		if(resultSet.next()) { 
-			uft.setPath(ResolutionHandler.generateResolutionTree().findNode(resultSet.getInt("ac_id")).getPath()); 
-			String c_name = resultSet.getString("cc_name");
-			uft.setPath(uft.getPath()+"."+c_name);
-		}else{
-			throw new DBHandlerException("Concrete unit not found");
+	public static String addConcreteUnitFile(UnitFileType uft) throws DBHandlerException {
+
+		try {
+			Connection con = getConnection();  
+			PreparedStatement prepared = con.prepareStatement(SELECT_UNIT_PATH);
+			prepared.setInt(1, uft.getUid());
+			ResultSet resultSet = prepared.executeQuery(); 
+			if(resultSet.next()) { 
+				uft.setPath(ResolutionHandler.generateResolutionTree().findNode(resultSet.getInt("ac_id")).getPath()); 
+				String c_name = resultSet.getString("cc_name");
+				uft.setPath(uft.getPath()+"."+c_name);
+			}else{
+				throw new DBHandlerException("Concrete unit not found");
+			}
+			prepared = con.prepareStatement(INSERT_UNIT_FILE); 
+			prepared.setString(1, uft.getFilename()); 
+			prepared.setInt(2, uft.getUid());  
+			prepared.setString(3, uft.getExtension()); 
+			prepared.setInt(4, uft.getVersion()); 
+			prepared.setString(5, uft.getBuildCfg());
+			prepared.setInt(6, uft.getFiletype());
+			prepared.setString(7, uft.getPath());
+			prepared.executeUpdate(); 
+			return uft.getPath();
+		} catch (SQLException e) {
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
 		}
-		prepared = con.prepareStatement(INSERT_UNIT_FILE); 
-		prepared.setString(1, uft.getFilename()); 
-		prepared.setInt(2, uft.getUid());  
-		prepared.setString(3, uft.getExtension()); 
-		prepared.setInt(4, uft.getVersion()); 
-		prepared.setString(5, uft.getBuildCfg());
-		prepared.setInt(6, uft.getFiletype());
-		prepared.setString(7, uft.getPath());
-		prepared.executeUpdate(); 
-		return uft.getPath();
+
 	}
 }

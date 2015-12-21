@@ -11,6 +11,7 @@ import br.ufc.storm.jaxb.AbstractComponentType;
 import br.ufc.storm.jaxb.ContextParameterType;
 import br.ufc.storm.jaxb.SliceType;
 import br.ufc.storm.exception.DBHandlerException;
+import br.ufc.storm.exception.StormException;
 import br.ufc.storm.exception.XMLException;
 
 public class AbstractComponentHandler extends DBHandler{
@@ -31,35 +32,40 @@ public class AbstractComponentHandler extends DBHandler{
 	 */
 
 	//TODO: Refactor this method
-	public static List<AbstractComponentType> listAbstractComponents() throws SQLException, DBHandlerException{
-		Connection con = getConnection();
-		int ac_id, supertype_id;
-		String name;
-		ArrayList<AbstractComponentType> list = new ArrayList<AbstractComponentType>(); 
-		PreparedStatement prepared = con.prepareStatement(SELECT_ALL_ABSTRACTCOMPONENT); 
-		ResultSet resultSet = prepared.executeQuery(); 
-		while (resultSet.next()) { 
-			name = resultSet.getString("ac_name");
-			ac_id = resultSet.getInt("ac_id"); 
-			supertype_id = resultSet.getInt("supertype_id"); 
-			//kind = resultSet.getInt("kind_id");
-			//				parent = resultSet.getInt("parent");
-			AbstractComponentType ac = new AbstractComponentType();
-			ac.setIdAc(ac_id);
-			ac.setName(name);
-			ac.setSupertype(new AbstractComponentType());
-			ac.getSupertype().setIdAc(supertype_id);
-			try {
-				ac.getSupertype().setName(AbstractComponentHandler.getAbstractComponentName(supertype_id));
-			} catch (DBHandlerException e) {
-				throw new DBHandlerException("Supertype not found");
+	public static List<AbstractComponentType> listAbstractComponents() throws DBHandlerException{
+		try {
+			Connection con = getConnection();
+			int ac_id, supertype_id;
+			String name;
+			ArrayList<AbstractComponentType> list = new ArrayList<AbstractComponentType>(); 
+			PreparedStatement prepared = con.prepareStatement(SELECT_ALL_ABSTRACTCOMPONENT); 
+			ResultSet resultSet = prepared.executeQuery(); 
+			while (resultSet.next()) { 
+				name = resultSet.getString("ac_name");
+				ac_id = resultSet.getInt("ac_id"); 
+				supertype_id = resultSet.getInt("supertype_id"); 
+				//kind = resultSet.getInt("kind_id");
+				//				parent = resultSet.getInt("parent");
+				AbstractComponentType ac = new AbstractComponentType();
+				ac.setIdAc(ac_id);
+				ac.setName(name);
+				ac.setSupertype(new AbstractComponentType());
+				ac.getSupertype().setIdAc(supertype_id);
+				try {
+					ac.getSupertype().setName(AbstractComponentHandler.getAbstractComponentName(supertype_id));
+				} catch (DBHandlerException e) {
+					throw new DBHandlerException("Supertype not found");
+				}
+				//ac.setParent(new AbstractComponentType());
+				//ac.getParent().setIdAc(parent);
+				//ac.setKind(kind);
+				list.add(ac);
 			}
-			//ac.setParent(new AbstractComponentType());
-			//ac.getParent().setIdAc(parent);
-			//ac.setKind(kind);
-			list.add(ac);
+			return list;
+		} catch (SQLException e1) {
+			throw new DBHandlerException("A sql error occurred: "+e1.getMessage());
 		}
-		return list;
+
 	}
 
 	/**
@@ -69,42 +75,48 @@ public class AbstractComponentHandler extends DBHandler{
 	 * @return Abstract Component added id
 	 * @throws SQLException 
 	 * @throws XMLException 
+	 * @throws StormException 
 	 */
 	//TODO: Refactor this method
-	public static int addAbstractComponent(AbstractComponentType ac) throws DBHandlerException, SQLException, XMLException{
-		Connection con = DBHandler.getConnection();
-		con.setAutoCommit(false);
-		int ac_id = 0;
-		PreparedStatement prepared = con.prepareStatement(INSERT_ABSTRACT_COMPONENT);
-		prepared.setString(1, ac.getName()); 
-		prepared.setInt(2, ac.getSupertype().getIdAc());
-		//Removido kind_id pois está definido no parâmetro de contexto
-		//			prepared.setInt(3, ac.getKind());
-		ResultSet result = prepared.executeQuery();
-		if(result.next()){
-			ac_id = result.getInt("ac_id");
-		}else{
-			throw new DBHandlerException("Abstract component id not returned");
-		}
-		if(ac.getContextParameter()!=null){
-			for(ContextParameterType cp:ac.getContextParameter()){
-				//					TODO: Corrigir a passagem de variáveis
-				String boundName = null;
-				if(cp.getBound() != null){
-					boundName = cp.getBound().getCcName();
-				}
-				boolean fcp = true;
-				if(fcp){
-					int ret = ContextParameterHandler.addContextParameter(cp.getName(),boundName, ac.getName(), null, con);
-					if(ret < 0){
-						fcp=false;
-						throw new XMLException("Storm XML Handler Exception: "+ret+" with parameter: "+cp.getName());
+	public static int addAbstractComponent(AbstractComponentType ac) throws DBHandlerException, StormException{
+		try {
+			Connection con = DBHandler.getConnection();
+			con.setAutoCommit(false);
+			int ac_id = 0;
+			PreparedStatement prepared = con.prepareStatement(INSERT_ABSTRACT_COMPONENT);
+			prepared.setString(1, ac.getName()); 
+			prepared.setInt(2, ac.getSupertype().getIdAc());
+			//Removido kind_id pois está definido no parâmetro de contexto
+			//			prepared.setInt(3, ac.getKind());
+			ResultSet result = prepared.executeQuery();
+			if(result.next()){
+				ac_id = result.getInt("ac_id");
+			}else{
+				throw new DBHandlerException("Abstract component id not returned");
+			}
+			if(ac.getContextParameter()!=null){
+				for(ContextParameterType cp:ac.getContextParameter()){
+					//					TODO: Corrigir a passagem de variáveis
+					String boundName = null;
+					if(cp.getBound() != null){
+						boundName = cp.getBound().getCcName();
+					}
+					boolean fcp = true;
+					if(fcp){
+						int ret = ContextParameterHandler.addContextParameter(cp.getName(),boundName, ac.getName(), null);
+						if(ret < 0){
+							fcp=false;
+							throw new DBHandlerException("Storm XML Handler Exception: "+ret+" with parameter: "+cp.getName());
+						}
 					}
 				}
 			}
+			con.commit();
+			return ac_id;
+		} catch (SQLException e) {
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
 		}
-		con.commit();
-		return ac_id;
+
 	}
 
 	/**
@@ -115,18 +127,14 @@ public class AbstractComponentHandler extends DBHandler{
 	 */
 	public static AbstractComponentType getAbstractComponent(int ac_id) throws DBHandlerException{
 		AbstractComponentType ac;
-		try {
-			ac = getAbstractComponentPartial(ac_id);
-			ac.getInnerComponents().addAll(ContextContractHandler.getInnerComponents(ac_id));
-			ac.getContextParameter().addAll(ResolutionHandler.generateResolutionTree().findNode(ac_id).getCps());
-			ac.getQualityParameters().addAll(QualityHandler.getQualityParameters(ac_id, null));
-			ac.getCostParameters().addAll(CostHandler.getCostParameters(ac_id, null));
-			ac.getAbstractUnit().addAll(AbstractUnitHandler.getAbstractUnits(ac_id));
-			ac.getSlices().addAll(getSlices(ac_id));
-			return ac;
-		} catch (SQLException e) {
-			throw new DBHandlerException("Abstract component not found");
-		}
+		ac = getAbstractComponentPartial(ac_id);
+		ac.getInnerComponents().addAll(ContextContractHandler.getInnerComponents(ac_id));
+		ac.getContextParameter().addAll(ResolutionHandler.generateResolutionTree().findNode(ac_id).getCps());
+		ac.getQualityParameters().addAll(QualityHandler.getQualityParameters(ac_id));
+		ac.getCostParameters().addAll(CostHandler.getCostParameters(ac_id));
+		ac.getAbstractUnit().addAll(AbstractUnitHandler.getAbstractUnits(ac_id));
+		ac.getSlices().addAll(getSlices(ac_id));
+		return ac;
 	}
 
 	/**
@@ -137,36 +145,41 @@ public class AbstractComponentHandler extends DBHandler{
 	 * @throws DBHandlerException 
 	 */
 	//TODO: Refactor this method
-	public static AbstractComponentType getAbstractComponentPartial(int ac_id) throws SQLException, DBHandlerException{
-		Connection con = getConnection(); 
-		Integer supertype_id = null;
-		String name = null;
-		PreparedStatement prepared = con.prepareStatement(SELECT_ABSTRACT_COMPONENT_BY_ID); 
-		prepared.setInt(1, ac_id);
-		ResultSet resultSet = prepared.executeQuery(); 
-		if (resultSet.next()) { 
-			if(resultSet.getBoolean("enabled") == false){
-				closeConnnection(con);
-				return null;
+	public static AbstractComponentType getAbstractComponentPartial(int ac_id) throws DBHandlerException{
+		try {
+			Connection con = getConnection();
+			Integer supertype_id = null;
+			String name = null;
+			PreparedStatement prepared = con.prepareStatement(SELECT_ABSTRACT_COMPONENT_BY_ID); 
+			prepared.setInt(1, ac_id);
+			ResultSet resultSet = prepared.executeQuery(); 
+			if (resultSet.next()) { 
+				if(resultSet.getBoolean("enabled") == false){
+					closeConnnection(con);
+					return null;
+				}
+				name=resultSet.getString("ac_name");
+				supertype_id = resultSet.getInt("supertype_id"); 
+				AbstractComponentType ac = new AbstractComponentType();
+				ac.setIdAc(ac_id);
+				ac.setName(name);
+				if(supertype_id!=null){
+					ac.setSupertype(new AbstractComponentType());
+					ac.getSupertype().setIdAc(supertype_id);
+					ac.getSupertype().setName(getAbstractComponentName(supertype_id));
+				}
+				//			ac.setParent(new AbstractComponentType());
+				//			ac.getParent().setIdAc(parent);
+				//			List<ContextParameterType> t = DBHandler.getAllContextParameterFromAbstractComponent(ac_id);
+				//			ac.getContextParameter().addAll(t);
+				return ac; 
+			}else{
+				throw new DBHandlerException("Abstract component not exists");
 			}
-			name=resultSet.getString("ac_name");
-			supertype_id = resultSet.getInt("supertype_id"); 
-			AbstractComponentType ac = new AbstractComponentType();
-			ac.setIdAc(ac_id);
-			ac.setName(name);
-			if(supertype_id!=null){
-				ac.setSupertype(new AbstractComponentType());
-				ac.getSupertype().setIdAc(supertype_id);
-				ac.getSupertype().setName(getAbstractComponentName(supertype_id));
-			}
-			//			ac.setParent(new AbstractComponentType());
-			//			ac.getParent().setIdAc(parent);
-			//			List<ContextParameterType> t = DBHandler.getAllContextParameterFromAbstractComponent(ac_id);
-			//			ac.getContextParameter().addAll(t);
-			return ac; 
-		}else{
-			throw new DBHandlerException("Abstract component not exists");
-		}
+		} catch (SQLException e) {
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+		} 
+
 	}
 
 	/**
@@ -177,20 +190,25 @@ public class AbstractComponentHandler extends DBHandler{
 	 * @throws DBHandlerException 
 	 */
 
-	public static AbstractComponentType getAbstractComponentFromContextContractID(int cc_id) throws SQLException, DBHandlerException{
-		Connection con = getConnection();
-		PreparedStatement prepared = con.prepareStatement(SELECT_ABSTRACT_COMPONENT_BY_CC_ID); 
-		prepared.setInt(1, cc_id);
-		ResultSet resultSet = prepared.executeQuery(); 
-		if(resultSet.next()) { 
-			if(resultSet.getBoolean("enabled") == false){
-				throw new DBHandlerException("Abstract component disabled, can't be caught");
+	public static AbstractComponentType getAbstractComponentFromContextContractID(int cc_id) throws DBHandlerException{
+		try {
+			Connection con = getConnection();
+			PreparedStatement prepared = con.prepareStatement(SELECT_ABSTRACT_COMPONENT_BY_CC_ID); 
+			prepared.setInt(1, cc_id);
+			ResultSet resultSet = prepared.executeQuery(); 
+			if(resultSet.next()) { 
+				if(resultSet.getBoolean("enabled") == false){
+					throw new DBHandlerException("Abstract component disabled, can't be caught");
+				}else{
+					return getAbstractComponent(resultSet.getInt("ac_id"));	
+				}
 			}else{
-				return getAbstractComponent(resultSet.getInt("ac_id"));	
+				throw new DBHandlerException("Abstract component not found");
 			}
-		}else{
-			throw new DBHandlerException("Abstract component not found");
+		} catch (SQLException e) {
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
 		}
+
 	}
 
 	/**
@@ -200,16 +218,22 @@ public class AbstractComponentHandler extends DBHandler{
 	 * @throws SQLException 
 	 * @throws DBHandlerException 
 	 */
-	public static String getAbstractComponentName(int id) throws SQLException, DBHandlerException{
-		Connection con = getConnection();
-		PreparedStatement prepared = con.prepareStatement(SELECT_COMPONENT_NAME); 
-		prepared.setInt(1, id); 
-		ResultSet resultSet = prepared.executeQuery(); 
-		if(resultSet.next()) { 
-			return resultSet.getString("ac_name");
-		}else{
-			throw new DBHandlerException("Abstract component not found");
-		}
+	public static String getAbstractComponentName(int id) throws DBHandlerException{
+		try {
+			Connection con = getConnection();
+			PreparedStatement prepared;
+			prepared = con.prepareStatement(SELECT_COMPONENT_NAME);
+			prepared.setInt(1, id); 
+			ResultSet resultSet = prepared.executeQuery(); 
+			if(resultSet.next()) { 
+				return resultSet.getString("ac_name");
+			}else{
+				throw new DBHandlerException("Abstract component not found");
+			}
+		} catch (SQLException e) {
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+		} 
+
 
 	}
 
@@ -220,19 +244,24 @@ public class AbstractComponentHandler extends DBHandler{
 	 * @throws SQLException 
 	 * @throws DBHandlerException 
 	 */
-	public static int getAbstractComponentID(String name) throws SQLException, DBHandlerException{
-		Connection con = getConnection(); 
-		int ac_id = 0;
-		PreparedStatement prepared = con.prepareStatement(SELECT_COMPONENT_ID); 
-		prepared.setString(1, name); 
-		ResultSet resultSet = prepared.executeQuery(); 
-		if(resultSet.next()) { 
-			ac_id = resultSet.getInt("ac_id"); 
-			return ac_id;
-		}else{
-			throw new DBHandlerException("Abstract component not found");
-		}
+	public static int getAbstractComponentID(String name) throws DBHandlerException{
 
+		try {
+			Connection con = getConnection(); 
+			int ac_id = 0;
+			PreparedStatement prepared;
+			prepared = con.prepareStatement(SELECT_COMPONENT_ID);
+			prepared.setString(1, name); 
+			ResultSet resultSet = prepared.executeQuery(); 
+			if(resultSet.next()) { 
+				ac_id = resultSet.getInt("ac_id"); 
+				return ac_id;
+			}else{
+				throw new DBHandlerException("Abstract component not found");
+			}
+		} catch (SQLException e) {
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+		} 
 	}
 
 	/**
@@ -242,20 +271,26 @@ public class AbstractComponentHandler extends DBHandler{
 	 * @throws SQLException 
 	 */
 
-	private static List<SliceType> getSlices(int ac_id) throws SQLException {
-		Connection con = getConnection();
-		ArrayList<SliceType> slices = new ArrayList<SliceType>();
-		PreparedStatement prepared = con.prepareStatement(SELECT_ALL_SLICES);
-		prepared.setInt(1, ac_id);
-		ResultSet resultSet = prepared.executeQuery();
-		while (resultSet.next()) {				
-			SliceType slc = new SliceType();
-			slc.setSliceId(resultSet.getInt("slice_id"));
-			slc.setSliceId(resultSet.getInt("inner_component_id"));
-			slc.setSliceId(resultSet.getInt("inner_unit_id"));
-			slices.add(slc);
-		} 
-		return slices; 
+	private static List<SliceType> getSlices(int ac_id) throws DBHandlerException {
+
+		try {
+			Connection con = getConnection();
+			ArrayList<SliceType> slices = new ArrayList<SliceType>();
+			PreparedStatement prepared = con.prepareStatement(SELECT_ALL_SLICES);
+			prepared.setInt(1, ac_id);
+			ResultSet resultSet = prepared.executeQuery();
+			while (resultSet.next()) {				
+				SliceType slc = new SliceType();
+				slc.setSliceId(resultSet.getInt("slice_id"));
+				slc.setSliceId(resultSet.getInt("inner_component_id"));
+				slc.setSliceId(resultSet.getInt("inner_unit_id"));
+				slices.add(slc);
+			} 
+			return slices; 
+		} catch (SQLException e) {
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+		}
+
 	}
 
 	/**
@@ -264,12 +299,17 @@ public class AbstractComponentHandler extends DBHandler{
 	 * @return true if correctly set as removed
 	 * @throws SQLException 
 	 */
-	public static boolean setObsolete(String name) throws SQLException{
-		Connection con = getConnection(); 
-			PreparedStatement prepared = con.prepareStatement(UPDATE_ABSTRACT_COMPONENT); 
+	public static void setObsolete(String name) throws DBHandlerException{
+
+		try {
+			Connection con = getConnection(); 
+			PreparedStatement prepared = con.prepareStatement(UPDATE_ABSTRACT_COMPONENT);
 			prepared.setString(1, name); 
 			prepared.execute();
-			return true;
+		} catch (SQLException e) {
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+		} 
+
 	}
 
 

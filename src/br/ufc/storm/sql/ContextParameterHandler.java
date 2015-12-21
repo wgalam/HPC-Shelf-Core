@@ -91,7 +91,7 @@ public class ContextParameterHandler extends DBHandler {
 				throw new DBHandlerException("Context Parameter not found with cp_name = "+cp_name);
 			}
 		} catch (SQLException e) { 
-			throw new DBHandlerException("An error occurred while finding context parameter: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
 		}
 		return CP_id;
 	}
@@ -116,9 +116,9 @@ public class ContextParameterHandler extends DBHandler {
 			}
 			return cp;
 		} catch (SQLException e) { 
-			throw new DBHandlerException("An error occurred while trying get context parameter: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
 		} 
-		
+
 	}
 
 
@@ -129,12 +129,11 @@ public class ContextParameterHandler extends DBHandler {
 	 * @throws DBHandlerException 
 	 */
 
-	public static List<ContextParameterType> getAllContextParameterFromAbstractComponent(int ac_id, Connection con) throws DBHandlerException {
+	public static List<ContextParameterType> getAllContextParameterFromAbstractComponent(int ac_id) throws DBHandlerException {
 		//		TODO: Validar se não vai fechar um ciclo entre limites e componentes. Criar uma tabela para validar esta possibilidade, se fechar ciclo, disparar uma exception.
-
 		List<ContextParameterType> cpl = new ArrayList<ContextParameterType>();
 		try {  
-			PreparedStatement prepared = con.prepareStatement(SELECT_COMPONENT_PARAMETER); 
+			PreparedStatement prepared = getConnection().prepareStatement(SELECT_COMPONENT_PARAMETER); 
 			prepared.setInt(1, ac_id);
 			ResultSet resultSet = prepared.executeQuery(); 
 			while (resultSet.next()) {
@@ -142,7 +141,6 @@ public class ContextParameterHandler extends DBHandler {
 				cp.setCpId(resultSet.getInt("cp_id"));
 				cp.setName(resultSet.getString("cp_name"));
 				int bound_id = resultSet.getInt("bound_id");
-
 				try{
 					if(bound_id != ac_id){
 						cp.setBound(ContextContractHandler.getContextContractIncomplete(bound_id));
@@ -162,10 +160,11 @@ public class ContextParameterHandler extends DBHandler {
 				cp.setContextVariable(null); 
 				cpl.add(cp);
 			} 
+			return cpl; 
 		} catch (SQLException e) { 
-			e.printStackTrace(); 
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
 		} 
-		return cpl; 
+
 	}
 
 
@@ -187,39 +186,38 @@ public class ContextParameterHandler extends DBHandler {
 			ResultSet resultSet = prepared.executeQuery(); 
 			if(resultSet.next()) { 
 				cc=ContextContractHandler.getContextContract(resultSet.getInt("cc_id")); 
+				return cc;
+			}else{
+				throw new DBHandlerException("Context variable not found with cp_id = "+cp_id);
 			}
+
 		} catch (SQLException e) { 
-			e.printStackTrace(); 
-			cc = null;
-		} finally { 
-			DBHandler.closeConnnection(con); 
-		} 
-		return cc;
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+		}
 	}
 
 	/**
 	 * This method returns an abstract component name given an id
 	 * @param cp_id
 	 * @return abstract component name
+	 * @throws DBHandlerException 
 	 */
 
-	public static Integer getBoundValue(int cp_id){
-		Connection con = null; 
-		Integer value = null;
+	public static Integer getBoundValue(int cp_id) throws DBHandlerException{
 		try { 
-			con = DBHandler.getConnection(); 
+			Connection con = DBHandler.getConnection(); 
 			PreparedStatement prepared = con.prepareStatement(SELECT_BOUND_VALUE); 
 			prepared.setInt(1, cp_id); 
 			ResultSet resultSet = prepared.executeQuery(); 
 			if(resultSet.next()) { 
-				value = resultSet.getInt("bound_value"); 
+				return resultSet.getInt("bound_value"); 
+			}else{
+				throw new DBHandlerException("Bound not found with cp_id = "+cp_id);
 			}
 		} catch (SQLException e) { 
-			e.printStackTrace(); 
-		} finally { 
-			DBHandler.closeConnnection(con); 
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
 		} 
-		return value;
+		
 	}
 
 
@@ -227,25 +225,23 @@ public class ContextParameterHandler extends DBHandler {
 	 * This method returns an abstract component name given an id
 	 * @param cp_id
 	 * @return abstract component name
+	 * @throws DBHandlerException 
 	 */
 
-	public static Integer getBoundID(int cp_id){
-		Connection con = null; 
-		Integer bound_id = null;
+	public static Integer getBoundID(int cp_id) throws DBHandlerException{
 		try { 
-			con = DBHandler.getConnection(); 
+			Connection con = DBHandler.getConnection(); 
 			PreparedStatement prepared = con.prepareStatement(SELECT_BOUND); 
 			prepared.setInt(1, cp_id); 
 			ResultSet resultSet = prepared.executeQuery(); 
 			if(resultSet.next()) { 
-				bound_id = resultSet.getInt("bound_id"); 
+				return resultSet.getInt("bound_id"); 
+			}else{
+				throw new DBHandlerException("Bound not found with cp_id = "+cp_id);
 			}
 		} catch (SQLException e) { 
-			e.printStackTrace(); 
-		} finally { 
-			DBHandler.closeConnnection(con); 
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
 		} 
-		return bound_id;
 	}
 
 }

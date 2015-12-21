@@ -35,23 +35,18 @@ public class DBHandler {
 						Context envCtx = (Context) new InitialContext().lookup("java:comp/env");
 						DataSource ds = (DataSource) envCtx.lookup("jdbc/Core");
 						con = ds.getConnection();
-					}
-					catch (Exception e) {
-						System.out.println("HPC-STORM - Connection error: " + e.getMessage());   
+					}catch (Exception e) {
+						throw new SQLException("Connection can not be created");
 					}
 				}else{
 					try {
-						try {
-							con = DriverManager.getConnection("jdbc:postgresql://"+PropertiesHandler.getProperty("core.database.address")+":"+PropertiesHandler.getProperty("core.databaase.port")+"/Core?", PropertiesHandler.getProperty("core.database.user"), PropertiesHandler.getProperty("core.database.password"));
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					} catch (SQLException e) {
-						e.printStackTrace();
-					} 
+						con = DriverManager.getConnection("jdbc:postgresql://"+PropertiesHandler.getProperty("core.database.address")+":"+PropertiesHandler.getProperty("core.databaase.port")+"/Core?", PropertiesHandler.getProperty("core.database.user"), PropertiesHandler.getProperty("core.database.password"));
+					} catch (IOException e) {
+						throw new SQLException("Connection can not be created");
+					}
 				}
 			} catch (IOException e) {
-				e.printStackTrace();
+				throw new SQLException("Connection can not be created");
 			}
 		}
 		return con; 

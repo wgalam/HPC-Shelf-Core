@@ -24,29 +24,32 @@ public class ContextContractHandler extends DBHandler{
 	private final static String INSERT_INNER_COMPONENT = "INSERT INTO inner_components (parent_id, inner_component_name, component_id) VALUES ((select ac_id from abstract_component where ac_name = ?), ?, ?);";
 	private final static String SELECT_INNER_COMPONENTS_IDs = "select A.ac_id from inner_components A, abstract_component B where A.parent_id = ? AND A.parent_id = B.ac_id;";
 
-	public static void  addContextContract(ContextContract cc) throws SQLException{
-
-		Connection con = getConnection();
-		int cc_id = 0;
-		con.setAutoCommit(false);
-		PreparedStatement prepared = con.prepareStatement(INSERT_CONTEXT_CONTRACT);
-		prepared.setString(1, cc.getAbstractComponent().getName());
-		prepared.setString(2, cc.getCcName());
-		ResultSet result = prepared.executeQuery();
-		if(result.next()){
-			cc_id = result.getInt("cc_id");
-			//Add context arguments
-			for(ContextArgumentType cat:cc.getContextArguments()){
-				cat.setCcId(cc_id);
-				ContextArgumentHandler.addContextArgument(cat);
+	public static void  addContextContract(ContextContract cc) throws DBHandlerException{
+		try {
+			Connection con = getConnection();
+			int cc_id = 0;
+			con.setAutoCommit(false);
+			PreparedStatement prepared = con.prepareStatement(INSERT_CONTEXT_CONTRACT);
+			prepared.setString(1, cc.getAbstractComponent().getName());
+			prepared.setString(2, cc.getCcName());
+			ResultSet result = prepared.executeQuery();
+			if(result.next()){
+				cc_id = result.getInt("cc_id");
+				//Add context arguments
+				for(ContextArgumentType cat:cc.getContextArguments()){
+					cat.setCcId(cc_id);
+					ContextArgumentHandler.addContextArgument(cat);
+				}
+				//Add Platform
+				addContextContract(cc.getPlatform());
+				//Add inner components
+				for(ContextContract inner : cc.getInnerComponents()){
+					addContextContract(inner);
+				}
+				con.commit();
 			}
-			//Add Platform
-			addContextContract(cc.getPlatform());
-			//Add inner components
-			for(ContextContract inner : cc.getInnerComponents()){
-				addContextContract(inner);
-			}
-			con.commit();
+		} catch (SQLException e) {
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
 		}
 	}
 
@@ -70,7 +73,7 @@ public class ContextContractHandler extends DBHandler{
 		} catch (SQLException e) {
 			throw new DBHandlerException("An error occured while trying to add a context contract with name: "+name+" and abstract component name "+ac_name+". Error: "+e.getMessage());
 		} 
-		
+
 	}
 
 
@@ -118,37 +121,36 @@ public class ContextContractHandler extends DBHandler{
 		} catch (SQLException e) {
 			throw new DBHandlerException("GetContextContract sql error: "+e.getMessage());
 		} 
-		
+
 	}
 
 
-	public static ContextContract getContextContractIncomplete(Integer bound_id) throws SQLException, DBHandlerException {
-		//Connection con = null; 
-				int ac_id = 0;
-				String name = null;
-				ContextContract cc = null;
-				try { 
-					Connection con = getConnection(); 
-					PreparedStatement prepared = con.prepareStatement(SELECT_CONTEXT_CONTRACT); 
-					prepared.setInt(1, bound_id);
-					ResultSet resultSet = prepared.executeQuery(); 
-					if (resultSet.next()){
-						ac_id = resultSet.getInt("ac_id");
-						name=resultSet.getString("cc_name");
-					} 
-					cc = new ContextContract();
-					cc.setCcId(bound_id);
-					cc.setCcName(name);
-					AbstractComponentType ac = new AbstractComponentType();
-					ac.setIdAc(ac_id);
-					//			cc.setAbstractComponent(DBHandler.getAbstractComponentIncomplete(ac_id));
-					//			cc.getContextArguments().addAll(DBHandler.getContextArguments(cc_id));
-					return cc;
-				} catch (SQLException e) {
-					//closeConnnection(con);
-					throw new DBHandlerException("Context contract not found with cc_id "+bound_id);
-					//			e.printStackTrace(); 
-				} 
+	public static ContextContract getContextContractIncomplete(Integer bound_id) throws DBHandlerException {
+		ContextContract cc = null;
+		try { 
+			int ac_id = 0;
+			String name = null;
+			Connection con = getConnection(); 
+			PreparedStatement prepared = con.prepareStatement(SELECT_CONTEXT_CONTRACT); 
+			prepared.setInt(1, bound_id);
+			ResultSet resultSet = prepared.executeQuery(); 
+			if (resultSet.next()){
+				ac_id = resultSet.getInt("ac_id");
+				name=resultSet.getString("cc_name");
+				cc = new ContextContract();
+				cc.setCcId(bound_id);
+				cc.setCcName(name);
+				AbstractComponentType ac = new AbstractComponentType();
+				ac.setIdAc(ac_id);
+			}
+			
+			//			cc.setAbstractComponent(DBHandler.getAbstractComponentIncomplete(ac_id));
+			//			cc.getContextArguments().addAll(DBHandler.getContextArguments(cc_id));
+			
+		} catch (SQLException e) {
+			throw new DBHandlerException("Context contract not found with cc_id "+bound_id);
+		} 
+		return cc;
 	}
 
 	/**
@@ -159,16 +161,21 @@ public class ContextContractHandler extends DBHandler{
 	 * @throws DBHandlerException 
 	 */
 
-	public static String getContextContractName(int cc_id) throws SQLException, DBHandlerException {
-		Connection con = getConnection();  
-		PreparedStatement prepared = con.prepareStatement(SELECT_CONTEXT_CONTRACT_NAME); 
-		prepared.setInt(1, cc_id); 
-		ResultSet resultSet = prepared.executeQuery(); 
-		if(resultSet.next()) { 
-			return resultSet.getString("cc_name"); 
-		}else{
-			throw new DBHandlerException("Context contract with id "+cc_id+" was not found");
-		}
+	public static String getContextContractName(int cc_id) throws DBHandlerException {
+		try {
+			Connection con = getConnection();  
+			PreparedStatement prepared = con.prepareStatement(SELECT_CONTEXT_CONTRACT_NAME);
+			prepared.setInt(1, cc_id);
+			ResultSet resultSet = prepared.executeQuery(); 
+			if(resultSet.next()) { 
+				return resultSet.getString("cc_name"); 
+			}else{
+				throw new DBHandlerException("Context contract with id "+cc_id+" was not found");
+			}
+		} catch (SQLException e) {
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+		} 
+
 	}
 
 	/**
@@ -179,16 +186,22 @@ public class ContextContractHandler extends DBHandler{
 	 * @throws DBHandlerException 
 	 */
 
-	public static int getContextContractID(String name) throws SQLException, DBHandlerException{
-		Connection con = getConnection(); 
-		PreparedStatement prepared = con.prepareStatement(SELECT_CONTEXT_CONTRACT_ID); 
-		prepared.setString(1, name); 
-		ResultSet resultSet = prepared.executeQuery(); 
-		if(resultSet.next()) { 
-			return resultSet.getInt("cc_id"); 
-		}else{
-			throw new DBHandlerException("Context contract with name = "+name+" was not fount");
-		}
+	public static int getContextContractID(String name) throws DBHandlerException{
+
+		try {
+			Connection con = getConnection(); 
+			PreparedStatement prepared = con.prepareStatement(SELECT_CONTEXT_CONTRACT_ID); 
+			prepared.setString(1, name);
+			ResultSet resultSet = prepared.executeQuery(); 
+			if(resultSet.next()) { 
+				return resultSet.getInt("cc_id"); 
+			}else{
+				throw new DBHandlerException("Context contract with name = "+name+" was not fount");
+			}
+		} catch (SQLException e) {
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+		} 
+
 	}
 
 
@@ -199,31 +212,30 @@ public class ContextContractHandler extends DBHandler{
 	 * @throws SQLException 
 	 */
 
-	public static List<Integer> getContextContractByAcId(int ac_id) throws SQLException{
-		Connection con = getConnection(); 
-		List<Integer> list = new ArrayList<Integer>();
-		PreparedStatement prepared = con.prepareStatement(SELECT_CONTEXT_CONTRACT_BY_AC_ID); 
-		prepared.setInt(1, ac_id); 
-		ResultSet resultSet = prepared.executeQuery(); 
-		while(resultSet.next()) { 
-			list.add(resultSet.getInt("cc_id"));
-		}
-		return list;
+	public static List<Integer> getContextContractByAcId(int ac_id) throws DBHandlerException{
+
+		try {
+			Connection con = getConnection(); 
+			List<Integer> list = new ArrayList<Integer>();
+			PreparedStatement prepared = con.prepareStatement(SELECT_CONTEXT_CONTRACT_BY_AC_ID); 
+			prepared.setInt(1, ac_id);
+			ResultSet resultSet = prepared.executeQuery(); 
+			while(resultSet.next()) { 
+				list.add(resultSet.getInt("cc_id"));
+			}
+			return list;
+		} catch (SQLException e) {
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+		} 
+
 	}
 
 	public static ContractList listContract(int ac_id) throws DBHandlerException{
 		ContractList list = new ContractList();
-		try {
 			for(Integer i : getContextContractByAcId(ac_id)){
 				list.getContract().add(getContextContract(i));
 			}
 			return list;
-		} catch (SQLException e) {
-			throw new DBHandlerException("There was an error with your query for context contract with ac_id = "+ac_id+" :"+e.getMessage());
-		} catch (DBHandlerException e) {
-			throw new DBHandlerException(e.getMessage()+" in class "+e.getLocalizedMessage());
-		}
-
 	}
 
 
@@ -238,16 +250,12 @@ public class ContextContractHandler extends DBHandler{
 		application.setAbstractComponent(AbstractComponentHandler.getAbstractComponent(application.getAbstractComponent().getIdAc()));
 		for(ContextArgumentType cat:application.getContextArguments()){
 			if(cat.getContextContract()!=null){
-				try {
-					cat.getContextContract().setCcName(ContextContractHandler.getContextContractName(cat.getContextContract().getCcId()));
-					//					cat.setKind(DBHandler.getComponentKind(cat.getContextContract().getAbstractComponent().getIdAc()));
-					AbstractComponentType ac = AbstractComponentHandler.getAbstractComponentFromContextContractID(cat.getContextContract().getCcId());
-					cat.getContextContract().setAbstractComponent(ac);
-					completeContextContract(cat.getContextContract());
-					//TODO: Adicionar argumentos de qualidade, custo e ranking, bem como os componenetes aninhados
-				} catch (SQLException e) {
-					throw new DBHandlerException("An error in database occurred while trying complete a context contract :"+e.getMessage()+" :: "+e.getErrorCode());
-				}
+				cat.getContextContract().setCcName(ContextContractHandler.getContextContractName(cat.getContextContract().getCcId()));
+				//					cat.setKind(DBHandler.getComponentKind(cat.getContextContract().getAbstractComponent().getIdAc()));
+				AbstractComponentType ac = AbstractComponentHandler.getAbstractComponentFromContextContractID(cat.getContextContract().getCcId());
+				cat.getContextContract().setAbstractComponent(ac);
+				completeContextContract(cat.getContextContract());
+				//TODO: Adicionar argumentos de qualidade, custo e ranking, bem como os componenetes aninhados
 			}
 		}
 	}
@@ -270,7 +278,7 @@ public class ContextContractHandler extends DBHandler{
 			prepared.setString(3, ic_name);
 			prepared.executeQuery();
 		} catch (SQLException e) {
-			throw new DBHandlerException("Can not add this inner component with parent: "+parent_ac_name);
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
 		} 
 	}
 
@@ -292,7 +300,7 @@ public class ContextContractHandler extends DBHandler{
 			}
 			return list;
 		} catch (SQLException e) { 
-			throw new DBHandlerException("An error occurred while looking for ac_id "+parent_ac_id);
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
 		}
 	}
 

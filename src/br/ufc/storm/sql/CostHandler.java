@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import br.ufc.storm.exception.DBHandlerException;
 import br.ufc.storm.jaxb.CostFunctionTermType;
 import br.ufc.storm.jaxb.CostFunctionType;
 import br.ufc.storm.jaxb.CostParameterType;
@@ -22,11 +23,10 @@ public class CostHandler extends DBHandler {
 	private static final String SELECT_COST_PARAMETER = "select * FROM context_parameter WHERE ac_id = ? AND parameter_type = 3;";
 
 	//TODO:Testar
-	public static int addCostFunction(CostFunctionType cft) {
-		Connection con = null; 
+	public static int addCostFunction(CostFunctionType cft) throws DBHandlerException {
 		int function_id = -1;
 		try { 
-			con = getConnection(); 
+			Connection con = getConnection(); 
 			con.setAutoCommit(false);
 			PreparedStatement prepared = con.prepareStatement(INSERT_COST_FUNCTION); 
 			prepared.setInt(1, cft.getCcId());
@@ -46,75 +46,67 @@ public class CostHandler extends DBHandler {
 
 					}
 				}
+				con.commit();
+				return function_id;
+			}else{
+				throw new DBHandlerException("Can not add this cost function");
 			}
-			con.commit();
+
 		} catch (SQLException e) { 
-			e.printStackTrace(); 
-		} finally { 
-			closeConnnection(con);
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
 		} 
-		return function_id;
+
 	}
 
-	public static CostFunctionType getCostFunction(Integer cp_id, Integer cc_id) {
-		CostFunctionType cof = null;
-		Connection con = null; 
+	public static CostFunctionType getCostFunction(Integer cp_id, Integer cc_id) throws DBHandlerException {
+
 		try { 
-			con = getConnection(); 
+			Connection con = getConnection(); 
 			PreparedStatement prepared = con.prepareStatement(SELECT_COST_FUNCTION);
 			prepared.setInt(1, cp_id);
 			prepared.setInt(2, cc_id);
 			ResultSet resultSet = prepared.executeQuery();
 			if(resultSet.next()) {
-				cof = new CostFunctionType();
+				CostFunctionType cof = new CostFunctionType();
 				cof.setFunctionId(resultSet.getInt("cof_id"));
 				cof.setFunctionName(resultSet.getString("function_name"));
 				cof.setFunctionValue(resultSet.getString("function_value"));
+				return cof;	
+			}else{
+				throw new DBHandlerException("Cost function with cp_id = "+cp_id+" was not found");
 			}
 		} catch (SQLException e) { 
-			e.printStackTrace(); 
-			closeConnnection(con);
-			return null;
-		} finally { 
-			closeConnnection(con); 
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
 		} 		
-		return cof;		
+
 	}
 
 	@SuppressWarnings("unchecked")
-	public static ArrayList<CostFunctionTermType> getCostFunctionParameter(Integer cof_id) {
-		ArrayList<CostFunctionTermType> cps= new ArrayList<CostFunctionTermType>();
-		Connection con = null;
+	public static ArrayList<CostFunctionTermType> getCostFunctionParameter(Integer cof_id) throws DBHandlerException {
 		try { 
-			con = getConnection(); 
+			Connection con = getConnection(); 
 			PreparedStatement prepared = con.prepareStatement(SELECT_COST_FUNCTION_TERMS); 
 			prepared.setInt(1, cof_id);
 			ResultSet resultSet = prepared.executeQuery(); 
-			while(resultSet.next()){ 
+			ArrayList<CostFunctionTermType> cps= new ArrayList<CostFunctionTermType>();
+			while(resultSet.next()){
 				CostFunctionTermType qftt = new CostFunctionTermType();
 				qftt.setCpId(resultSet.getInt("cp_id"));
 				qftt.setOrder(resultSet.getInt("term_order"));
 				cps.add(qftt);
 			}
+			Collections.sort (cps, new ComparatorCostTerms(true));
+			return cps;
 		} catch (SQLException e) { 
-			e.printStackTrace(); 
-			return null;
-		} finally { 
-			closeConnnection(con); 
-		} 		
-		//Sorting the resulting list by order
-		Collections.sort (cps, new ComparatorCostTerms(true));
-		return cps;
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+		}	
+
 	}
 
-	public static ArrayList<CostParameterType> getCostParameters(int ac_id, Connection connection){
-		ArrayList<CostParameterType> cps= new ArrayList<CostParameterType>();
-		Connection con = connection;
-
+	public static ArrayList<CostParameterType> getCostParameters(int ac_id) throws DBHandlerException{
 		try { 
-			if(con==null){
-				con = getConnection(); 
-			}
+			Connection con = getConnection(); 
+			ArrayList<CostParameterType> cps= new ArrayList<CostParameterType>();
 			PreparedStatement prepared = con.prepareStatement(SELECT_COST_PARAMETER); 
 			prepared.setInt(1, ac_id);
 			ResultSet resultSet = prepared.executeQuery(); 
@@ -125,16 +117,11 @@ public class CostHandler extends DBHandler {
 				qp.setKindId(resultSet.getInt("kind_id"));
 				cps.add(qp);
 			}
-		} catch (SQLException e) { 
-			System.out.println("Erro ao tentar buscar por parametros de custo do componente abstrato"+ac_id);
-			e.printStackTrace(); 
-		} finally { 
-			//	closeConnnection(con); 
-		} 		
-		return cps;
+			return cps;
+		} catch (SQLException e) {
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+		}
 	}
-
-
 }
 
 @SuppressWarnings("rawtypes")

@@ -17,9 +17,10 @@ public class ComponentKindHandler extends DBHandler {
 	 * @param name Name of kind
 	 * @param description Description of kind
 	 * @return This method returns the component id
+	 * @throws DBHandlerException 
 	 */
 
-	private static int addKind(String name, String description) {
+	private static int addKind(String name, String description) throws DBHandlerException {
 		try {
 			Connection con = DBHandler.getConnection();
 			PreparedStatement prepared = con.prepareStatement(INSERT_KIND); 
@@ -28,11 +29,12 @@ public class ComponentKindHandler extends DBHandler {
 			ResultSet result = prepared.executeQuery();
 			if(result.next()){
 				return result.getInt("kind_id");
+			}else{
+				throw new DBHandlerException("An error occurred while adding component kind with name "+name);
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
 		}
-		return 0;
 	}
 
 	/**
@@ -43,18 +45,24 @@ public class ComponentKindHandler extends DBHandler {
 	 * @throws DBHandlerException 
 	 */
 
-	public static int getKindID(String kind_name) throws SQLException, DBHandlerException {
-		Connection con = getConnection(); 
-		int kind_id = 0;
-		PreparedStatement prepared = con.prepareStatement(SELECT_KIND_ID); 
-		prepared.setString(1, kind_name); 
-		ResultSet resultSet = prepared.executeQuery(); 
-		if(resultSet.next()) { 
-			kind_id = resultSet.getInt("kind_id"); 
-			return kind_id;
-		}else{
-			throw new DBHandlerException("Component kind not found");
-		}
+	public static int getKindID(String kind_name) throws DBHandlerException {
+
+		try {
+			Connection con = getConnection(); 
+			int kind_id = 0;
+			PreparedStatement prepared = con.prepareStatement(SELECT_KIND_ID); 
+			prepared.setString(1, kind_name);
+			ResultSet resultSet = prepared.executeQuery(); 
+			if(resultSet.next()) { 
+				kind_id = resultSet.getInt("kind_id"); 
+				return kind_id;
+			}else{
+				throw new DBHandlerException("Component kind not found");
+			}
+		} catch (SQLException e) {
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+		} 
+
 	}
 
 	/**
@@ -65,15 +73,21 @@ public class ComponentKindHandler extends DBHandler {
 	 * @throws DBHandlerException 
 	 */
 
-	public static String getKindName(int id) throws SQLException, DBHandlerException {
-		Connection con = getConnection();  
-		PreparedStatement prepared = con.prepareStatement(SELECT_KIND_NAME); 
-		prepared.setInt(1, id); 
-		ResultSet resultSet = prepared.executeQuery(); 
-		if(resultSet.next()) { 
-			return resultSet.getString("kind_name"); 
-		}else{
-			throw new DBHandlerException("Component kind not found");
-		}
+	public static String getKindName(int id) throws DBHandlerException {
+
+		try {
+			Connection con = getConnection();  
+			PreparedStatement prepared = con.prepareStatement(SELECT_KIND_NAME); 
+			prepared.setInt(1, id);
+			ResultSet resultSet = prepared.executeQuery(); 
+			if(resultSet.next()) { 
+				return resultSet.getString("kind_name"); 
+			}else{
+				throw new DBHandlerException("Component kind not found");
+			}
+		} catch (SQLException e) {
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+		} 
+
 	}
 }

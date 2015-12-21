@@ -33,12 +33,11 @@ public class ResolutionHandler extends DBHandler {
 		PreparedStatement prepared;
 		ResultSet resultSet;
 		List<ContextContract> list = new ArrayList<ContextContract>();
-		Connection con = null; 
 		int history;
 		int supertype = 0;
 		int aux = requiredID;
 		try { 
-			con = getConnection();
+			Connection con = getConnection();
 			do{
 				prepared = con.prepareStatement(SELECT_CONTEXT_CONTRACT_BY_AC_ID);
 				prepared.setInt(1, aux); 
@@ -67,9 +66,7 @@ public class ResolutionHandler extends DBHandler {
 			}while(resultSet!= null && history != supertypeID );//supertype != supertypeID && supertype != 0
 			return list;
 		} catch (SQLException e) { 
-			throw new DBHandlerException("There was an error with your query for context contract with ac_id = "+aux+" :"+e.getMessage());
-		} catch (DBHandlerException e) {
-			throw new DBHandlerException("There was an error with your query for context contract with ac_id = "+aux+" :"+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
 		} 
 
 	}
@@ -116,9 +113,8 @@ public class ResolutionHandler extends DBHandler {
 	 * @throws DBHandlerException 
 	 */
 	public static ResolutionNode generateResolutionTree(Integer i, ResolutionNode tree, List<ContextParameterType> cps, List<QualityParameterType> qps, List<CostParameterType> cops, List<RankingParameterType> rps, String parentPath) throws DBHandlerException{
-		Connection con;
 		try {
-			con = DBHandler.getConnection();
+			Connection con = DBHandler.getConnection();
 			PreparedStatement prepared = con.prepareStatement(SELECT_ABSTRACT_COMPONENT_BY_SUPERTYPE_ID); 
 			prepared.setInt(1, i);
 			ResultSet resultSet = prepared.executeQuery(); 
@@ -130,9 +126,9 @@ public class ResolutionHandler extends DBHandler {
 				node.setName(resultSet.getString("ac_name"));
 				node.setPath(parentPath);
 				node.setAc_id(resultSet.getInt("ac_id"));
-				node.setCps(ContextParameterHandler.getAllContextParameterFromAbstractComponent(node.getAc_id(), con));
+				node.setCps(ContextParameterHandler.getAllContextParameterFromAbstractComponent(node.getAc_id()));
 				node.getCps().addAll(cps);
-				node.setQps(QualityHandler.getQualityParameters(node.getAc_id(), con));
+				node.setQps(QualityHandler.getQualityParameters(node.getAc_id()));
 				if(node.getQps().size()>0){
 					node.getQps().addAll(qps);
 				}
@@ -140,7 +136,7 @@ public class ResolutionHandler extends DBHandler {
 				if(node.getRps().size()>0){
 					node.getRps().addAll(rps);
 				}
-				node.setCops(CostHandler.getCostParameters(node.getAc_id(), con));
+				node.setCops(CostHandler.getCostParameters(node.getAc_id()));
 				if(node.getCops().size()>0){
 					node.getCops().addAll(cops);
 				}
@@ -149,10 +145,11 @@ public class ResolutionHandler extends DBHandler {
 				generateResolutionTree(node.getAc_id(), node, node.getCps(), node.getQps(), node.getCops(), node.getRps(), node.getPath()+"."+node.getName());
 
 			} 
+			return tree;
 		} catch (SQLException e) { 
-			e.printStackTrace(); 
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
 		} 	
-		return tree;
+		
 	}
 
 	/**
@@ -161,19 +158,12 @@ public class ResolutionHandler extends DBHandler {
 	 * @throws DBHandlerException 
 	 */
 	public static ResolutionNode generateResolutionTree() throws DBHandlerException{
-		Connection con = null;
-		try {
-			con = getConnection();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		};
 		ResolutionNode tree = new ResolutionNode();
 		tree.setAc_id(0);
 		tree.setName("root");
 		tree.setPath("");
 		tree.setSupertype(tree);
 		ResolutionNode r = generateResolutionTree(0, tree, new ArrayList<ContextParameterType>(), new ArrayList<QualityParameterType>(), new ArrayList<CostParameterType>(), new ArrayList<RankingParameterType>(), "root");
-		closeConnnection(con);
 		return r;
 	}
 

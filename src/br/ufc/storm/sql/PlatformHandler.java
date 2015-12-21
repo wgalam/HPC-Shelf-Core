@@ -10,55 +10,39 @@ import br.ufc.storm.jaxb.AbstractComponentType;
 import br.ufc.storm.jaxb.ContextContract;
 
 public class PlatformHandler extends DBHandler {
-	
+
 	private static final String SELECT_PLATFORM_BY_CC_ID = "select * from context_contract A, component_platform B where A.cc_id = B.platform_cc_id and B.cc_id = ?;";
-	
+
 
 	/**
 	 * This method gets a context contract that represents a platform
 	 * @param cc_id
 	 * @return
+	 * @throws DBHandlerException 
 	 */
-	public static ContextContract getPlatform(int cc_id){
-		Connection con = null; 
+	public static ContextContract getPlatform(int cc_id) throws DBHandlerException{
 		ContextContract cc = new ContextContract();
 		try { 
-			con = getConnection(); 
+			Connection con = getConnection(); 
 			PreparedStatement prepared = con.prepareStatement(SELECT_PLATFORM_BY_CC_ID); 
 			prepared.setInt(1, cc_id);
 			ResultSet resultSet = prepared.executeQuery(); 
 
-			while (resultSet.next()) { 
+			if(resultSet.next()) { 
 				AbstractComponentType act = new AbstractComponentType();
 				cc.setAbstractComponent(act);
 				cc.setCcId(resultSet.getInt("cc_id")); 
 				cc.getAbstractComponent().setIdAc(resultSet.getInt("ac_id")); 
 				cc.setCcName(resultSet.getString("cc_name"));
-			} 
-			if(cc.getAbstractComponent()==null){
-				closeConnnection(con);
-				return null;
-			}
-			try {
 				cc.setAbstractComponent(AbstractComponentHandler.getAbstractComponent(cc.getAbstractComponent().getIdAc()));
-			} catch (DBHandlerException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			try {
 				cc.getContextArguments().addAll(ContextArgumentHandler.getContextArguments(cc.getCcId()));
-			} catch (DBHandlerException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				return cc;
+			}else{
+				throw new DBHandlerException("Platform with abstract component id = "+cc_id+" was not found");
 			}
-			closeConnnection(con);
-			return cc; 
 		} catch (SQLException e) { 
-			e.printStackTrace(); 
-		} finally { 
-			closeConnnection(con); 
+			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
 		} 
-		return null;
 	}
 
 
