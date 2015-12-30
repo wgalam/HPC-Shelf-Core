@@ -37,11 +37,7 @@ import br.ufc.storm.io.LogHandler;
 public class Main {
 	public static void main(String[] args) throws IOException {
 		
-		LogHandler.doLog("Testando Log1");
-
-		LogHandler.doLog("Testando Log2");
-		
-		LogHandler.doLog("Testando Log3");
+		LogHandler.getLog().warning("Testando o append");;
 		
 		
 		//		System.out.println(CoreServices.listContract(19));

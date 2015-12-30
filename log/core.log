@@ -1,48 +1,56 @@
-dez 29, 2015 10:24:55 PM br.ufc.storm.exception.ShelfException <init>
+dez 29, 2015 10:35:32 PM br.ufc.storm.exception.ShelfException <init>
 ADVERTÊNCIA: ShelfException: DBHandlerException: Quality function not found with cp_id = 1
-dez 29, 2015 10:24:55 PM br.ufc.storm.exception.ShelfException <init>
+dez 29, 2015 10:35:32 PM br.ufc.storm.exception.ShelfException <init>
 ADVERTÊNCIA: ShelfException: FunctionException: Can not get quality function: DBHandlerException: Quality function not found with cp_id = 1
-dez 29, 2015 10:24:55 PM br.ufc.storm.exception.ShelfException <init>
+dez 29, 2015 10:35:32 PM br.ufc.storm.exception.ShelfException <init>
 ADVERTÊNCIA: ShelfException: DBHandlerException: Cost function with cp_id = 2 was not found
-dez 29, 2015 10:24:55 PM br.ufc.storm.exception.ShelfException <init>
+dez 29, 2015 10:35:32 PM br.ufc.storm.exception.ShelfException <init>
 ADVERTÊNCIA: ShelfException: FunctionException: Can not get cost function: DBHandlerException: Cost function with cp_id = 2 was not found
-dez 29, 2015 10:24:55 PM br.ufc.storm.exception.ShelfException <init>
+dez 29, 2015 10:35:32 PM br.ufc.storm.exception.ShelfException <init>
 ADVERTÊNCIA: ShelfException: DBHandlerException: 
-dez 29, 2015 10:24:55 PM br.ufc.storm.exception.ShelfException <init>
+dez 29, 2015 10:35:32 PM br.ufc.storm.exception.ShelfException <init>
 ADVERTÊNCIA: ShelfException: FunctionException: Can not get ranking function: DBHandlerException: 
-dez 29, 2015 10:24:56 PM br.ufc.storm.exception.ShelfException <init>
+dez 29, 2015 10:35:33 PM br.ufc.storm.exception.ShelfException <init>
 ADVERTÊNCIA: ShelfException: DBHandlerException: Quality function not found with cp_id = 1
-dez 29, 2015 10:24:56 PM br.ufc.storm.exception.ShelfException <init>
+dez 29, 2015 10:35:33 PM br.ufc.storm.exception.ShelfException <init>
 ADVERTÊNCIA: ShelfException: FunctionException: Can not get quality function: DBHandlerException: Quality function not found with cp_id = 1
-dez 29, 2015 10:24:56 PM br.ufc.storm.exception.ShelfException <init>
+dez 29, 2015 10:35:33 PM br.ufc.storm.exception.ShelfException <init>
 ADVERTÊNCIA: ShelfException: DBHandlerException: Cost function with cp_id = 2 was not found
-dez 29, 2015 10:24:56 PM br.ufc.storm.exception.ShelfException <init>
+dez 29, 2015 10:35:33 PM br.ufc.storm.exception.ShelfException <init>
 ADVERTÊNCIA: ShelfException: FunctionException: Can not get cost function: DBHandlerException: Cost function with cp_id = 2 was not found
-dez 29, 2015 10:24:56 PM br.ufc.storm.exception.ShelfException <init>
+dez 29, 2015 10:35:33 PM br.ufc.storm.exception.ShelfException <init>
 ADVERTÊNCIA: ShelfException: DBHandlerException: 
-dez 29, 2015 10:24:56 PM br.ufc.storm.exception.ShelfException <init>
+dez 29, 2015 10:35:33 PM br.ufc.storm.exception.ShelfException <init>
 ADVERTÊNCIA: ShelfException: FunctionException: Can not get ranking function: DBHandlerException: 
-dez 29, 2015 10:24:57 PM br.ufc.storm.exception.ShelfException <init>
+dez 29, 2015 10:35:34 PM br.ufc.storm.exception.ShelfException <init>
 ADVERTÊNCIA: ShelfException: DBHandlerException: Quality function not found with cp_id = 1
-dez 29, 2015 10:24:57 PM br.ufc.storm.exception.ShelfException <init>
+dez 29, 2015 10:35:34 PM br.ufc.storm.exception.ShelfException <init>
 ADVERTÊNCIA: ShelfException: FunctionException: Can not get quality function: DBHandlerException: Quality function not found with cp_id = 1
-dez 29, 2015 10:24:57 PM br.ufc.storm.exception.ShelfException <init>
+dez 29, 2015 10:35:34 PM br.ufc.storm.exception.ShelfException <init>
 ADVERTÊNCIA: ShelfException: DBHandlerException: Cost function with cp_id = 2 was not found
-dez 29, 2015 10:24:57 PM br.ufc.storm.exception.ShelfException <init>
+dez 29, 2015 10:35:34 PM br.ufc.storm.exception.ShelfException <init>
 ADVERTÊNCIA: ShelfException: FunctionException: Can not get cost function: DBHandlerException: Cost function with cp_id = 2 was not found
-dez 29, 2015 10:24:57 PM br.ufc.storm.exception.ShelfException <init>
+dez 29, 2015 10:35:34 PM br.ufc.storm.exception.ShelfException <init>
 ADVERTÊNCIA: ShelfException: DBHandlerException: 
-dez 29, 2015 10:24:57 PM br.ufc.storm.exception.ShelfException <init>
+dez 29, 2015 10:35:34 PM br.ufc.storm.exception.ShelfException <init>
 ADVERTÊNCIA: ShelfException: FunctionException: Can not get ranking function: DBHandlerException: 
-dez 29, 2015 10:24:57 PM br.ufc.storm.exception.ShelfException <init>
+dez 29, 2015 10:35:34 PM br.ufc.storm.exception.ShelfException <init>
 ADVERTÊNCIA: ShelfException: DBHandlerException: Quality function not found with cp_id = 1
-dez 29, 2015 10:24:57 PM br.ufc.storm.exception.ShelfException <init>
+dez 29, 2015 10:35:34 PM br.ufc.storm.exception.ShelfException <init>
 ADVERTÊNCIA: ShelfException: FunctionException: Can not get quality function: DBHandlerException: Quality function not found with cp_id = 1
-dez 29, 2015 10:24:57 PM br.ufc.storm.exception.ShelfException <init>
+dez 29, 2015 10:35:34 PM br.ufc.storm.exception.ShelfException <init>
 ADVERTÊNCIA: ShelfException: DBHandlerException: Cost function with cp_id = 2 was not found
-dez 29, 2015 10:24:57 PM br.ufc.storm.exception.ShelfException <init>
+dez 29, 2015 10:35:34 PM br.ufc.storm.exception.ShelfException <init>
 ADVERTÊNCIA: ShelfException: FunctionException: Can not get cost function: DBHandlerException: Cost function with cp_id = 2 was not found
-dez 29, 2015 10:24:57 PM br.ufc.storm.exception.ShelfException <init>
+dez 29, 2015 10:35:34 PM br.ufc.storm.exception.ShelfException <init>
 ADVERTÊNCIA: ShelfException: DBHandlerException: 
-dez 29, 2015 10:24:57 PM br.ufc.storm.exception.ShelfException <init>
+dez 29, 2015 10:35:34 PM br.ufc.storm.exception.ShelfException <init>
 ADVERTÊNCIA: ShelfException: FunctionException: Can not get ranking function: DBHandlerException: 
+dez 29, 2015 10:41:54 PM Main main
+ADVERTÊNCIA: Testando o append
+dez 29, 2015 10:42:02 PM Main main
+ADVERTÊNCIA: Testando o append
+dez 29, 2015 10:42:03 PM Main main
+ADVERTÊNCIA: Testando o append
+dez 29, 2015 10:42:03 PM Main main
+ADVERTÊNCIA: Testando o append
