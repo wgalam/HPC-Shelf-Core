@@ -70,7 +70,6 @@ public class Resolution{
 	 * @throws ResolveException 
 	 */
 //Método está errado, só está encontrando um componente
-	revisar
 	public static CandidateListType resolve(ContextContract application, ResolutionNode resolutionTree, ContextContract applicationPlatform) throws ResolveException{
 		if(resolutionTree==null){
 			try {
@@ -98,9 +97,9 @@ public class Resolution{
 					if(componentSubTypeRecursiveTest(application, candidate, null, application.getAbstractComponent(),resolutionTree)){
 						if(candidate.getPlatform() == null){
 							//Will test the next software contract
-//							continue;
+							continue;
 						}
-						List<ContextContract> componentCandidatePlatformlist;
+						List<ContextContract> componentCandidatePlatformlist = null;
 						try {
 							componentCandidatePlatformlist = ResolutionHandler.generateCompliantPlatformCandidates(candidate.getPlatform().getAbstractComponent().getIdAc(), resolutionTree);
 						} catch (DBHandlerException e3) {
@@ -109,7 +108,7 @@ public class Resolution{
 						}
 						if(componentCandidatePlatformlist.size() > 0){
 							for(int i = 0; i < componentCandidatePlatformlist.size(); i++){
-
+								
 								ContextContract platform = componentCandidatePlatformlist.get(i);
 								if(applicationPlatform!=null){
 									candidate.setPlatform(applicationPlatform);
@@ -142,27 +141,23 @@ public class Resolution{
 							}
 							//partialComponentList has a list with all candidate components passed in first filter
 							//----------------------------------------------------------------------------------------------------------------------------------------------
-
 							for(ContextContract cc:candidateList.getCandidate()){
 								try {
 									FunctionHandler.calulateContextContractQualityArguments(cc.getPlatform(), resolutionTree);
 								} catch (FunctionException e2) {
-									//Will test the next software contract
-									continue;
+									//do nothing
 								} //calcula parametros de qualidade
 								if(Resolution.isSubTypeByQuality(application.getPlatform(), cc.getPlatform(), null, resolutionTree)){
 									try {
 										FunctionHandler.calulateContextContractCostArguments(cc.getPlatform(), resolutionTree);
 									} catch (FunctionException e1) {
-										//Will test the next software contract
-										continue;
+										//do nothing
 									} //calcula parametros de custo
 									if(Resolution.isSubTypeByCost(application.getPlatform(), cc.getPlatform(), null, resolutionTree)){
 										try {
 											FunctionHandler.calulateContextContractRankingArguments(cc.getPlatform(), resolutionTree);
 										} catch (FunctionException e) {
-											//Will test the next software contract
-											continue;
+											//do nothing
 										} //calcula parametros de custo
 										newCandidateList.getCandidate().add(cc);									
 									}
@@ -172,7 +167,7 @@ public class Resolution{
 					}
 				} catch (DBHandlerException e) {
 					//Will test the next software contract
-//					continue;
+					continue;
 				}
 
 

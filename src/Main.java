@@ -17,21 +17,34 @@ import br.ufc.storm.jaxb.ContextParameterType;
 import br.ufc.storm.jaxb.QualityFunctionTermType;
 import br.ufc.storm.jaxb.QualityFunctionType;
 import br.ufc.storm.jaxb.QualityParameterType;
+import br.ufc.storm.jaxb.SliceType;
 import br.ufc.storm.jaxb.UnitFileType;
 import br.ufc.storm.model.ResolutionNode;
 import br.ufc.storm.sql.DBHandler;
+import br.ufc.storm.sql.SliceHandler;
 import br.ufc.storm.webservices.CoreServices;
 import br.ufc.storm.xml.XMLHandler;
 import br.ufc.storm.sql.ConcreteUnitHandler;
 import br.ufc.storm.sql.ContextContractHandler;
+import br.ufc.storm.sql.ContextParameterHandler;
 import br.ufc.storm.control.FunctionHandler;
 import br.ufc.storm.control.Resolution;
 import br.ufc.storm.exception.DBHandlerException;
+import br.ufc.storm.exception.StormException;
 import br.ufc.storm.io.FileHandler;
+import br.ufc.storm.io.LogHandler;
 
 public class Main {
 	public static void main(String[] args) throws IOException {
-//		System.out.println(CoreServices.listContract(19));
+		
+		LogHandler.doLog("Testando Log1");
+
+		LogHandler.doLog("Testando Log2");
+		
+		LogHandler.doLog("Testando Log3");
+		
+		
+		//		System.out.println(CoreServices.listContract(19));
 		/*AbstractUnitType cut = UnitHandler.getAbstractUnit(25);
 		System.out.println(cut.getAuId()+" Abstract component id: "+cut.getAcId()+" Abstract unit name: "+cut.getAuName());
 		*/
@@ -190,7 +203,23 @@ public class Main {
 			System.out.println(p.getName());
 		}*/
 		
-	/*	AbstractComponentType ac = DBHandler.getAbstractComponent(1);
+	/*	AbstractComponentTyp
+		
+		
+//		List<ContextParameterType> t = DBHandler.getContextParameter(14);
+//		for(ContextParameterType x: t){
+//			System.out.println("AAAAA:"+x.getName());
+//		}
+		
+//		x0  //limite superior
+//		
+//		    x1
+//		    
+//		         x3  
+//		         
+//		    x4          x5 //limite pedido
+//		
+	e ac = DBHandler.getAbstractComponent(1);
 		System.out.println(ac.getName());
 		for(ContextParameterType p: ac.getContextParameter()){
 			System.out.println(p.getName());

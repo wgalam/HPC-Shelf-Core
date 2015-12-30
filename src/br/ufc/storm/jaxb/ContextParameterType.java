@@ -2,7 +2,7 @@
 // Este arquivo foi gerado pela Arquitetura JavaTM para Implementação de Referência (JAXB) de Bind XML, v2.2.8-b130911.1802 
 // Consulte <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Todas as modificações neste arquivo serão perdidas após a recompilação do esquema de origem. 
-// Gerado em: 2015.12.16 às 03:13:02 PM BRT 
+// Gerado em: 2015.12.29 às 08:53:36 PM BRT 
 //
 
 
@@ -26,11 +26,13 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;element name="bound" type="{http://storm.lia.ufc.br}context_contract" minOccurs="0"/>
+ *         &lt;element name="bound_value" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;choice>
- *           &lt;element name="context_variable" type="{http://storm.lia.ufc.br}context_contract" minOccurs="0"/>
- *           &lt;element name="value" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *           &lt;element name="context_variable_required" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;/choice>
  *         &lt;element name="context_argument" type="{http://storm.lia.ufc.br}context_argument_type" minOccurs="0"/>
+ *         &lt;element name="context_variable_provided" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="context_variable_required_id" type="{http://www.w3.org/2001/XMLSchema}int"/>
  *       &lt;/sequence>
  *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="cp_id" type="{http://www.w3.org/2001/XMLSchema}int" />
@@ -44,18 +46,25 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "context_parameter_type", propOrder = {
     "bound",
-    "contextVariable",
-    "value",
-    "contextArgument"
+    "boundValue",
+    "contextVariableRequired",
+    "contextArgument",
+    "contextVariableProvided",
+    "contextVariableRequiredId"
 })
 public class ContextParameterType {
 
     protected ContextContract bound;
-    @XmlElement(name = "context_variable")
-    protected ContextContract contextVariable;
-    protected String value;
+    @XmlElement(name = "bound_value", required = true)
+    protected String boundValue;
+    @XmlElement(name = "context_variable_required")
+    protected String contextVariableRequired;
     @XmlElement(name = "context_argument")
     protected ContextArgumentType contextArgument;
+    @XmlElement(name = "context_variable_provided")
+    protected String contextVariableProvided;
+    @XmlElement(name = "context_variable_required_id")
+    protected int contextVariableRequiredId;
     @XmlAttribute(name = "name")
     protected String name;
     @XmlAttribute(name = "cp_id")
@@ -86,51 +95,51 @@ public class ContextParameterType {
     }
 
     /**
-     * Obtém o valor da propriedade contextVariable.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ContextContract }
-     *     
-     */
-    public ContextContract getContextVariable() {
-        return contextVariable;
-    }
-
-    /**
-     * Define o valor da propriedade contextVariable.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link ContextContract }
-     *     
-     */
-    public void setContextVariable(ContextContract value) {
-        this.contextVariable = value;
-    }
-
-    /**
-     * Obtém o valor da propriedade value.
+     * Obtém o valor da propriedade boundValue.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getValue() {
-        return value;
+    public String getBoundValue() {
+        return boundValue;
     }
 
     /**
-     * Define o valor da propriedade value.
+     * Define o valor da propriedade boundValue.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setValue(String value) {
-        this.value = value;
+    public void setBoundValue(String value) {
+        this.boundValue = value;
+    }
+
+    /**
+     * Obtém o valor da propriedade contextVariableRequired.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getContextVariableRequired() {
+        return contextVariableRequired;
+    }
+
+    /**
+     * Define o valor da propriedade contextVariableRequired.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setContextVariableRequired(String value) {
+        this.contextVariableRequired = value;
     }
 
     /**
@@ -155,6 +164,46 @@ public class ContextParameterType {
      */
     public void setContextArgument(ContextArgumentType value) {
         this.contextArgument = value;
+    }
+
+    /**
+     * Obtém o valor da propriedade contextVariableProvided.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getContextVariableProvided() {
+        return contextVariableProvided;
+    }
+
+    /**
+     * Define o valor da propriedade contextVariableProvided.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setContextVariableProvided(String value) {
+        this.contextVariableProvided = value;
+    }
+
+    /**
+     * Obtém o valor da propriedade contextVariableRequiredId.
+     * 
+     */
+    public int getContextVariableRequiredId() {
+        return contextVariableRequiredId;
+    }
+
+    /**
+     * Define o valor da propriedade contextVariableRequiredId.
+     * 
+     */
+    public void setContextVariableRequiredId(int value) {
+        this.contextVariableRequiredId = value;
     }
 
     /**

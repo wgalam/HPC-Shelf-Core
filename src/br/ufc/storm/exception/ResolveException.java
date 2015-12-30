@@ -3,7 +3,7 @@ package br.ufc.storm.exception;
 import java.lang.Exception;
 
 
-public class ResolveException extends Exception{
+public class ResolveException extends ShelfException{
 	private static final long serialVersionUID = 1L;
 
 	public ResolveException() {

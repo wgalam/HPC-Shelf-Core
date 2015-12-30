@@ -18,7 +18,7 @@ public class FileHandler {
 	 * @return
 	 */
 	public static boolean addFile(byte[] data,String fileName) {
-        try {
+		try {
 			Path pathToFile = Paths.get(PropertiesHandler.getProperty("core.library.path")+"/"+fileName);
 			Files.createDirectories(pathToFile.getParent());
 			Files.createFile(pathToFile);
@@ -27,8 +27,8 @@ public class FileHandler {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-        return false;
-  }
+		return false;
+	}
 	/**
 	 * This method is responsible for receive a byte array and save them content to hard disk
 	 * @param path
@@ -48,28 +48,28 @@ public class FileHandler {
 		}
 		return false;
 	}
-					
+
 	/**
 	 * This method read a file from hard disk and return its content as a string
 	 * @param pathname Path to file
 	 * @return File content as string
 	 * @throws IOException
 	 */
-	
+
 	public static byte[] readFile(String pathname) throws IOException {
 
 		Path path = Paths.get(pathname);
 		byte[] data = Files.readAllBytes(path);
 		return data;
 	}
-	
+
 	public static String readFileAsString(String pathname) throws IOException {
 
 		Path path = Paths.get(pathname);
 		byte[] data = Files.readAllBytes(path);
 		return new String(data);
 	}
-	
+
 	public static byte[] getUnitFile(int ufid) throws DBHandlerException{
 		byte[] data = null;
 		try {
@@ -80,5 +80,5 @@ public class FileHandler {
 		}
 		return data;
 	}
-	
+
 }

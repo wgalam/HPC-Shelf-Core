@@ -16,6 +16,7 @@ import br.ufc.storm.xml.XMLHandler;
 import br.ufc.storm.control.ComputationalSystemHandler;
 import br.ufc.storm.control.Deployer;
 import br.ufc.storm.exception.DBHandlerException;
+import br.ufc.storm.exception.XMLException;
 
 public class CoreServices {
 
@@ -31,7 +32,11 @@ public class CoreServices {
 	 */
 
 	public boolean addAbstractComponent(String cmp) throws ParserConfigurationException, SAXException, IOException, DBHandlerException{
-		return XMLHandler.addAbstractComponentFromXML(cmp);
+		try {
+			return XMLHandler.addAbstractComponentFromXML(cmp);
+		} catch (XMLException e) {
+			return false;
+		}
 	}
 
 	/**
@@ -67,12 +72,10 @@ public class CoreServices {
 		try {
 			AbstractComponentType ac = AbstractComponentHandler.getAbstractComponentPartial(id);
 			return XMLHandler.getAbstractComponent(ac.getName());
-		} catch (SQLException e) {
-			return null;
 		} catch (DBHandlerException e) {
 			return null;
 		}
-		
+
 	}
 
 	/**
@@ -100,28 +103,17 @@ public class CoreServices {
 	}
 
 	/**
-	 * This method adds an instantiation type into database.
-	 * @param cmp XML file as string
-	 * @return True if no exception occurs
-	 */
-
-	public boolean addInstantiationType(String cmp){
-		int id = XMLHandler.addInstantiationTypeFromXML(cmp);
-		if(id > 0){
-			return true;
-		}else{
-			return false;
-		}
-	}
-
-	/**
 	 * This method adds an inner component into database.
 	 * @param cmp XML file as string
 	 * @return True if no exception occurs
 	 */
 
 	public boolean addInnerComponent(String cmp){
-		return  XMLHandler.addInnerComponentFromXML(cmp);
+		try {
+			return  XMLHandler.addInnerComponentFromXML(cmp);
+		} catch (XMLException e) {
+			return false;
+		}
 	}
 
 	/**
@@ -139,7 +131,11 @@ public class CoreServices {
 	 * @return True if no exception occurs
 	 */
 	public boolean addContextParameter(String cmp){
-		return XMLHandler.addContextParameterFromXML(cmp, null);
+		try {
+			return XMLHandler.addContextParameterFromXML(cmp, null);
+		} catch (XMLException e) {
+			return false;
+		}
 	}
 
 	/**
@@ -148,7 +144,11 @@ public class CoreServices {
 	 * @return XML file with a list of context parameters belonging to given abstract component
 	 */
 	public String getContextParameter(String name){
-		return XMLHandler.getContextParameters(name);
+		try {
+			return XMLHandler.getContextParameters(name);
+		} catch (XMLException e) {
+			return null;
+		}
 	}
 
 	/**
@@ -204,9 +204,10 @@ public class CoreServices {
 	 * @return True if no exception occurs
 	 */
 	public boolean addUnitFile(byte[] data, String xml) {
-		if(XMLHandler.addUnitFile(xml, data)){
+		try {
+			XMLHandler.addUnitFile(xml, data);
 			return true;
-		}else{
+		} catch (XMLException e) {
 			return false;
 		}
 	}
@@ -218,8 +219,9 @@ public class CoreServices {
 	 */
 	public boolean setObsolete(String cmp){
 		try {
-			return AbstractComponentHandler.setObsolete(cmp);
-		} catch (SQLException e) {
+			AbstractComponentHandler.setObsolete(cmp);
+			return true;
+		} catch (DBHandlerException e) {
 			return false;
 		}
 	}
@@ -229,11 +231,15 @@ public class CoreServices {
 	 * @return - XML file with a list of all components
 	 */
 	public String list(){
-		return XMLHandler.listComponent();
+		try {
+			return XMLHandler.listComponent();
+		} catch (XMLException e) {
+			return null;
+		}
 	}
 
 	public static String listContract(int ac_id) throws DBHandlerException{
-		
+
 		return XMLHandler.listContract(ac_id);
 	}
 
@@ -245,11 +251,10 @@ public class CoreServices {
 	public String resolve(String cmp){
 		try {
 			return XMLHandler.resolve(cmp);
-		} catch (DBHandlerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (XMLException e) {
+			return null;
 		}
-		return null;
+		
 	}
 
 	/**
@@ -269,7 +274,11 @@ public class CoreServices {
 	 */
 	public String deploy(int sessionID, String cmp){
 		CandidateListType clist = XMLHandler.getList(new File(cmp));
-		SessionHandler.createSession(sessionID);
+		try {
+			SessionHandler.createSession(sessionID);
+		} catch (DBHandlerException e) {
+			return null;
+		}
 		return(Deployer.deploy(clist));
 	}
 
@@ -283,12 +292,12 @@ public class CoreServices {
 	}
 
 	public boolean cancelSession(int sessionID){
-		if(SessionHandler.destroySession(sessionID)){
+		try {
+			SessionHandler.destroySession(sessionID);
 			return true;
-		}else{
+		} catch (DBHandlerException e) {
 			return false;
 		}
-
 	}
 
 	public String instantiateACK(String address){
@@ -301,6 +310,10 @@ public class CoreServices {
 	 * @return True if no exception occurs
 	 */
 	public int addQualityFunction(String func){
-		return XMLHandler.addQualityFunction(func);
+		try {
+			return XMLHandler.addQualityFunction(func);
+		} catch (XMLException e) {
+			return -1;
+		}
 	}
 }

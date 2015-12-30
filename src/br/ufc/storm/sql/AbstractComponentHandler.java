@@ -5,9 +5,17 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.xml.bind.JAXB;
+
+import org.apache.axis2.jaxws.common.config.AddressingWSDLExtensionValidator;
 
 import br.ufc.storm.jaxb.AbstractComponentType;
+import br.ufc.storm.jaxb.AbstractUnitType;
+import br.ufc.storm.jaxb.ContextContract;
 import br.ufc.storm.jaxb.ContextParameterType;
 import br.ufc.storm.jaxb.SliceType;
 import br.ufc.storm.exception.DBHandlerException;
@@ -44,8 +52,6 @@ public class AbstractComponentHandler extends DBHandler{
 				name = resultSet.getString("ac_name");
 				ac_id = resultSet.getInt("ac_id"); 
 				supertype_id = resultSet.getInt("supertype_id"); 
-				//kind = resultSet.getInt("kind_id");
-				//				parent = resultSet.getInt("parent");
 				AbstractComponentType ac = new AbstractComponentType();
 				ac.setIdAc(ac_id);
 				ac.setName(name);
@@ -77,42 +83,52 @@ public class AbstractComponentHandler extends DBHandler{
 	 * @throws XMLException 
 	 * @throws StormException 
 	 */
-	//TODO: Refactor this method
-	public static int addAbstractComponent(AbstractComponentType ac) throws DBHandlerException, StormException{
+	public static void addAbstractComponent(AbstractComponentType ac, Map<String, Integer> sharedVariables) throws DBHandlerException, StormException{
+
 		try {
+
 			Connection con = DBHandler.getConnection();
-			con.setAutoCommit(false);
-			int ac_id = 0;
 			PreparedStatement prepared = con.prepareStatement(INSERT_ABSTRACT_COMPONENT);
 			prepared.setString(1, ac.getName()); 
 			prepared.setInt(2, ac.getSupertype().getIdAc());
-			//Removido kind_id pois está definido no parâmetro de contexto
-			//			prepared.setInt(3, ac.getKind());
 			ResultSet result = prepared.executeQuery();
 			if(result.next()){
-				ac_id = result.getInt("ac_id");
+				ac.setIdAc(result.getInt("ac_id"));
 			}else{
 				throw new DBHandlerException("Abstract component id not returned");
 			}
 			if(ac.getContextParameter()!=null){
+				if(sharedVariables == null){
+					sharedVariables = new HashMap<String, Integer>();
+				}
 				for(ContextParameterType cp:ac.getContextParameter()){
-					//					TODO: Corrigir a passagem de variáveis
+					//TODO: Corrigir a passagem de variáveis
+					//					Se tem variavel compartilhada, adicionar no hashmap
+
 					String boundName = null;
 					if(cp.getBound() != null){
 						boundName = cp.getBound().getCcName();
+					}else{
+						//						Parameter without bound, must throw an exception
+						throw new DBHandlerException("Parameter without bound");
 					}
-					boolean fcp = true;
-					if(fcp){
-						int ret = ContextParameterHandler.addContextParameter(cp.getName(),boundName, ac.getName(), null);
-						if(ret < 0){
-							fcp=false;
-							throw new DBHandlerException("Storm XML Handler Exception: "+ret+" with parameter: "+cp.getName());
-						}
+
+					if(cp.getContextVariableProvided()!=null){
+						sharedVariables.put(cp.getContextVariableProvided(), cp.getCpId());
 					}
+					cp.setCpId(ContextParameterHandler.addContextParameter(cp.getName(),boundName, ac.getName(), null, cp.getBoundValue(), cp.getContextVariableRequired(), sharedVariables));
 				}
 			}
-			con.commit();
-			return ac_id;
+			//Add each abstract unit
+			for(AbstractUnitType aut: ac.getAbstractUnit()){
+				aut.setAuId(AbstractUnitHandler.addAbstractUnit(aut.getAcId(), aut.getAuName()));;
+			}
+			for(AbstractComponentType inner:ac.getInnerComponents()){
+				addAbstractComponent(inner, sharedVariables);
+			}
+			for(SliceType st:ac.getSlices()){
+				SliceHandler.addSlice(st, ac.getIdAc());
+			}
 		} catch (SQLException e) {
 			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
 		}
@@ -244,7 +260,7 @@ public class AbstractComponentHandler extends DBHandler{
 	 * @throws SQLException 
 	 * @throws DBHandlerException 
 	 */
-	public static int getAbstractComponentID(String name) throws DBHandlerException{
+	public static Integer getAbstractComponentID(String name) throws DBHandlerException{
 
 		try {
 			Connection con = getConnection(); 
@@ -257,7 +273,7 @@ public class AbstractComponentHandler extends DBHandler{
 				ac_id = resultSet.getInt("ac_id"); 
 				return ac_id;
 			}else{
-				throw new DBHandlerException("Abstract component not found");
+				return null;
 			}
 		} catch (SQLException e) {
 			throw new DBHandlerException("A sql error occurred: "+e.getMessage());

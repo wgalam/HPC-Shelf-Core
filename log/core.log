@@ -1,0 +1,48 @@
+dez 29, 2015 10:24:55 PM br.ufc.storm.exception.ShelfException <init>
+ADVERTÊNCIA: ShelfException: DBHandlerException: Quality function not found with cp_id = 1
+dez 29, 2015 10:24:55 PM br.ufc.storm.exception.ShelfException <init>
+ADVERTÊNCIA: ShelfException: FunctionException: Can not get quality function: DBHandlerException: Quality function not found with cp_id = 1
+dez 29, 2015 10:24:55 PM br.ufc.storm.exception.ShelfException <init>
+ADVERTÊNCIA: ShelfException: DBHandlerException: Cost function with cp_id = 2 was not found
+dez 29, 2015 10:24:55 PM br.ufc.storm.exception.ShelfException <init>
+ADVERTÊNCIA: ShelfException: FunctionException: Can not get cost function: DBHandlerException: Cost function with cp_id = 2 was not found
+dez 29, 2015 10:24:55 PM br.ufc.storm.exception.ShelfException <init>
+ADVERTÊNCIA: ShelfException: DBHandlerException: 
+dez 29, 2015 10:24:55 PM br.ufc.storm.exception.ShelfException <init>
+ADVERTÊNCIA: ShelfException: FunctionException: Can not get ranking function: DBHandlerException: 
+dez 29, 2015 10:24:56 PM br.ufc.storm.exception.ShelfException <init>
+ADVERTÊNCIA: ShelfException: DBHandlerException: Quality function not found with cp_id = 1
+dez 29, 2015 10:24:56 PM br.ufc.storm.exception.ShelfException <init>
+ADVERTÊNCIA: ShelfException: FunctionException: Can not get quality function: DBHandlerException: Quality function not found with cp_id = 1
+dez 29, 2015 10:24:56 PM br.ufc.storm.exception.ShelfException <init>
+ADVERTÊNCIA: ShelfException: DBHandlerException: Cost function with cp_id = 2 was not found
+dez 29, 2015 10:24:56 PM br.ufc.storm.exception.ShelfException <init>
+ADVERTÊNCIA: ShelfException: FunctionException: Can not get cost function: DBHandlerException: Cost function with cp_id = 2 was not found
+dez 29, 2015 10:24:56 PM br.ufc.storm.exception.ShelfException <init>
+ADVERTÊNCIA: ShelfException: DBHandlerException: 
+dez 29, 2015 10:24:56 PM br.ufc.storm.exception.ShelfException <init>
+ADVERTÊNCIA: ShelfException: FunctionException: Can not get ranking function: DBHandlerException: 
+dez 29, 2015 10:24:57 PM br.ufc.storm.exception.ShelfException <init>
+ADVERTÊNCIA: ShelfException: DBHandlerException: Quality function not found with cp_id = 1
+dez 29, 2015 10:24:57 PM br.ufc.storm.exception.ShelfException <init>
+ADVERTÊNCIA: ShelfException: FunctionException: Can not get quality function: DBHandlerException: Quality function not found with cp_id = 1
+dez 29, 2015 10:24:57 PM br.ufc.storm.exception.ShelfException <init>
+ADVERTÊNCIA: ShelfException: DBHandlerException: Cost function with cp_id = 2 was not found
+dez 29, 2015 10:24:57 PM br.ufc.storm.exception.ShelfException <init>
+ADVERTÊNCIA: ShelfException: FunctionException: Can not get cost function: DBHandlerException: Cost function with cp_id = 2 was not found
+dez 29, 2015 10:24:57 PM br.ufc.storm.exception.ShelfException <init>
+ADVERTÊNCIA: ShelfException: DBHandlerException: 
+dez 29, 2015 10:24:57 PM br.ufc.storm.exception.ShelfException <init>
+ADVERTÊNCIA: ShelfException: FunctionException: Can not get ranking function: DBHandlerException: 
+dez 29, 2015 10:24:57 PM br.ufc.storm.exception.ShelfException <init>
+ADVERTÊNCIA: ShelfException: DBHandlerException: Quality function not found with cp_id = 1
+dez 29, 2015 10:24:57 PM br.ufc.storm.exception.ShelfException <init>
+ADVERTÊNCIA: ShelfException: FunctionException: Can not get quality function: DBHandlerException: Quality function not found with cp_id = 1
+dez 29, 2015 10:24:57 PM br.ufc.storm.exception.ShelfException <init>
+ADVERTÊNCIA: ShelfException: DBHandlerException: Cost function with cp_id = 2 was not found
+dez 29, 2015 10:24:57 PM br.ufc.storm.exception.ShelfException <init>
+ADVERTÊNCIA: ShelfException: FunctionException: Can not get cost function: DBHandlerException: Cost function with cp_id = 2 was not found
+dez 29, 2015 10:24:57 PM br.ufc.storm.exception.ShelfException <init>
+ADVERTÊNCIA: ShelfException: DBHandlerException: 
+dez 29, 2015 10:24:57 PM br.ufc.storm.exception.ShelfException <init>
+ADVERTÊNCIA: ShelfException: FunctionException: Can not get ranking function: DBHandlerException: 

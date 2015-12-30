@@ -46,13 +46,19 @@
     		<element name="bound" type="tns:context_contract"
     			maxOccurs="1" minOccurs="0">
     		</element>
+    		<element name="bound_value" type="string"></element>
     		<choice>
-    			<element name="context_variable"
-    				type="tns:context_contract" maxOccurs="1" minOccurs="0">
+    			<element name="context_variable_required" type="string"
+    				maxOccurs="1" minOccurs="0">
     			</element>
-    			<element name="value" type="string"></element>
     		</choice>
-    		<element name="context_argument" type="tns:context_argument_type" maxOccurs="1" minOccurs="0"></element>
+    		<element name="context_argument"
+    			type="tns:context_argument_type" maxOccurs="1" minOccurs="0">
+    		</element>
+    		<element name="context_variable_provided" type="string"
+    			maxOccurs="1" minOccurs="0">
+    		</element>
+    		<element name="context_variable_required_id" type="int"></element>
     	</sequence>
     	<attribute name="name" type="string"></attribute>
     	<attribute name="cp_id" type="int"></attribute>
@@ -302,4 +308,5 @@
     		<element name="contract" type="tns:context_contract" maxOccurs="unbounded" minOccurs="0"></element>
     	</sequence>
     </complexType>
+
 </schema>

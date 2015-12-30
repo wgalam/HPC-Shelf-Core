@@ -1,6 +1,8 @@
 package br.ufc.storm.exception;
 
-public class DBHandlerException extends Exception{
+import br.ufc.storm.io.LogHandler;
+
+public class DBHandlerException extends ShelfException{
 	private static final long serialVersionUID = 1L;
 
 	public DBHandlerException() {
