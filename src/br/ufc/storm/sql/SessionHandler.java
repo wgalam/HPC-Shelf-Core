@@ -33,7 +33,7 @@ public class SessionHandler extends DBHandler {
 				throw new DBHandlerException("Can not create session with user_id: "+userID);
 			}
 		} catch (SQLException e) { 
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
 	}
 
@@ -47,7 +47,7 @@ public class SessionHandler extends DBHandler {
 			prepared.setInt(3, sessionID);
 			prepared.executeUpdate(); 
 		} catch (SQLException e) { 
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
 	}
 
@@ -74,7 +74,7 @@ public class SessionHandler extends DBHandler {
 				throw new DBHandlerException("Error while trying get end time from database serverserver");
 			}
 		} catch (SQLException e) { 
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
 		 
 	}

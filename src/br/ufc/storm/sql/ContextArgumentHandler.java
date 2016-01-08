@@ -45,10 +45,9 @@ public class ContextArgumentHandler extends DBHandler {
 				throw new DBHandlerException("There no exists the context argument with Context Parameter id equals to "+cp_id+" and context contract equals to "+cc_id);
 			}
 		} catch (SQLException e) {
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		}
 	}
-
 
 	/**
 	 * This method adds a context argument
@@ -88,7 +87,7 @@ public class ContextArgumentHandler extends DBHandler {
 			}
 			return true;
 		} catch (SQLException e) {
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
 	}
 
@@ -110,7 +109,7 @@ public class ContextArgumentHandler extends DBHandler {
 			prepared.setInt(2, cpId);
 			prepared.executeQuery();
 		} catch (SQLException e) {
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		}
 
 	}
@@ -122,18 +121,17 @@ public class ContextArgumentHandler extends DBHandler {
 	 * @param con
 	 * @throws SQLException 
 	 */
+	
 	//	TODO: Testar
 	private static void addContextArgumentContextContract(int ca_id, ContextContract contextContract) throws DBHandlerException {
-
 		try {
 			PreparedStatement prepared = getConnection().prepareStatement(INSERT_CONTEXT_ARGUMENT_CONTEXT_CONTRACT); 
 			prepared.setInt(1, ca_id);
 			prepared.setInt(2, contextContract.getCcId());
 			prepared.executeQuery();
 		} catch (SQLException e) {
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		}
-
 	}
 
 	/**
@@ -153,7 +151,7 @@ public class ContextArgumentHandler extends DBHandler {
 			prepared.setString(3, cavt.getValue());
 			prepared.executeQuery();
 		} catch (SQLException e) {
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		}
 
 	}
@@ -211,7 +209,7 @@ public class ContextArgumentHandler extends DBHandler {
 			} 
 			return cpl;
 		} catch (SQLException e) {
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		}
 
 	}
@@ -224,6 +222,7 @@ public class ContextArgumentHandler extends DBHandler {
 	 * @throws SQLException 
 	 */
 	//TODO: Grade chance de estar errado o último teste, revisar e testar
+	@SuppressWarnings("resource")
 	public static Object getContextArgumentValue(int cp_id, int cc_id) throws DBHandlerException{
 
 		try {
@@ -297,7 +296,7 @@ public class ContextArgumentHandler extends DBHandler {
 			}
 			return null;
 		} catch (SQLException e) {
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		}
 
 	}

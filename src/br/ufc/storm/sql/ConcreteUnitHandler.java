@@ -30,18 +30,18 @@ public class ConcreteUnitHandler extends DBHandler {
 	 * @throws SQLException 
 	 */
 
-	public static void addConcreteUnit(String contextContract_id, String au_id) throws DBHandlerException {
+	public static void addConcreteUnit(Integer contextContract_id, Integer au_id) throws DBHandlerException {
 
 		try {
 			Connection con = getConnection(); 
 			PreparedStatement prepared = con.prepareStatement(INSERT_CONCRETE_UNIT); 
-			prepared.setInt(1, Integer.parseInt(contextContract_id));
-			prepared.setInt(2, Integer.parseInt(au_id)); 
+			prepared.setInt(1, contextContract_id);
+			prepared.setInt(2, au_id); 
 			prepared.executeUpdate(); 
 		} catch (NumberFormatException e) {
-			throw new DBHandlerException("A error occurred while parsing int: "+e.getMessage());
+			throw new DBHandlerException("A error occurred while parsing int: ", e);
 		} catch (SQLException e) {
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
 
 	}
@@ -71,7 +71,7 @@ public class ConcreteUnitHandler extends DBHandler {
 				throw new DBHandlerException("Concrete unit not found");
 			}
 		} catch (SQLException e) {
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
 
 	}
@@ -98,7 +98,7 @@ public class ConcreteUnitHandler extends DBHandler {
 				throw new DBHandlerException("Concrete unit not found");
 			}
 		} catch (SQLException e) {
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
 
 	}
@@ -134,7 +134,7 @@ public class ConcreteUnitHandler extends DBHandler {
 			}
 			return list;
 		} catch (SQLException e) {
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
 
 	}
@@ -159,13 +159,13 @@ public class ConcreteUnitHandler extends DBHandler {
 					file = PropertiesHandler.getProperty("core.library.path")+"/"+resultSet.getString("path").replace('.', '/')+"/"+resultSet.getString("file_name")+"."+resultSet.getString("file_extension");
 					return file;
 				} catch (IOException e) {
-					throw new DBHandlerException("An I/O error occurred: "+e.getMessage());
+					throw new DBHandlerException("An I/O error occurred: ", e);
 				}
 			}else{
 				throw new DBHandlerException("Unit file not found");
 			}
 		}catch(SQLException e){
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		}
 
 	}
@@ -204,7 +204,7 @@ public class ConcreteUnitHandler extends DBHandler {
 			prepared.executeUpdate(); 
 			return uft.getPath();
 		} catch (SQLException e) {
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		}
 
 	}

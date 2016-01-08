@@ -2,7 +2,7 @@
 // Este arquivo foi gerado pela Arquitetura JavaTM para Implementação de Referência (JAXB) de Bind XML, v2.2.8-b130911.1802 
 // Consulte <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Todas as modificações neste arquivo serão perdidas após a recompilação do esquema de origem. 
-// Gerado em: 2015.12.29 às 08:53:36 PM BRT 
+// Gerado em: 2016.01.03 às 05:52:03 PM BRT 
 //
 
 
@@ -32,11 +32,12 @@ import javax.xml.namespace.QName;
 public class ObjectFactory {
 
     private final static QName _ContextContract_QNAME = new QName("http://storm.lia.ufc.br", "context_contract");
-    private final static QName _ContractList_QNAME = new QName("http://storm.lia.ufc.br", "contractList");
+    private final static QName _CandidateList_QNAME = new QName("http://storm.lia.ufc.br", "candidate_list");
     private final static QName _UnitFile_QNAME = new QName("http://storm.lia.ufc.br", "unit_file");
     private final static QName _ConcreteUnit_QNAME = new QName("http://storm.lia.ufc.br", "concrete_unit");
-    private final static QName _CandidateList_QNAME = new QName("http://storm.lia.ufc.br", "candidateList");
+    private final static QName _ContractList_QNAME = new QName("http://storm.lia.ufc.br", "contract_list");
     private final static QName _AbstractComponent_QNAME = new QName("http://storm.lia.ufc.br", "abstract_component");
+    private final static QName _ComputationalSystem_QNAME = new QName("http://storm.lia.ufc.br", "computational_system");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: br.ufc.storm.jaxb
@@ -51,6 +52,14 @@ public class ObjectFactory {
      */
     public ContextContract createContextContract() {
         return new ContextContract();
+    }
+
+    /**
+     * Create an instance of {@link CandidateListType }
+     * 
+     */
+    public CandidateListType createCandidateListType() {
+        return new CandidateListType();
     }
 
     /**
@@ -75,14 +84,6 @@ public class ObjectFactory {
      */
     public ContractList createContractList() {
         return new ContractList();
-    }
-
-    /**
-     * Create an instance of {@link CandidateListType }
-     * 
-     */
-    public CandidateListType createCandidateListType() {
-        return new CandidateListType();
     }
 
     /**
@@ -214,6 +215,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link ComputationalSystemType }
+     * 
+     */
+    public ComputationalSystemType createComputationalSystemType() {
+        return new ComputationalSystemType();
+    }
+
+    /**
      * Create an instance of {@link ConcreteComponentType }
      * 
      */
@@ -255,12 +264,12 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link ContractList }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link CandidateListType }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://storm.lia.ufc.br", name = "contractList")
-    public JAXBElement<ContractList> createContractList(ContractList value) {
-        return new JAXBElement<ContractList>(_ContractList_QNAME, ContractList.class, null, value);
+    @XmlElementDecl(namespace = "http://storm.lia.ufc.br", name = "candidate_list")
+    public JAXBElement<CandidateListType> createCandidateList(CandidateListType value) {
+        return new JAXBElement<CandidateListType>(_CandidateList_QNAME, CandidateListType.class, null, value);
     }
 
     /**
@@ -282,12 +291,12 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link CandidateListType }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link ContractList }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://storm.lia.ufc.br", name = "candidateList")
-    public JAXBElement<CandidateListType> createCandidateList(CandidateListType value) {
-        return new JAXBElement<CandidateListType>(_CandidateList_QNAME, CandidateListType.class, null, value);
+    @XmlElementDecl(namespace = "http://storm.lia.ufc.br", name = "contract_list")
+    public JAXBElement<ContractList> createContractList(ContractList value) {
+        return new JAXBElement<ContractList>(_ContractList_QNAME, ContractList.class, null, value);
     }
 
     /**
@@ -297,6 +306,15 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://storm.lia.ufc.br", name = "abstract_component")
     public JAXBElement<AbstractComponentType> createAbstractComponent(AbstractComponentType value) {
         return new JAXBElement<AbstractComponentType>(_AbstractComponent_QNAME, AbstractComponentType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://storm.lia.ufc.br", name = "computational_system")
+    public JAXBElement<String> createComputationalSystem(String value) {
+        return new JAXBElement<String>(_ComputationalSystem_QNAME, String.class, null, value);
     }
 
 }

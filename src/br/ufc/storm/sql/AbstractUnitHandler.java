@@ -40,7 +40,7 @@ public class AbstractUnitHandler extends DBHandler {
 				throw new DBHandlerException("Abstract unit can't be added: ");	
 			}
 		} catch (SQLException e) {
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
 	}
 
@@ -70,7 +70,7 @@ public class AbstractUnitHandler extends DBHandler {
 			}
 			return cut;
 		} catch (SQLException e) {
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
 
 	}
@@ -95,7 +95,7 @@ public class AbstractUnitHandler extends DBHandler {
 				throw new DBHandlerException("Abstract unit not found");
 			}
 		} catch (SQLException e) {
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
 
 
@@ -123,7 +123,7 @@ public class AbstractUnitHandler extends DBHandler {
 			} 
 			return auts; 
 		} catch (SQLException e) {
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		}
 
 	}

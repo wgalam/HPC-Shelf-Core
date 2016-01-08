@@ -56,7 +56,7 @@ public class QualityHandler extends DBHandler{
 				throw new DBHandlerException("Quality function can not be created, error trying retrieve qf id");
 			}
 		} catch (SQLException e) { 
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
 
 	}
@@ -86,7 +86,7 @@ public class QualityHandler extends DBHandler{
 			}
 			return cps;
 		} catch (SQLException e) { 
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		} 	
 	}
 
@@ -113,7 +113,7 @@ public class QualityHandler extends DBHandler{
 			}
 
 		} catch (SQLException e) { 
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		}		
 
 	}
@@ -140,7 +140,7 @@ public class QualityHandler extends DBHandler{
 			Collections.sort (cps, new ComparatorQualityTerms(true));
 			return cps;
 		} catch (SQLException e) { 
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		}	
 	}
 }

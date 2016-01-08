@@ -33,7 +33,7 @@ public class ComponentKindHandler extends DBHandler {
 				throw new DBHandlerException("An error occurred while adding component kind with name "+name);
 			}
 		} catch (SQLException e) {
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		}
 	}
 
@@ -60,7 +60,7 @@ public class ComponentKindHandler extends DBHandler {
 				throw new DBHandlerException("Component kind not found");
 			}
 		} catch (SQLException e) {
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
 
 	}
@@ -86,7 +86,7 @@ public class ComponentKindHandler extends DBHandler {
 				throw new DBHandlerException("Component kind not found");
 			}
 		} catch (SQLException e) {
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
 
 	}

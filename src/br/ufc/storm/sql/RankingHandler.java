@@ -57,7 +57,7 @@ public class RankingHandler extends DBHandler{
 			}
 
 		} catch (SQLException e) { 
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage()); 
+			throw new DBHandlerException("A sql error occurred: ", e); 
 		}
 
 	}
@@ -79,7 +79,7 @@ public class RankingHandler extends DBHandler{
 				throw new DBHandlerException("");
 			}
 		} catch (SQLException e) { 
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		}	
 
 	}
@@ -101,7 +101,7 @@ public class RankingHandler extends DBHandler{
 			}
 			return rps;
 		} catch (SQLException e) { 
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
 	}
 
@@ -122,7 +122,7 @@ public class RankingHandler extends DBHandler{
 			Collections.sort (rps, new ComparatorRankingTerms(true));
 			return rps;
 		} catch (SQLException e) { 
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
 
 	}

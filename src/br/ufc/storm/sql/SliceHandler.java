@@ -29,7 +29,7 @@ public class SliceHandler extends DBHandler {
 				throw new DBHandlerException("Slice can't be added: ");	
 			}
 		} catch (SQLException e) {
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
 	}
 
@@ -48,7 +48,7 @@ public class SliceHandler extends DBHandler {
 				throw new DBHandlerException("Slice not found ");
 			}
 		} catch (SQLException e) {
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
 	}
 
@@ -67,7 +67,7 @@ public class SliceHandler extends DBHandler {
 			}
 			return list;
 		} catch (SQLException e) {
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
 	}
 

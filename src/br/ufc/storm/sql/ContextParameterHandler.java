@@ -12,7 +12,7 @@ import br.ufc.storm.jaxb.AbstractComponentType;
 import br.ufc.storm.jaxb.ContextContract;
 import br.ufc.storm.jaxb.ContextParameterType;
 import br.ufc.storm.exception.DBHandlerException;
-import br.ufc.storm.exception.StormException;
+import br.ufc.storm.exception.ResolveException;
 
 public class ContextParameterHandler extends DBHandler {
 
@@ -50,6 +50,7 @@ public class ContextParameterHandler extends DBHandler {
 	 * @return Context parameter id from added context parameter
 	 * @throws StormException 
 	 * @throws DBHandlerException 
+	 * @throws ResolveException 
 	 */
 
 //	public static int addContextParameter(ContextParameterType cp, String ac_name) throws StormException, DBHandlerException{
@@ -84,14 +85,14 @@ public class ContextParameterHandler extends DBHandler {
 //
 //	}
 	
-	public static int addContextParameter(String name, String bound_name, String abstractcomponent_name, String context_variable_name, String boundValue, String required_variable_name, Map<String, Integer> map) throws StormException, DBHandlerException{
+	public static int addContextParameter(String name, String bound_name, String abstractcomponent_name, String context_variable_name, String boundValue, String required_variable_name, Map<String, Integer> map) throws DBHandlerException, ResolveException{
 		//		TODO: Adicionar variavel compartilhada
 		//		Listar todas variáveis compartilhadas, criar método que a partir de um ac, encontra todas as variáveis compartilhadas com aninhados
 		int cp_id;
 		try { 
 			Connection con = getConnection();
 			if(validateContexParameter(AbstractComponentHandler.getAbstractComponentID(abstractcomponent_name), AbstractComponentHandler.getAbstractComponentID(bound_name))==false){
-				throw new StormException("Composition tree violated");
+				throw new ResolveException("Composition tree violated");
 			}
 			PreparedStatement prepared = con.prepareStatement(INSERT_CONTEXT_PARAMETER);
 			prepared.setString(1, bound_name);
@@ -123,7 +124,7 @@ public class ContextParameterHandler extends DBHandler {
 			
 			return cp_id;
 		} catch (SQLException e) {
-			throw new DBHandlerException("An error occurred while trying add context parameter: "+e.getMessage());
+			throw new DBHandlerException("An error occurred while trying add context parameter: ", e);
 		} 
 
 	}
@@ -186,7 +187,7 @@ public class ContextParameterHandler extends DBHandler {
 			prepared.setString(2, name);
 			prepared.executeUpdate();
 		} catch (SQLException e) {
-			throw new DBHandlerException("An error occurred while trying add context parameter: "+ e.getMessage());
+			throw new DBHandlerException("An error occurred while trying add context parameter: ", e);
 		} 
 	}
 	
@@ -204,7 +205,7 @@ public class ContextParameterHandler extends DBHandler {
 			prepared.setInt(2, required_var_cp_id);
 			prepared.executeUpdate();
 		} catch (SQLException e) {
-			throw new DBHandlerException("An error occurred while trying add context parameter: "+ e.getMessage());
+			throw new DBHandlerException("An error occurred while trying add context parameter: ", e);
 		} 
 	}
 
@@ -229,7 +230,7 @@ public class ContextParameterHandler extends DBHandler {
 				throw new DBHandlerException("Context Parameter not found with cp_name = "+cp_name);
 			}
 		} catch (SQLException e) { 
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		}
 		return CP_id;
 	}
@@ -273,7 +274,7 @@ public class ContextParameterHandler extends DBHandler {
 			
 			return cp;
 		} catch (SQLException e) { 
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
 	}
 
@@ -305,9 +306,9 @@ public class ContextParameterHandler extends DBHandler {
 						//						cp.setBound(DBHandler.getContextContract(bound_id));
 
 					}else{
-						throw new StormException("Context Parameter bound self referenced results in infinite loop");
+						throw new ResolveException("Context Parameter bound self referenced results in infinite loop");
 					}
-				}catch (StormException e) {
+				}catch (ResolveException e) {
 					ContextContract cc = new ContextContract();
 					cc.setAbstractComponent(new AbstractComponentType());
 					cc.getAbstractComponent().setIdAc(bound_id);
@@ -318,7 +319,7 @@ public class ContextParameterHandler extends DBHandler {
 			} 
 			return cpl; 
 		} catch (SQLException e) { 
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
 
 	}
@@ -348,7 +349,7 @@ public class ContextParameterHandler extends DBHandler {
 			}
 
 		} catch (SQLException e) { 
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		}
 	}
 
@@ -371,7 +372,7 @@ public class ContextParameterHandler extends DBHandler {
 				throw new DBHandlerException("Bound not found with cp_id = "+cp_id);
 			}
 		} catch (SQLException e) { 
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
 
 	}
@@ -384,7 +385,7 @@ public class ContextParameterHandler extends DBHandler {
 			prepared.setString(2, value);
 			prepared.executeUpdate(); 
 		} catch (SQLException e) { 
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
 
 	}
@@ -408,7 +409,7 @@ public class ContextParameterHandler extends DBHandler {
 				throw new DBHandlerException("Bound not found with cp_id = "+cp_id);
 			}
 		} catch (SQLException e) { 
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
 	}
 
@@ -423,7 +424,7 @@ public class ContextParameterHandler extends DBHandler {
 				throw new DBHandlerException("Variable provided not found");
 			}
 		} catch (SQLException e) { 
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
 	}
 	
@@ -438,7 +439,7 @@ public class ContextParameterHandler extends DBHandler {
 				throw new DBHandlerException("Variable required not found");
 			}
 		} catch (SQLException e) { 
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
 	}
 }

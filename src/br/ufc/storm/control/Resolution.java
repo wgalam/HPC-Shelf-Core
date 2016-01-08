@@ -75,13 +75,13 @@ public class Resolution{
 			try {
 				resolutionTree = ResolutionHandler.generateResolutionTree();
 			} catch (DBHandlerException e) {
-				throw new ResolveException("Can not create resolution tree: "+e.getMessage());
+				throw new ResolveException("Can not create resolution tree: ",e);
 			}
 		}
 		try {
 			ContextContractHandler.completeContextContract(application);
 		} catch (DBHandlerException e1) {
-			throw new ResolveException("Can not complete context contract data: "+e1.getMessage());
+			throw new ResolveException("Can not complete context contract data: ",e1);
 		}
 		CandidateListType candidateList = new CandidateListType();
 		CandidateListType newCandidateList = new CandidateListType();

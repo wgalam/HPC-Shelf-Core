@@ -19,7 +19,7 @@ import br.ufc.storm.jaxb.ContextContract;
 import br.ufc.storm.jaxb.ContextParameterType;
 import br.ufc.storm.jaxb.SliceType;
 import br.ufc.storm.exception.DBHandlerException;
-import br.ufc.storm.exception.StormException;
+import br.ufc.storm.exception.ResolveException;
 import br.ufc.storm.exception.XMLException;
 
 public class AbstractComponentHandler extends DBHandler{
@@ -60,7 +60,7 @@ public class AbstractComponentHandler extends DBHandler{
 				try {
 					ac.getSupertype().setName(AbstractComponentHandler.getAbstractComponentName(supertype_id));
 				} catch (DBHandlerException e) {
-					throw new DBHandlerException("Supertype not found");
+					throw new DBHandlerException("Supertype not found", e);
 				}
 				//ac.setParent(new AbstractComponentType());
 				//ac.getParent().setIdAc(parent);
@@ -69,25 +69,25 @@ public class AbstractComponentHandler extends DBHandler{
 			}
 			return list;
 		} catch (SQLException e1) {
-			throw new DBHandlerException("A sql error occurred: "+e1.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e1);
 		}
 
 	}
 
 	/**
-	 * 
-	 * This method adds an Abstract Component into components library
-	 * @param ac object
-	 * @return Abstract Component added id
+	 * This method adds an Abstract Component into components library 
+	 * @param ac object 
+	 * @return Abstract Component added id 
+	 * @throws ResolveException 
 	 * @throws SQLException 
 	 * @throws XMLException 
-	 * @throws StormException 
 	 */
-	public static void addAbstractComponent(AbstractComponentType ac, Map<String, Integer> sharedVariables) throws DBHandlerException, StormException{
+	public static void addAbstractComponent(AbstractComponentType ac, Map<String, Integer> sharedVariables) throws DBHandlerException, ResolveException{
 
 		try {
 
 			Connection con = DBHandler.getConnection();
+			con.setAutoCommit(false);
 			PreparedStatement prepared = con.prepareStatement(INSERT_ABSTRACT_COMPONENT);
 			prepared.setString(1, ac.getName()); 
 			prepared.setInt(2, ac.getSupertype().getIdAc());
@@ -193,7 +193,7 @@ public class AbstractComponentHandler extends DBHandler{
 				throw new DBHandlerException("Abstract component not exists");
 			}
 		} catch (SQLException e) {
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
 
 	}
@@ -222,7 +222,7 @@ public class AbstractComponentHandler extends DBHandler{
 				throw new DBHandlerException("Abstract component not found");
 			}
 		} catch (SQLException e) {
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		}
 
 	}
@@ -247,7 +247,7 @@ public class AbstractComponentHandler extends DBHandler{
 				throw new DBHandlerException("Abstract component not found");
 			}
 		} catch (SQLException e) {
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
 
 
@@ -276,7 +276,7 @@ public class AbstractComponentHandler extends DBHandler{
 				return null;
 			}
 		} catch (SQLException e) {
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
 	}
 
@@ -304,7 +304,7 @@ public class AbstractComponentHandler extends DBHandler{
 			} 
 			return slices; 
 		} catch (SQLException e) {
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		}
 
 	}
@@ -323,7 +323,7 @@ public class AbstractComponentHandler extends DBHandler{
 			prepared.setString(1, name); 
 			prepared.execute();
 		} catch (SQLException e) {
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
 
 	}

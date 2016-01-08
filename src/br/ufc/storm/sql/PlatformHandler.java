@@ -41,7 +41,7 @@ public class PlatformHandler extends DBHandler {
 				throw new DBHandlerException("Platform with abstract component id = "+cc_id+" was not found");
 			}
 		} catch (SQLException e) { 
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
 	}
 

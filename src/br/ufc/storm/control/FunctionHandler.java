@@ -47,14 +47,14 @@ public class FunctionHandler {
 			try {
 				function = QualityHandler.getQualityFunction(qpt.getQpId(), cc.getCcId());
 			} catch (DBHandlerException e) {
-				throw new FunctionException("Can not get quality function: "+e.getMessage());
+				throw new FunctionException("Can not get quality function: ",e);
 			}
 			if(function != null){
 				ArrayList<QualityFunctionTermType> terms;
 				try {
 					terms = QualityHandler.getQualityFunctionParameter(function.getFunctionId());
 				} catch (DBHandlerException e) {
-					throw new FunctionException("Can not get quality function: "+e.getMessage());
+					throw new FunctionException("Can not get quality function: ",e);
 				}
 				for(QualityFunctionTermType qftt: terms){//busca cada argumento de cada termo da função
 					ContextArgumentType cat = Resolution.getArgumentRecursive(cc, qftt.getCpId());
@@ -122,7 +122,7 @@ public class FunctionHandler {
 			try {
 				function = CostHandler.getCostFunction(qpt.getCopId(), cc.getCcId());
 			} catch (DBHandlerException e) {
-				throw new FunctionException("Can not get cost function: "+e.getMessage());
+				throw new FunctionException("Can not get cost function: ",e);
 			}
 			if(function != null){
 				//						System.out.println("STORM=>FunctionHander:"+"Carregou uma função");
@@ -130,7 +130,7 @@ public class FunctionHandler {
 				try {
 					terms = CostHandler.getCostFunctionParameter(function.getFunctionId());
 				} catch (DBHandlerException e) {
-					throw new FunctionException("Can not get cost function: "+e.getMessage());
+					throw new FunctionException("Can not get cost function: ",e);
 				}
 				for(CostFunctionTermType qftt: terms){//busca cada argumento de cada termo da função
 					ContextArgumentType cat = Resolution.getArgumentRecursive(cc, qftt.getCpId());
@@ -174,14 +174,14 @@ public class FunctionHandler {
 			try {
 				function = RankingHandler.getRankingFunction(qpt.getRankId(), cc.getCcId());
 			} catch (DBHandlerException e) {
-				throw new FunctionException("Can not get ranking function: "+e.getMessage());
+				throw new FunctionException("Can not get ranking function: ",e);
 			}
 			if(function != null){
 				ArrayList<RankingFunctionTermType> terms;
 				try {
 					terms = RankingHandler.getRankingFunctionParameter(function.getFunctionId());
 				} catch (DBHandlerException e) {
-					throw new FunctionException("Can not get ranking function term: "+e.getMessage());
+					throw new FunctionException("Can not get ranking function term: ",e);
 				}
 				for(RankingFunctionTermType qftt: terms){//busca cada argumento de cada termo da função
 					ContextArgumentType cat = Resolution.getArgumentRecursive(cc, qftt.getCpId());

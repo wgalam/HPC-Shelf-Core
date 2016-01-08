@@ -53,7 +53,7 @@ public class CostHandler extends DBHandler {
 			}
 
 		} catch (SQLException e) { 
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
 
 	}
@@ -76,7 +76,7 @@ public class CostHandler extends DBHandler {
 				throw new DBHandlerException("Cost function with cp_id = "+cp_id+" was not found");
 			}
 		} catch (SQLException e) { 
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		} 		
 
 	}
@@ -98,7 +98,7 @@ public class CostHandler extends DBHandler {
 			Collections.sort (cps, new ComparatorCostTerms(true));
 			return cps;
 		} catch (SQLException e) { 
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		}	
 
 	}
@@ -119,7 +119,7 @@ public class CostHandler extends DBHandler {
 			}
 			return cps;
 		} catch (SQLException e) {
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		}
 	}
 }

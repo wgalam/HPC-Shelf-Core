@@ -13,6 +13,8 @@ import br.ufc.storm.jaxb.ContextArgumentType;
 import br.ufc.storm.jaxb.ContextContract;
 import br.ufc.storm.jaxb.ContextParameterType;
 import br.ufc.storm.jaxb.ContractList;
+import br.ufc.storm.jaxb.CostArgumentType;
+import br.ufc.storm.jaxb.QualityArgumentType;
 
 public class ContextContractHandler extends DBHandler{
 
@@ -28,7 +30,6 @@ public class ContextContractHandler extends DBHandler{
 		try {
 			Connection con = getConnection();
 			int cc_id = 0;
-			con.setAutoCommit(false);
 			PreparedStatement prepared = con.prepareStatement(INSERT_CONTEXT_CONTRACT);
 			prepared.setString(1, cc.getAbstractComponent().getName());
 			prepared.setString(2, cc.getCcName());
@@ -42,14 +43,22 @@ public class ContextContractHandler extends DBHandler{
 				}
 				//Add Platform
 				addContextContract(cc.getPlatform());
+				
 				//Add inner components
 				for(ContextContract inner : cc.getInnerComponents()){
 					addContextContract(inner);
 				}
-				con.commit();
+				//add quality functions
+				for(QualityArgumentType qa : cc.getQualityArguments()){
+					QualityHandler.addQualityFunction(qa.getFunction());
+				}
+				//add cost functions
+				for(CostArgumentType ca : cc.getCostArguments()){
+					CostHandler.addCostFunction(ca.getFunction());
+				}
 			}
 		} catch (SQLException e) {
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		}
 	}
 
@@ -71,7 +80,7 @@ public class ContextContractHandler extends DBHandler{
 			prepared.executeQuery(); 	
 			return getContextContractID(name);
 		} catch (SQLException e) {
-			throw new DBHandlerException("An error occured while trying to add a context contract with name: "+name+" and abstract component name "+ac_name+". Error: "+e.getMessage());
+			throw new DBHandlerException("An error occured while trying to add a context contract with name: "+name+" and abstract component name "+ac_name+". Error: ", e);
 		} 
 
 	}
@@ -119,7 +128,7 @@ public class ContextContractHandler extends DBHandler{
 				throw new DBHandlerException("Context contract with id "+cc_id+" was not found");
 			}
 		} catch (SQLException e) {
-			throw new DBHandlerException("GetContextContract sql error: "+e.getMessage());
+			throw new DBHandlerException("GetContextContract sql error: ", e);
 		} 
 
 	}
@@ -148,7 +157,7 @@ public class ContextContractHandler extends DBHandler{
 			//			cc.getContextArguments().addAll(DBHandler.getContextArguments(cc_id));
 			
 		} catch (SQLException e) {
-			throw new DBHandlerException("Context contract not found with cc_id "+bound_id);
+			throw new DBHandlerException("Context contract not found with cc_id "+bound_id, e);
 		} 
 		return cc;
 	}
@@ -173,7 +182,7 @@ public class ContextContractHandler extends DBHandler{
 				throw new DBHandlerException("Context contract with id "+cc_id+" was not found");
 			}
 		} catch (SQLException e) {
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
 
 	}
@@ -199,7 +208,7 @@ public class ContextContractHandler extends DBHandler{
 				throw new DBHandlerException("Context contract with name = "+name+" was not fount");
 			}
 		} catch (SQLException e) {
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
 
 	}
@@ -225,7 +234,7 @@ public class ContextContractHandler extends DBHandler{
 			}
 			return list;
 		} catch (SQLException e) {
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
 
 	}
@@ -278,7 +287,7 @@ public class ContextContractHandler extends DBHandler{
 			prepared.setString(3, ic_name);
 			prepared.executeQuery();
 		} catch (SQLException e) {
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
 	}
 
@@ -300,7 +309,7 @@ public class ContextContractHandler extends DBHandler{
 			}
 			return list;
 		} catch (SQLException e) { 
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		}
 	}
 

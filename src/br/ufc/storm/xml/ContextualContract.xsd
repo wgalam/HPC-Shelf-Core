@@ -115,17 +115,20 @@
     		<element name="cost_arguments" type="tns:cost_argument_type"
     			maxOccurs="unbounded" minOccurs="0">
     		</element>
-    		<element name="quality_functions"
-    			type="tns:quality_function_type" maxOccurs="unbounded"
-    			minOccurs="0">
-    		</element>
     		<choice>
-    			<element name="inner_components_resolved" type="tns:candidate_list_type" maxOccurs="unbounded" minOccurs="0"></element>
-    			<element name="inner_components" type="tns:context_contract" maxOccurs="unbounded" minOccurs="0"></element>
+    			<element name="inner_components_resolved"
+    				type="tns:candidate_list_type" maxOccurs="unbounded"
+    				minOccurs="0">
+    			</element>
+    			<element name="inner_components"
+    				type="tns:context_contract" maxOccurs="unbounded"
+    				minOccurs="0">
+    			</element>
     		</choice>
     	</sequence>
     	<attribute name="cc_name" type="string"></attribute>
     	<attribute name="cc_id" type="int"></attribute>
+    	<attribute name="owner_id" type="int"></attribute>
     </complexType>
 
 
@@ -157,7 +160,7 @@
     	</sequence>
     </complexType>
 
-    <element name="candidateList" type="tns:candidate_list_type"></element>
+    <element name="candidate_list" type="tns:candidate_list_type"></element>
     
     <complexType name="candidate_list_type">
     	<sequence>
@@ -181,6 +184,9 @@
 
 
     <complexType name="quality_argument_type">
+    	<sequence>
+    		<element name="function" type="tns:quality_function_type" maxOccurs="1" minOccurs="0"></element>
+    	</sequence>
     	<attribute name="qp_id" type="int"></attribute>
     	<attribute name="value" type="double"></attribute>
     </complexType>
@@ -207,14 +213,17 @@
     </complexType>
 
 
-    <complexType name="ranking_argument_type">
-    	<attribute name="rank_id" type="int"></attribute>
-    	<attribute name="value" type="double"></attribute>
-    </complexType>
+     <complexType name="ranking_argument_type">
+     	<sequence>
+     		<element name="function" type="tns:ranking_function_type" maxOccurs="1" minOccurs="0"></element>
+     	</sequence>
+     	<attribute name="rank_id" type="int"></attribute>
+     	<attribute name="value" type="double"></attribute>
+     </complexType>
 
 
 
-    <complexType name="ranking_parameter_type">
+     <complexType name="ranking_parameter_type">
     	<sequence>
     		<element name="ranking_argument"
     			type="tns:ranking_argument_type" maxOccurs="1" minOccurs="0">
@@ -246,12 +255,15 @@
     </complexType>
 
 
-    <complexType name="cost_argument_type">
-    	<attribute name="cop_id" type="int"></attribute>
-    	<attribute name="value" type="double"></attribute>
-    </complexType>
+     <complexType name="cost_argument_type">
+     	<sequence>
+     		<element name="function" type="tns:cost_function_type" maxOccurs="1" minOccurs="0"></element>
+     	</sequence>
+     	<attribute name="cop_id" type="int"></attribute>
+     	<attribute name="value" type="double"></attribute>
+     </complexType>
 
-    <complexType name="cost_parameter_type">
+     <complexType name="cost_parameter_type">
     	<sequence>
     		<element name="cost_argument" type="tns:cost_argument_type"
     			maxOccurs="1" minOccurs="0">
@@ -301,7 +313,7 @@
 
     <element name="unit_file" type="tns:unit_file_type"></element>
 
-    <element name="contractList" type="tns:contractList"></element>
+    <element name="contract_list" type="tns:contractList"></element>
     
     <complexType name="contractList">
     	<sequence>
@@ -309,4 +321,13 @@
     	</sequence>
     </complexType>
 
+
+    <complexType name="computational_system_type">
+    	<sequence>
+    		<element name="context_contract" type="tns:context_contract"></element>
+    	</sequence>
+    	<attribute name="session" type="int"></attribute>
+    </complexType>
+
+    <element name="computational_system" type="string"></element>
 </schema>

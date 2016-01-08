@@ -1,43 +1,13 @@
 
 
-import java.io.File;
 import java.io.IOException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import javax.xml.parsers.ParserConfigurationException;
-import org.xml.sax.SAXException;
 
-import br.ufc.storm.jaxb.AbstractComponentType;
-import br.ufc.storm.jaxb.AbstractUnitType;
-import br.ufc.storm.jaxb.ConcreteUnitType;
-import br.ufc.storm.jaxb.ContextArgumentType;
-import br.ufc.storm.jaxb.ContextContract;
-import br.ufc.storm.jaxb.ContextParameterType;
-import br.ufc.storm.jaxb.QualityFunctionTermType;
-import br.ufc.storm.jaxb.QualityFunctionType;
-import br.ufc.storm.jaxb.QualityParameterType;
-import br.ufc.storm.jaxb.SliceType;
-import br.ufc.storm.jaxb.UnitFileType;
-import br.ufc.storm.model.ResolutionNode;
-import br.ufc.storm.sql.DBHandler;
-import br.ufc.storm.sql.SliceHandler;
-import br.ufc.storm.webservices.CoreServices;
-import br.ufc.storm.xml.XMLHandler;
-import br.ufc.storm.sql.ConcreteUnitHandler;
-import br.ufc.storm.sql.ContextContractHandler;
-import br.ufc.storm.sql.ContextParameterHandler;
-import br.ufc.storm.control.FunctionHandler;
-import br.ufc.storm.control.Resolution;
-import br.ufc.storm.exception.DBHandlerException;
-import br.ufc.storm.exception.StormException;
-import br.ufc.storm.io.FileHandler;
 import br.ufc.storm.io.LogHandler;
 
 public class Main {
 	public static void main(String[] args) throws IOException {
 		
-		LogHandler.getLog().warning("Testando o append");;
+		LogHandler.getLogger().warning("Testando o append");
 		
 		
 		//		System.out.println(CoreServices.listContract(19));

@@ -31,12 +31,12 @@ import org.xml.sax.SAXException;
 import br.ufc.storm.control.Resolution;
 import br.ufc.storm.exception.DBHandlerException;
 import br.ufc.storm.exception.ResolveException;
-import br.ufc.storm.exception.StormException;
 import br.ufc.storm.exception.XMLException;
 import br.ufc.storm.io.FileHandler;
 import br.ufc.storm.jaxb.AbstractComponentType;
 import br.ufc.storm.jaxb.AbstractUnitType;
 import br.ufc.storm.jaxb.CandidateListType;
+import br.ufc.storm.jaxb.ConcreteUnitType;
 import br.ufc.storm.jaxb.ContextContract;
 import br.ufc.storm.jaxb.ContextParameterType;
 import br.ufc.storm.jaxb.ContractList;
@@ -46,12 +46,13 @@ import br.ufc.storm.jaxb.UnitFileType;
 import br.ufc.storm.model.ResolutionNode;
 import br.ufc.storm.sql.AbstractComponentHandler;
 import br.ufc.storm.sql.AbstractUnitHandler;
+import br.ufc.storm.sql.ConcreteUnitHandler;
 import br.ufc.storm.sql.ContextContractHandler;
 import br.ufc.storm.sql.ContextParameterHandler;
 import br.ufc.storm.sql.DBHandler;
 import br.ufc.storm.sql.QualityHandler;
 import br.ufc.storm.sql.ResolutionHandler;
-import br.ufc.storm.sql.ConcreteUnitHandler;
+
 
 public class XMLHandler {
 	static DocumentBuilderFactory dbf;
@@ -110,6 +111,7 @@ public class XMLHandler {
 			context = JAXBContext.newInstance(br.ufc.storm.jaxb.ObjectFactory.class.getPackage().getName(),
 					br.ufc.storm.jaxb.ObjectFactory.class.getClassLoader());
 			Unmarshaller unmarshaller = context.createUnmarshaller();
+			@SuppressWarnings("unchecked")
 			JAXBElement<ContextContract> element = (JAXBElement<ContextContract>) unmarshaller.unmarshal(new InputSource(new java.io.StringReader(file)));
 			cc=element.getValue();
 		} catch (JAXBException e) {
@@ -130,7 +132,7 @@ public class XMLHandler {
 			try {
 				element1 = new ObjectFactory().createCandidateList(Resolution.resolve(cc, null,null));
 			} catch (ResolveException e) {
-				throw new XMLException(e.getMessage());
+				throw new XMLException(e);
 			}
 			marshaller.marshal(element1, sw);
 		} catch (JAXBException e) {
@@ -140,7 +142,7 @@ public class XMLHandler {
 		try {
 			sw.close();
 		} catch (IOException e) {
-			throw new XMLException(e.getMessage());
+			throw new XMLException(e);
 		}
 		return str;
 
@@ -166,6 +168,7 @@ public class XMLHandler {
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	public static AbstractComponentType XMLtoJava(String file){
 
 		try {
@@ -179,6 +182,7 @@ public class XMLHandler {
 		return null;		
 	}
 
+	@SuppressWarnings("unchecked")
 	public static AbstractComponentType generateContextParameter(File file){
 		AbstractComponentType ac = null;
 		JAXBContext context;
@@ -201,13 +205,12 @@ public class XMLHandler {
 	 * @return True if non exception occurs
 	 * @throws DBHandlerException 
 	 * @throws XMLException 
+	 * @throws ResolveException 
 	 */
-	public static boolean addAbstractComponentFromXML(String file) throws XMLException{
-		try {
-			DBHandler.getConnection().setAutoCommit(false);
-		} catch (SQLException e1) {
-			throw new XMLException("Error commiting changes "+e1);
-		}
+	
+	@SuppressWarnings("unchecked")
+	public static boolean addAbstractComponentFromXML(String file) throws XMLException, ResolveException{
+
 		AbstractComponentType ac = new AbstractComponentType();
 		try {
 			JAXBContext context = JAXBContext.newInstance(br.ufc.storm.jaxb.ObjectFactory.class.getPackage().getName(),
@@ -216,29 +219,31 @@ public class XMLHandler {
 			JAXBElement<AbstractComponentType> element = (JAXBElement<AbstractComponentType>) unmarshaller.unmarshal(new InputSource(new java.io.StringReader(file)));
 			ac = element.getValue();
 		} catch (JAXBException e) {
-			throw new XMLException("Can not unmarshler XML");
+			throw new XMLException("Can not unmarshler XML", e);
 		}
+
 		if(ac.getSupertype().getIdAc()==null){
 			try {
 				ac.getSupertype().setIdAc(AbstractComponentHandler.getAbstractComponentID(ac.getSupertype().getName()));
 			} catch (DBHandlerException e) {
-				throw new XMLException(e.getMessage());
+				throw new XMLException(e);
 			}
 		}
-		try {
-			AbstractComponentHandler.addAbstractComponent(ac, null);
-		} catch (StormException | DBHandlerException e) {
-			throw new XMLException(e.getMessage());
-		}
 
-		//			Adding context parameter this abstract component has
 		try {
+			DBHandler.getConnection().setAutoCommit(false);
+			AbstractComponentHandler.addAbstractComponent(ac, null);
 			DBHandler.getConnection().commit();
 			DBHandler.getConnection().setAutoCommit(true);
 		} catch (SQLException e) {
-			throw new XMLException("Error commiting changes "+e);
+			throw new XMLException("Error commiting changes ",e);
+		} catch (DBHandlerException e) {
+			throw new XMLException("Error commiting changes ",e);
 		}
-		
+
+
+		//			Adding context parameter this abstract component has
+
 		return true;
 	}
 
@@ -299,9 +304,15 @@ public class XMLHandler {
 	 * @throws XMLException 
 	 * @throws DBHandlerException 
 	 */
-	public static boolean addContextContract(String cmp, Connection con) throws XMLException, DBHandlerException{
+	@SuppressWarnings("unchecked")
+	public static boolean addContextContract(String cmp) throws XMLException, DBHandlerException{
 		ContextContract cc = null;
 		JAXBContext context;
+		try {
+			DBHandler.getConnection().setAutoCommit(false);
+		} catch (SQLException e) {
+			throw new XMLException("Error commiting changes ",e);
+		}
 		try {
 			context = JAXBContext.newInstance(br.ufc.storm.jaxb.ObjectFactory.class.getPackage().getName(),
 					br.ufc.storm.jaxb.ObjectFactory.class.getClassLoader());
@@ -309,28 +320,33 @@ public class XMLHandler {
 			JAXBElement<ContextContract> element = (JAXBElement<ContextContract>) unmarshaller.unmarshal(new InputSource(new java.io.StringReader(cmp)));
 			cc = element.getValue();
 			ContextContractHandler.addContextContract(cc);
+			try {
+				DBHandler.getConnection().commit();
+				DBHandler.getConnection().setAutoCommit(true);
+			} catch (SQLException e) {
+				throw new XMLException("Error commiting changes ",e);
+			}
 			return true;
 		} catch (JAXBException e) {
-			throw new XMLException("Can not add context contract, problem JAXB translator");
+			throw new XMLException("Can not add context contract, problem JAXB translator", e);
 		}
-		
+
 	}
 
 	/**
 	 * This method generates a XML file with an abstract component
 	 * @param ac_name Abstract component name
 	 * @return XML file content with abstract component values
+	 * @throws XMLException 
 	 */	
 
-	public static String getAbstractComponent(String ac_name){
+	public static String getAbstractComponent(String ac_name) throws XMLException{
 		AbstractComponentType abscom = null;
 		try {
 			abscom = AbstractComponentHandler.getAbstractComponent(AbstractComponentHandler.getAbstractComponentID(ac_name));
 		} catch (DBHandlerException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			throw new XMLException("Can not get component in database", e1);
 		}
-		System.out.println(abscom.toString());
 		JAXBContext context;
 		java.io.StringWriter sw = new StringWriter();
 		try {
@@ -342,7 +358,7 @@ public class XMLHandler {
 			JAXBElement<AbstractComponentType> element = new ObjectFactory().createAbstractComponent(abscom);
 			marshaller.marshal(element, sw);
 		} catch (JAXBException e) {
-			e.printStackTrace();
+			throw new XMLException("Can not convert component to XML", e);
 		}
 		return sw.toString();
 	}
@@ -376,6 +392,7 @@ public class XMLHandler {
 	 * @throws XMLException 
 	 */
 
+	@SuppressWarnings("unchecked")
 	public static boolean addContextParameterFromXML(String cmp, Connection con) throws XMLException{
 		AbstractComponentType ac = null;
 		JAXBContext context;
@@ -386,15 +403,13 @@ public class XMLHandler {
 			JAXBElement<AbstractComponentType> element = (JAXBElement<AbstractComponentType>) unmarshaller.unmarshal(new InputSource(new java.io.StringReader(cmp)));
 			ac = element.getValue();
 		} catch (JAXBException e) {
-			throw new XMLException("Error while unmarshaling context parameter: "+e.getMessage());
+			throw new XMLException("Error while unmarshaling context parameter: ", e);
 		}
 		ContextParameterType cp = ac.getContextParameter().get(0);
 		try {
 			ContextParameterHandler.addContextParameter(cp.getName(), cp.getBound().getAbstractComponent().getName(), ac.getName(), cp.getContextVariableProvided(), cp.getBoundValue(), null , null);
-		} catch (StormException e) {
-			throw new XMLException(e.getMessage());
-		} catch (DBHandlerException e) {
-			throw new XMLException(e.getMessage());
+		} catch (DBHandlerException | ResolveException e) {
+			throw new XMLException(e);
 		}
 		return true;
 	}
@@ -412,19 +427,13 @@ public class XMLHandler {
 		try {
 			ac.setIdAc(AbstractComponentHandler.getAbstractComponentID(ac_name));
 		} catch (DBHandlerException e2) {
-			throw new XMLException(e2.getMessage());
+			throw new XMLException(e2);
 		}
-		Connection con;
-		List<ContextParameterType> cp = null;
-		try {
-			con = DBHandler.getConnection();
-			cp = ContextParameterHandler.getAllContextParameterFromAbstractComponent(ac.getIdAc());
-		
-		} catch (SQLException | DBHandlerException e1) {
-			throw new XMLException(e1.getMessage());
-		}
-		List<ContextParameterType> aux = ac.getContextParameter();
-		aux = cp;
+			try {
+				ac.getContextParameter().addAll(ContextParameterHandler.getAllContextParameterFromAbstractComponent(ac.getIdAc()));
+			} catch (DBHandlerException e1) {
+				throw new XMLException(e1);
+			}
 		JAXBContext context;
 		java.io.StringWriter sw = new StringWriter();
 		try {
@@ -443,16 +452,6 @@ public class XMLHandler {
 	}
 
 	/**
-	 * This method adds a platform profile to components library
-	 * @param cmp XML file content 
-	 * @return True if the addiction was well successfully
-	 */
-
-	public static boolean addProfileFromXML(String cmp) {
-	 	return false;
-	}
-
-	/**
 	 * This method adds a context argument to an abstract components 
 	 * @param file XML file content 
 	 * @return True if the addiction was well successfully
@@ -466,6 +465,7 @@ public class XMLHandler {
 	 * @throws XMLException 
 	 */
 
+	@SuppressWarnings("unchecked")
 	public static boolean addInnerComponentFromXML(String cmp) throws XMLException {
 
 		AbstractComponentType ac = null;
@@ -483,7 +483,7 @@ public class XMLHandler {
 		try {
 			ContextContractHandler.addInnerComponent(ac.getInnerComponents().get(0).getName(), ac.getInnerComponents().get(0).getName(), ac.getName());
 		} catch (DBHandlerException e) {
-			throw new XMLException(e.getMessage());
+			throw new XMLException(e);
 		}
 		return true;
 	}
@@ -494,6 +494,7 @@ public class XMLHandler {
 	 * @throws XMLException 
 	 */
 
+	@SuppressWarnings("unchecked")
 	public static void addAbstractUnitsFromXML(File file) throws XMLException {
 		AbstractComponentType ac = null;
 		JAXBContext context;
@@ -510,47 +511,12 @@ public class XMLHandler {
 			try {
 				AbstractUnitHandler.addAbstractUnit(aut.getAcId(), aut.getAuName());
 			} catch (DBHandlerException e) {
-				throw new XMLException(e.getMessage());
+				throw new XMLException(e);
 			}
 		}
 	}
 
-	/**
-	 * This method adds an concrete unit
-	 * @param cmp XML file content
-	 * @return True if the addiction was well successfully
-	 */
-
-	public static int addUnitFromXML(String cmp) {
-		AbstractComponentType ac = null;
-		JAXBContext context;
-		try {
-			context = JAXBContext.newInstance(br.ufc.storm.jaxb.ObjectFactory.class.getPackage().getName(),
-					br.ufc.storm.jaxb.ObjectFactory.class.getClassLoader());
-			Unmarshaller unmarshaller = context.createUnmarshaller();
-			JAXBElement<AbstractComponentType> element = (JAXBElement<AbstractComponentType>) unmarshaller.unmarshal(new InputSource(new java.io.StringReader(cmp)));
-			ac = element.getValue();
-		} catch (JAXBException e) {
-			e.printStackTrace();
-			return -1;
-		}
-
-		//return DBHandler.addConcreteUnit(, DBHandler.getAbstractUnitID(name)+"");
-
-		return -1;
-		/*
-		String name;
-		String concrete_component_id;
-		Document doc = XMLHandler.openXMLFileNew(file);
-		Element raiz = doc.getDocumentElement();
-		NodeList listUnits = raiz.getElementsByTagName("concrete_unit");
-		Element component = (Element) listUnits.item(0);
-		name = component.getAttribute("au_name");		
-		concrete_component_id = component.getAttribute("concrete_component_id");
-		DBHandler.addConcreteUnit(concrete_component_id, DBHandler.getAbstractUnitID(name)+"");//Corrigir
-		return DBHandler.getConcreteUnitID(name); //Corrigir
-		 */	}
-
+	@SuppressWarnings("unchecked")
 	public static boolean addUnitFile(String xml, byte [] data) throws XMLException{
 		UnitFileType uft = null;
 		JAXBContext context;
@@ -575,81 +541,14 @@ public class XMLHandler {
 				}
 			}
 		} catch (DBHandlerException e) {
-			throw new XMLException(e.getMessage());
+			throw new XMLException(e);
 		}
-		
+
 		return false;
 
 	}
 
-	/*public static boolean addUnitFile(String xml, byte [] data){
-		String filename;
-		String extension;
-		String folder;
-		String build_cfg;
-		String version;
-		String filetype;
-		String uid;
-		Document doc = XMLHandler.openXMLFile(xml);
-		Element raiz = doc.getDocumentElement();
-		NodeList listUnits = raiz.getElementsByTagName("unit_file");
-		Element component = (Element) listUnits.item(0);
-		filename = component.getAttribute("name");		
-		uid = component.getAttribute("u_id");
-		extension = component.getAttribute("extension");
-		folder = component.getAttribute("folder");
-		build_cfg = component.getAttribute("build_cfg");
-		version = component.getAttribute("version");
-		filetype = component.getAttribute("file_type");
 
-		if(DBHandler.addConcreteUnitFile(filename, uid, extension, folder, build_cfg, version, filetype)){
-			if(FileHandler.addFile(data, uid+"."+filename+"."+extension)){
-				return true;
-			}else{
-				//REMOVER
-				return false;
-			}
-		}
-		return false;
-
-	}*/
-
-
-	/**
-	 * This method gets a list of all abstract components
-	 * @return XML file content
-	 * @throws XMLException 
-	 */
-
-
-	public static String listComponent() throws XMLException{
-		ResolutionNode tree;
-		try {
-			tree = ResolutionHandler.generateResolutionTree();
-		} catch (DBHandlerException e) {
-			throw new XMLException(e.getMessage());
-		}
-		List<AbstractComponentType> abscom = null;
-		try {
-			abscom = AbstractComponentHandler.listAbstractComponents();
-		} catch (DBHandlerException e) {
-			throw new XMLException(e.getMessage());
-		}
-		org.jdom2.Element cp = new org.jdom2.Element("root");
-		org.jdom2.Document doc = new org.jdom2.Document(cp);
-		for(int i = 0; i < abscom.size(); i++){ 
-			org.jdom2.Element contextParameter = new org.jdom2.Element("abstract_component");
-			contextParameter.setAttribute(new Attribute("ac_id", abscom.get(i).getIdAc()+""));
-			contextParameter.setAttribute(new Attribute("name", abscom.get(i).getName()));
-			contextParameter.setAttribute(new Attribute("path", tree.findNode(abscom.get(i).getIdAc()).getPath()));
-			contextParameter.setAttribute(new Attribute("supertype", abscom.get(i).getSupertype().getName()));
-			//contextParameter.setAttribute(new Attribute("kind", abscom.get(i).getKind()+""));
-			doc.getRootElement().addContent(contextParameter);
-		}
-		XMLOutputter xmlOutput = new XMLOutputter();
-		xmlOutput.setFormat(Format.getPrettyFormat());
-		return xmlOutput.outputString((org.jdom2.Document) doc);
-	}
 
 	public static AbstractComponentType generateAbstractComponentType(int ac_id, String name, int supertype, int parent, int kind){
 		AbstractComponentType ac = new AbstractComponentType();
@@ -670,6 +569,7 @@ public class XMLHandler {
 		return ac;
 	}
 
+	@SuppressWarnings("unchecked")
 	public static int addQualityFunction(String file) throws XMLException{
 		QualityFunctionType qf = new QualityFunctionType();
 		JAXBContext context;
@@ -686,10 +586,11 @@ public class XMLHandler {
 		try {
 			return QualityHandler.addQualityFunction(qf);
 		} catch (DBHandlerException e) {
-			throw new XMLException(e.getMessage());
+			throw new XMLException(e);
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public static ContextContract cloneContextContract(ContextContract componentToClone){
 		JAXBContext context;
 		ContextContract newComponent = new ContextContract();
@@ -713,7 +614,101 @@ public class XMLHandler {
 		return newComponent;
 	}
 
-	public static String listContract(int ac_id) throws DBHandlerException{
+	@SuppressWarnings("unchecked")
+	public static Integer addAbstractUnitFromXML(String cmp) throws XMLException {
+		AbstractUnitType aut = new AbstractUnitType();
+		JAXBContext context;
+		try {
+			context = JAXBContext.newInstance(br.ufc.storm.jaxb.ObjectFactory.class.getPackage().getName(),
+					br.ufc.storm.jaxb.ObjectFactory.class.getClassLoader());
+			Unmarshaller unmarshaller = context.createUnmarshaller();
+			JAXBElement<AbstractUnitType> element = (JAXBElement<AbstractUnitType>) unmarshaller.unmarshal(new InputSource(new java.io.StringReader(cmp)));
+			aut = element.getValue();
+		} catch (JAXBException e) {
+			throw new XMLException("An error occurred while converting XML", e);
+		}
+		try {
+			return AbstractUnitHandler.addAbstractUnit(aut.getAcId(), aut.getAuName());
+		} catch (DBHandlerException e) {
+			throw new XMLException("An error occurred while registering abstract unit", e);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public static void addConcreteUnit(String cmp) throws XMLException {
+		ConcreteUnitType cut = new ConcreteUnitType();
+		JAXBContext context;
+		try {
+			context = JAXBContext.newInstance(br.ufc.storm.jaxb.ObjectFactory.class.getPackage().getName(),
+					br.ufc.storm.jaxb.ObjectFactory.class.getClassLoader());
+			Unmarshaller unmarshaller = context.createUnmarshaller();
+			JAXBElement<ConcreteUnitType> element = (JAXBElement<ConcreteUnitType>) unmarshaller.unmarshal(new InputSource(new java.io.StringReader(cmp)));
+			cut = element.getValue();
+		} catch (JAXBException e) {
+			throw new XMLException("An error occurred while converting XML", e);
+		}
+		try {
+			ConcreteUnitHandler.addConcreteUnit(cut.getCcId(), cut.getAuId());
+		} catch (DBHandlerException e) {
+			throw new XMLException("An error occurred while registering concrete unit", e);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public static CandidateListType getCandidateList(String file) throws XMLException {
+		CandidateListType list = new CandidateListType();
+		JAXBContext context;
+		try {
+			context = JAXBContext.newInstance(br.ufc.storm.jaxb.ObjectFactory.class.getPackage().getName(),
+					br.ufc.storm.jaxb.ObjectFactory.class.getClassLoader());
+			Unmarshaller unmarshaller = context.createUnmarshaller();
+			JAXBElement<CandidateListType> element = (JAXBElement<CandidateListType>) unmarshaller.unmarshal(new InputSource(new java.io.StringReader(file)));
+			list = element.getValue();
+			return list;
+		} catch (JAXBException e) {
+			throw new XMLException("An error occurred while converting XML", e);
+		}
+	}
+
+
+	/**
+	 * This method gets a list of all abstract components
+	 * @return XML file content
+	 * @throws XMLException 
+	 */
+	
+	
+	public static String listComponent() throws XMLException{
+		ResolutionNode tree;
+		try {
+			tree = ResolutionHandler.generateResolutionTree();
+		} catch (DBHandlerException e) {
+			throw new XMLException(e);
+		}
+		List<AbstractComponentType> abscom = null;
+		try {
+			abscom = AbstractComponentHandler.listAbstractComponents();
+		} catch (DBHandlerException e) {
+			throw new XMLException(e);
+		}
+		org.jdom2.Element cp = new org.jdom2.Element("root");
+		org.jdom2.Document doc = new org.jdom2.Document(cp);
+		for(int i = 0; i < abscom.size(); i++){ 
+			org.jdom2.Element contextParameter = new org.jdom2.Element("abstract_component");
+			contextParameter.setAttribute(new Attribute("ac_id", abscom.get(i).getIdAc()+""));
+			contextParameter.setAttribute(new Attribute("name", abscom.get(i).getName()));
+			contextParameter.setAttribute(new Attribute("path", tree.findNode(abscom.get(i).getIdAc()).getPath()));
+			contextParameter.setAttribute(new Attribute("supertype", abscom.get(i).getSupertype().getName()));
+			//contextParameter.setAttribute(new Attribute("kind", abscom.get(i).getKind()+""));
+			doc.getRootElement().addContent(contextParameter);
+		}
+		XMLOutputter xmlOutput = new XMLOutputter();
+		xmlOutput.setFormat(Format.getPrettyFormat());
+		return xmlOutput.outputString((org.jdom2.Document) doc);
+	}
+
+
+	public static String listContextContract(int ac_id) throws DBHandlerException{
 		ContractList list;
 		try {
 			list = ContextContractHandler.listContract(ac_id);
@@ -732,34 +727,9 @@ public class XMLHandler {
 			}
 			return sw.toString();
 		} catch (DBHandlerException e1) {
-			throw new DBHandlerException(e1.getMessage());
+			throw new DBHandlerException(e1);
 		}
-		
-	}
-
-	public static boolean addContextContractFromXML(String file) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public static int addAbstractUnitFromXML(String cmp) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	public static String getInnerComponent(String name) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public static int addConcreteUnit(String cmp) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	public static CandidateListType getList(File file) {
-		// TODO Auto-generated method stub
-		return null;
+	
 	}
 
 

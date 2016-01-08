@@ -66,7 +66,7 @@ public class ResolutionHandler extends DBHandler {
 			}while(resultSet!= null && history != supertypeID );//supertype != supertypeID && supertype != 0
 			return list;
 		} catch (SQLException e) { 
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
 
 	}
@@ -101,7 +101,7 @@ public class ResolutionHandler extends DBHandler {
 			}
 			return list;
 		} catch (SQLException e) {
-			throw new DBHandlerException("An error occurred while trying to generate a compliant platform");
+			throw new DBHandlerException("An error occurred while trying to generate a compliant platform", e);
 		}
 		
 	}
@@ -147,7 +147,7 @@ public class ResolutionHandler extends DBHandler {
 			} 
 			return tree;
 		} catch (SQLException e) { 
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			throw new DBHandlerException("A sql error occurred: ", e);
 		} 	
 		
 	}

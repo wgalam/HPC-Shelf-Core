@@ -2,7 +2,7 @@
 // Este arquivo foi gerado pela Arquitetura JavaTM para Implementação de Referência (JAXB) de Bind XML, v2.2.8-b130911.1802 
 // Consulte <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Todas as modificações neste arquivo serão perdidas após a recompilação do esquema de origem. 
-// Gerado em: 2015.12.29 às 08:53:36 PM BRT 
+// Gerado em: 2016.01.03 às 05:52:03 PM BRT 
 //
 
 
@@ -33,7 +33,6 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="quality_arguments" type="{http://storm.lia.ufc.br}quality_argument_type" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="ranking_arguments" type="{http://storm.lia.ufc.br}ranking_argument_type" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="cost_arguments" type="{http://storm.lia.ufc.br}cost_argument_type" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="quality_functions" type="{http://storm.lia.ufc.br}quality_function_type" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;choice>
  *           &lt;element name="inner_components_resolved" type="{http://storm.lia.ufc.br}candidate_list_type" maxOccurs="unbounded" minOccurs="0"/>
  *           &lt;element name="inner_components" type="{http://storm.lia.ufc.br}context_contract" maxOccurs="unbounded" minOccurs="0"/>
@@ -41,6 +40,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;/sequence>
  *       &lt;attribute name="cc_name" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="cc_id" type="{http://www.w3.org/2001/XMLSchema}int" />
+ *       &lt;attribute name="owner_id" type="{http://www.w3.org/2001/XMLSchema}int" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -56,7 +56,6 @@ import javax.xml.bind.annotation.XmlType;
     "qualityArguments",
     "rankingArguments",
     "costArguments",
-    "qualityFunctions",
     "innerComponentsResolved",
     "innerComponents"
 })
@@ -73,8 +72,6 @@ public class ContextContract {
     protected List<RankingArgumentType> rankingArguments;
     @XmlElement(name = "cost_arguments")
     protected List<CostArgumentType> costArguments;
-    @XmlElement(name = "quality_functions")
-    protected List<QualityFunctionType> qualityFunctions;
     @XmlElement(name = "inner_components_resolved")
     protected List<CandidateListType> innerComponentsResolved;
     @XmlElement(name = "inner_components")
@@ -83,6 +80,8 @@ public class ContextContract {
     protected String ccName;
     @XmlAttribute(name = "cc_id")
     protected Integer ccId;
+    @XmlAttribute(name = "owner_id")
+    protected Integer ownerId;
 
     /**
      * Gets the value of the contextArguments property.
@@ -249,35 +248,6 @@ public class ContextContract {
     }
 
     /**
-     * Gets the value of the qualityFunctions property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the qualityFunctions property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getQualityFunctions().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link QualityFunctionType }
-     * 
-     * 
-     */
-    public List<QualityFunctionType> getQualityFunctions() {
-        if (qualityFunctions == null) {
-            qualityFunctions = new ArrayList<QualityFunctionType>();
-        }
-        return this.qualityFunctions;
-    }
-
-    /**
      * Gets the value of the innerComponentsResolved property.
      * 
      * <p>
@@ -381,6 +351,30 @@ public class ContextContract {
      */
     public void setCcId(Integer value) {
         this.ccId = value;
+    }
+
+    /**
+     * Obtém o valor da propriedade ownerId.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Integer }
+     *     
+     */
+    public Integer getOwnerId() {
+        return ownerId;
+    }
+
+    /**
+     * Define o valor da propriedade ownerId.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Integer }
+     *     
+     */
+    public void setOwnerId(Integer value) {
+        this.ownerId = value;
     }
 
 }

@@ -2,7 +2,7 @@
 // Este arquivo foi gerado pela Arquitetura JavaTM para Implementação de Referência (JAXB) de Bind XML, v2.2.8-b130911.1802 
 // Consulte <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Todas as modificações neste arquivo serão perdidas após a recompilação do esquema de origem. 
-// Gerado em: 2015.12.29 às 08:53:36 PM BRT 
+// Gerado em: 2016.01.03 às 05:52:03 PM BRT 
 //
 
 
@@ -23,6 +23,9 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="ranking_argument_type">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *       &lt;sequence>
+ *         &lt;element name="function" type="{http://storm.lia.ufc.br}ranking_function_type" minOccurs="0"/>
+ *       &lt;/sequence>
  *       &lt;attribute name="rank_id" type="{http://www.w3.org/2001/XMLSchema}int" />
  *       &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}double" />
  *     &lt;/restriction>
@@ -33,13 +36,40 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ranking_argument_type")
+@XmlType(name = "ranking_argument_type", propOrder = {
+    "function"
+})
 public class RankingArgumentType {
 
+    protected RankingFunctionType function;
     @XmlAttribute(name = "rank_id")
     protected Integer rankId;
     @XmlAttribute(name = "value")
     protected Double value;
+
+    /**
+     * Obtém o valor da propriedade function.
+     * 
+     * @return
+     *     possible object is
+     *     {@link RankingFunctionType }
+     *     
+     */
+    public RankingFunctionType getFunction() {
+        return function;
+    }
+
+    /**
+     * Define o valor da propriedade function.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link RankingFunctionType }
+     *     
+     */
+    public void setFunction(RankingFunctionType value) {
+        this.function = value;
+    }
 
     /**
      * Obtém o valor da propriedade rankId.
