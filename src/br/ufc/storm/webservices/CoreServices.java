@@ -32,7 +32,7 @@ public class CoreServices {
 	 */
 
 	public boolean addAbstractComponent(String cmp) throws ParserConfigurationException, SAXException, IOException, DBHandlerException{
-		
+		LogHandler.getLogger().info("Starting to add an abstract component...");
 		try {
 			return XMLHandler.addAbstractComponentFromXML(cmp);
 		} catch (XMLException | ResolveException e) {
@@ -50,6 +50,7 @@ public class CoreServices {
 	 */
 
 	public boolean addContextContract(String cmp) throws ParserConfigurationException, SAXException, IOException{
+		LogHandler.getLogger().info("Starting to add a context component...");
 		try {
 			return XMLHandler.addContextContract(cmp);
 		} catch (XMLException | DBHandlerException e) {
@@ -64,8 +65,7 @@ public class CoreServices {
 	 */
 
 	public String getAbstractComponent(String name){
-		System.out.println("AHHHHHHHHHHHH");
-		LogHandler.getLogger().info("Starting to get Abstract component");
+		LogHandler.getLogger().info("Starting to get an abstract component...");
 		try {
 			return XMLHandler.getAbstractComponent(name);
 		} catch (XMLException e) {
@@ -80,6 +80,7 @@ public class CoreServices {
 	 */
 
 	public String getAbstractComponentByID(int id){
+		LogHandler.getLogger().info("Starting to get an abstract component id...");
 		try {
 			AbstractComponentType ac = AbstractComponentHandler.getAbstractComponentPartial(id);
 			return XMLHandler.getAbstractComponent(ac.getName());
@@ -96,6 +97,7 @@ public class CoreServices {
 	 */
 
 	public String getProfile(int id){
+		LogHandler.getLogger().info("Starting to get a profile...");
 		try {
 			return XMLHandler.getContextContract(id);
 		} catch (DBHandlerException e) {
@@ -110,6 +112,7 @@ public class CoreServices {
 	 */
 
 	public boolean addInnerComponent(String cmp){
+		LogHandler.getLogger().info("Starting to add an inner component...");
 		try {
 			return  XMLHandler.addInnerComponentFromXML(cmp);
 		} catch (XMLException e) {
@@ -125,6 +128,7 @@ public class CoreServices {
 	 * @return True if no exception occurs
 	 */
 	public boolean addContextParameter(String cmp){
+		LogHandler.getLogger().info("Starting to add a context parameter...");
 		try {
 			return XMLHandler.addContextParameterFromXML(cmp, null);
 		} catch (XMLException e) {
@@ -138,6 +142,7 @@ public class CoreServices {
 	 * @return XML file with a list of context parameters belonging to given abstract component
 	 */
 	public String getContextParameter(String name){
+		LogHandler.getLogger().info("Starting to get a context parameter...");
 		try {
 			return XMLHandler.getContextParameters(name);
 		} catch (XMLException e) {
@@ -152,6 +157,7 @@ public class CoreServices {
 	 */
 
 	public String getContextContract(int id){
+		LogHandler.getLogger().info("Starting to get a context contract...");
 		try {
 			return XMLHandler.getContextContract(id);
 		} catch (DBHandlerException e) {
@@ -160,25 +166,13 @@ public class CoreServices {
 	}
 
 
-	//#################################################################
-	/**
-	 * This method adds a concrete component into core.
-	 * @param abstractcomponent Abstract component name.
-	 * @param url Source code file URL
-	 * @return True if no exception occurs
-	 */
-	public boolean addConcreteComponent(String abstractcomponent, String url){
-		//TODO: A fazer
-		return false;
-	}
-
-	//#################################################################
 	/**
 	 * This method adds an abstract unit to an abstract component
 	 * @param cmp XML file as string
 	 * @return True if no exception occurs
 	 */
 	public Integer addAbstractUnit(String cmp){
+		LogHandler.getLogger().info("Starting to add an abstract unit...");
 		try {
 			return XMLHandler.addAbstractUnitFromXML(cmp);
 		} catch (XMLException e) {
@@ -192,6 +186,7 @@ public class CoreServices {
 	 * @return True if no exception occurs
 	 */
 	public boolean addConcreteUnit(String cmp){
+		LogHandler.getLogger().info("Starting to add a concrete unit...");
 		try {
 			XMLHandler.addConcreteUnit(cmp);
 			return true;
@@ -207,6 +202,7 @@ public class CoreServices {
 	 * @return True if no exception occurs
 	 */
 	public boolean addUnitFile(byte[] data, String xml) {
+		LogHandler.getLogger().info("Starting to add an unit file...");
 		try {
 			XMLHandler.addUnitFile(xml, data);
 			return true;
@@ -221,6 +217,7 @@ public class CoreServices {
 	 * @return True if operation is well successful
 	 */
 	public boolean setObsolete(String cmp){
+		LogHandler.getLogger().info("Starting to set a component obsolete...");
 		try {
 			AbstractComponentHandler.setObsolete(cmp);
 			return true;
@@ -234,6 +231,7 @@ public class CoreServices {
 	 * @return - XML file with a list of all components
 	 */
 	public String list(){
+		LogHandler.getLogger().info("Starting to create a list of abstract components...");
 		try {
 			return XMLHandler.listComponent();
 		} catch (XMLException e) {
@@ -242,7 +240,7 @@ public class CoreServices {
 	}
 
 	public static String listContract(int ac_id) throws DBHandlerException{
-
+		LogHandler.getLogger().info("Starting to create a list of context contracts...");
 		return XMLHandler.listContextContract(ac_id);
 	}
 
@@ -253,7 +251,7 @@ public class CoreServices {
 	 */
 	public String resolve(String cmp){
 		try {
-			LogHandler.getLogger().info("STARTING RESOLUTION");
+			LogHandler.getLogger().info("Starting to resolve a context contract...");
 			String str = XMLHandler.resolve(cmp);
 			//LogHandler.close();
 			return str;
@@ -270,6 +268,7 @@ public class CoreServices {
 	 */
 
 	public boolean releasePlatform(String uri){
+		LogHandler.getLogger().info("Starting to reease a platform...");
 		return BackendHandler.releasePlatform(uri);
 	}
 
@@ -279,6 +278,7 @@ public class CoreServices {
 	 * @return session URI 
 	 */
 	public String deploy(int sessionID, String cmp){
+		LogHandler.getLogger().info("Starting to deploy an application...");
 		try {
 			CandidateListType clist = XMLHandler.getCandidateList(cmp);
 			SessionHandler.createSession(sessionID);
@@ -294,10 +294,12 @@ public class CoreServices {
 	 * @return
 	 */
 	public String instantiate(String uri){
+		LogHandler.getLogger().info("Starting to instantiate an application...");
 		return BackendHandler.instantiate(uri);
 	}
 
 	public boolean cancelSession(int sessionID){
+		LogHandler.getLogger().info("Starting to cancel a session...");
 		try {
 			SessionHandler.destroySession(sessionID);
 			return true;
@@ -307,6 +309,7 @@ public class CoreServices {
 	}
 
 	public String instantiateACK(String address){
+		LogHandler.getLogger().info("Starting to ack a session...");
 		return SAFeServices.sendAck(address);
 	}
 
@@ -316,6 +319,7 @@ public class CoreServices {
 	 * @return True if no exception occurs
 	 */
 	public int addQualityFunction(String func){
+		LogHandler.getLogger().info("Starting to add a quality function...");
 		try {
 			return XMLHandler.addQualityFunction(func);
 		} catch (XMLException e) {

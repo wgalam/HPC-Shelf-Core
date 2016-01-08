@@ -5,10 +5,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.logging.FileHandler;
+import java.util.logging.Formatter;
 import java.util.logging.Handler;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
@@ -31,15 +35,16 @@ public class LogHandler {
 			// This block configure the logger with handler and formatter  
 			SimpleDateFormat format = new SimpleDateFormat("M-d_HH:mm:ss");
 			if(Boolean.parseBoolean(PropertiesHandler.getProperty("core.database.testing"))){
-				path = PropertiesHandler.getProperty("core.log.path")+"/core"+ format.format(Calendar.getInstance().getTime())+".log";
+				path = PropertiesHandler.getProperty("core.log.path")+"/Core_log-"+ format.format(Calendar.getInstance().getTime())+".log";
 			}else{
-				path = "/usr/share/Tomcat7/webapps/axis2/WEB-INF/services/CoreServices/log/core"+ format.format(Calendar.getInstance().getTime())+".log";
+				path = "/usr/share/Tomcat7/webapps/axis2/WEB-INF/services/CoreServices/log/Core_log-"+ format.format(Calendar.getInstance().getTime())+".log";
 			}
 			Files.createDirectories(Paths.get(path).getParent());
 			fh = new java.util.logging.FileHandler(path, false);
 			logger.setUseParentHandlers(false);
 			logger.addHandler(fh);
-			SimpleFormatter formatter = new SimpleFormatter();  
+			MyFormatter formatter = new MyFormatter();  
+			
 			fh.setFormatter(formatter);  
 		} catch (SecurityException e) {  
 			e.printStackTrace();  
@@ -51,14 +56,43 @@ public class LogHandler {
 	public static Logger getLogger(){
 		if(log == null){
 			log = new LogHandler();
-			log.logger.warning("CREATING NEW LOG");
+			LogHandler.logger.warning("CREATING NEW LOG");
 		}
-		return log.logger;
+		return LogHandler.logger;
 	}
 
+	
 	public static void close() {
 		if(fh != null){
 			fh.close();
 		}
 	}
+	
+}
+class MyFormatter extends Formatter {
+    //
+    // Create a DateFormat to format the logger timestamp.
+    //
+    private static final DateFormat df = new SimpleDateFormat("hh:mm:ss");
+//    private static final DateFormat df = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss.SSS");
+    public String format(LogRecord record) {
+        StringBuilder builder = new StringBuilder(1000);
+        builder.append(df.format(new Date(record.getMillis()))).append(" - ");
+        builder.append("[").append(record.getLevel()).append("] - ");
+        builder.append(formatMessage(record));
+        builder.append(" (").append(record.getSourceClassName()).append(".");
+        builder.append(record.getSourceMethodName()).append("())");
+        builder.append("\n");
+        return builder.toString();
+    }
+ 
+    public String getHead(Handler h) {
+        return super.getHead(h);
+    }
+ 
+    public String getTail(Handler h) {
+        return super.getTail(h);
+    }
+
+	
 }

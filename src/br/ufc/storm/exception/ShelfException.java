@@ -10,15 +10,15 @@ public class ShelfException extends Exception{
 	}
 	public ShelfException(String message) { 
 		super(message); 
-		LogHandler.getLogger().warning("ShelfException: "+message);
+		LogHandler.getLogger().severe("ShelfException: "+message);
 	}
 	public ShelfException(String message, Throwable cause) { 
 		super(message, cause); 
 		String str = "";
 		for(StackTraceElement element : cause.getStackTrace()){
-			str+="at "+element.getClassName()+"."+element.getMethodName()+"("+element.getFileName()+":"+element.getLineNumber()+")\n";
+			str+="\tat "+element.getClassName()+"."+element.getMethodName()+"("+element.getFileName()+":"+element.getLineNumber()+")\n";
 		}
-		LogHandler.getLogger().warning("ShelfException: "+message+"\n"+str);
+		LogHandler.getLogger().severe("ShelfException: "+message+"\n"+str);
 	}
 	public ShelfException(Throwable cause) { 
 		super(cause); 
@@ -26,6 +26,6 @@ public class ShelfException extends Exception{
 		for(StackTraceElement element : cause.getStackTrace()){
 			str+="at "+element.getClassName()+"."+element.getMethodName()+"("+element.getFileName()+":"+element.getLineNumber()+")\n";
 		}
-		LogHandler.getLogger().warning("ShelfException: "+cause.getMessage()+"\n"+str);
+		LogHandler.getLogger().severe("ShelfException: "+cause.getMessage()+"\n"+str);
 	}
 }

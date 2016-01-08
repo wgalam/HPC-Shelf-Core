@@ -18,6 +18,7 @@ import br.ufc.storm.xml.XMLHandler;
 import br.ufc.storm.exception.DBHandlerException;
 import br.ufc.storm.exception.FunctionException;
 import br.ufc.storm.exception.ResolveException;
+import br.ufc.storm.io.LogHandler;
 
 public class Resolution{
 
@@ -71,6 +72,7 @@ public class Resolution{
 	 */
 //Método está errado, só está encontrando um componente
 	public static CandidateListType resolve(ContextContract application, ResolutionNode resolutionTree, ContextContract applicationPlatform) throws ResolveException{
+		LogHandler.getLogger().info("Resolution Class: Starting to resolve a component!");
 		if(resolutionTree==null){
 			try {
 				resolutionTree = ResolutionHandler.generateResolutionTree();
@@ -86,6 +88,7 @@ public class Resolution{
 		CandidateListType candidateList = new CandidateListType();
 		CandidateListType newCandidateList = new CandidateListType();
 		List<ContextContract> concreteComponentCandidatesList;
+		LogHandler.getLogger().info("Generating Software Component Candidate List...");
 		try {
 			concreteComponentCandidatesList = ResolutionHandler.generateCandidates(application.getAbstractComponent().getSupertype().getIdAc(), application.getAbstractComponent().getIdAc(), resolutionTree);
 		} catch (DBHandlerException e1) {
@@ -100,6 +103,7 @@ public class Resolution{
 							continue;
 						}
 						List<ContextContract> componentCandidatePlatformlist = null;
+						LogHandler.getLogger().info("Generating Hardware Candidate List...");
 						try {
 							componentCandidatePlatformlist = ResolutionHandler.generateCompliantPlatformCandidates(candidate.getPlatform().getAbstractComponent().getIdAc(), resolutionTree);
 						} catch (DBHandlerException e3) {
@@ -141,6 +145,7 @@ public class Resolution{
 							}
 							//partialComponentList has a list with all candidate components passed in first filter
 							//----------------------------------------------------------------------------------------------------------------------------------------------
+							LogHandler.getLogger().info("Calculating arguments...");
 							for(ContextContract cc:candidateList.getCandidate()){
 								try {
 									FunctionHandler.calulateContextContractQualityArguments(cc.getPlatform(), resolutionTree);
