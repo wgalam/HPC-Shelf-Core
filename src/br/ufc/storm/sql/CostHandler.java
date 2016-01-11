@@ -73,7 +73,8 @@ public class CostHandler extends DBHandler {
 				cof.setFunctionValue(resultSet.getString("function_value"));
 				return cof;	
 			}else{
-				throw new DBHandlerException("Cost function with cp_id = "+cp_id+" was not found");
+				return null;
+//				throw new DBHandlerException("Cost function with cp_id = "+cp_id+" was not found");
 			}
 		} catch (SQLException e) { 
 			throw new DBHandlerException("A sql error occurred: ", e);

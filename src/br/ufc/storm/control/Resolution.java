@@ -59,7 +59,6 @@ public class Resolution{
 			System.out.println("Erro enquanto estava resolvendo um contrato");
 			e.printStackTrace();
 		}
-
 	}
 
 	/**
@@ -70,7 +69,6 @@ public class Resolution{
 	 * @return
 	 * @throws ResolveException 
 	 */
-//Método está errado, só está encontrando um componente
 	public static CandidateListType resolve(ContextContract application, ResolutionNode resolutionTree, ContextContract applicationPlatform) throws ResolveException{
 		LogHandler.getLogger().info("Resolution Class: Starting to resolve a component!");
 		if(resolutionTree==null){
@@ -94,6 +92,8 @@ public class Resolution{
 		} catch (DBHandlerException e1) {
 			return new CandidateListType();
 		}
+		LogHandler.getLogger().info(concreteComponentCandidatesList.size()+" components were found, now it will be filtered");
+		int index = 0;
 		if(concreteComponentCandidatesList.size() > 0){
 			for(ContextContract candidate:concreteComponentCandidatesList){
 				try {
@@ -103,13 +103,14 @@ public class Resolution{
 							continue;
 						}
 						List<ContextContract> componentCandidatePlatformlist = null;
-						LogHandler.getLogger().info("Generating Hardware Candidate List...");
+						LogHandler.getLogger().info("Generating Hardware Candidate List for candidate: "+index);
 						try {
 							componentCandidatePlatformlist = ResolutionHandler.generateCompliantPlatformCandidates(candidate.getPlatform().getAbstractComponent().getIdAc(), resolutionTree);
 						} catch (DBHandlerException e3) {
 							//Will test the next software contract
 							continue;
 						}
+						LogHandler.getLogger().info(componentCandidatePlatformlist.size()+" platforms were found for software component "+index);
 						if(componentCandidatePlatformlist.size() > 0){
 							for(int i = 0; i < componentCandidatePlatformlist.size(); i++){
 								
@@ -164,7 +165,8 @@ public class Resolution{
 										} catch (FunctionException e) {
 											//do nothing
 										} //calcula parametros de custo
-										newCandidateList.getCandidate().add(cc);									
+										newCandidateList.getCandidate().add(cc);
+										LogHandler.getLogger().info("Candidate "+cc.getCcName()+" added");
 									}
 								}
 							}
@@ -175,7 +177,7 @@ public class Resolution{
 					continue;
 				}
 
-
+				index++;
 			}
 		}
 		return newCandidateList;

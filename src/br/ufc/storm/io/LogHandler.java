@@ -24,21 +24,17 @@ public class LogHandler {
 	private static java.util.logging.FileHandler fh = null;  
 	
 	public LogHandler(){
-		
 		logger = Logger.getLogger("MyLog");
 		String path;
-
-
 		try {  
-
-
 			// This block configure the logger with handler and formatter  
-			SimpleDateFormat format = new SimpleDateFormat("M-d_HH:mm:ss");
+			SimpleDateFormat format = new SimpleDateFormat("D-M-Y-_HH:mm:ss");
 			if(Boolean.parseBoolean(PropertiesHandler.getProperty("core.database.testing"))){
-				path = PropertiesHandler.getProperty("core.log.path")+"/Core_log-"+ format.format(Calendar.getInstance().getTime())+".log";
+				path = PropertiesHandler.getProperty("core.log.path");
 			}else{
-				path = "/usr/share/Tomcat7/webapps/axis2/WEB-INF/services/CoreServices/log/Core_log-"+ format.format(Calendar.getInstance().getTime())+".log";
+				path = PropertiesHandler.getProperty("core.log.server.path");
 			}
+			path+="/Core_log-"+ format.format(Calendar.getInstance().getTime())+".log";
 			Files.createDirectories(Paths.get(path).getParent());
 			fh = new java.util.logging.FileHandler(path, false);
 			logger.setUseParentHandlers(false);
@@ -56,7 +52,7 @@ public class LogHandler {
 	public static Logger getLogger(){
 		if(log == null){
 			log = new LogHandler();
-			LogHandler.logger.warning("CREATING NEW LOG");
+			LogHandler.logger.info("CREATING NEW LOG");
 		}
 		return LogHandler.logger;
 	}
@@ -66,6 +62,10 @@ public class LogHandler {
 		if(fh != null){
 			fh.close();
 		}
+		fh=null;
+		logger = null;
+		log = null;
+		
 	}
 	
 }

@@ -34,8 +34,11 @@ public class CoreServices {
 	public boolean addAbstractComponent(String cmp) throws ParserConfigurationException, SAXException, IOException, DBHandlerException{
 		LogHandler.getLogger().info("Starting to add an abstract component...");
 		try {
-			return XMLHandler.addAbstractComponentFromXML(cmp);
+			Boolean b = XMLHandler.addAbstractComponentFromXML(cmp);
+			LogHandler.close();
+			return b;
 		} catch (XMLException | ResolveException e) {
+			LogHandler.close();
 			return false;
 		}
 	}
@@ -52,8 +55,11 @@ public class CoreServices {
 	public boolean addContextContract(String cmp) throws ParserConfigurationException, SAXException, IOException{
 		LogHandler.getLogger().info("Starting to add a context component...");
 		try {
-			return XMLHandler.addContextContract(cmp);
+			Boolean b = XMLHandler.addContextContract(cmp);
+			LogHandler.close();
+			return b;
 		} catch (XMLException | DBHandlerException e) {
+			LogHandler.close();
 			return false;
 		}
 	}
@@ -67,8 +73,11 @@ public class CoreServices {
 	public String getAbstractComponent(String name){
 		LogHandler.getLogger().info("Starting to get an abstract component...");
 		try {
-			return XMLHandler.getAbstractComponent(name);
+			String str = XMLHandler.getAbstractComponent(name);
+			LogHandler.close();
+			return str;
 		} catch (XMLException e) {
+			LogHandler.close();
 			return null;
 		}
 	}
@@ -83,8 +92,11 @@ public class CoreServices {
 		LogHandler.getLogger().info("Starting to get an abstract component id...");
 		try {
 			AbstractComponentType ac = AbstractComponentHandler.getAbstractComponentPartial(id);
-			return XMLHandler.getAbstractComponent(ac.getName());
+			String str = XMLHandler.getAbstractComponent(ac.getName());
+			LogHandler.close();
+			return str;
 		} catch (Exception e) {
+			LogHandler.close();
 			return null;
 		}
 
@@ -99,8 +111,11 @@ public class CoreServices {
 	public String getProfile(int id){
 		LogHandler.getLogger().info("Starting to get a profile...");
 		try {
-			return XMLHandler.getContextContract(id);
+			String str = XMLHandler.getContextContract(id);
+			LogHandler.close();
+			return str;
 		} catch (DBHandlerException e) {
+			LogHandler.close();
 			return null;
 		}
 	}
@@ -114,8 +129,11 @@ public class CoreServices {
 	public boolean addInnerComponent(String cmp){
 		LogHandler.getLogger().info("Starting to add an inner component...");
 		try {
-			return  XMLHandler.addInnerComponentFromXML(cmp);
+			boolean b = XMLHandler.addInnerComponentFromXML(cmp);
+			LogHandler.close();
+			return b;
 		} catch (XMLException e) {
+			LogHandler.close();
 			return false;
 		}
 	}
@@ -130,8 +148,11 @@ public class CoreServices {
 	public boolean addContextParameter(String cmp){
 		LogHandler.getLogger().info("Starting to add a context parameter...");
 		try {
-			return XMLHandler.addContextParameterFromXML(cmp, null);
+			boolean b = XMLHandler.addContextParameterFromXML(cmp, null);
+			LogHandler.close();
+			return b;
 		} catch (XMLException e) {
+			LogHandler.close();
 			return false;
 		}
 	}
@@ -144,8 +165,11 @@ public class CoreServices {
 	public String getContextParameter(String name){
 		LogHandler.getLogger().info("Starting to get a context parameter...");
 		try {
-			return XMLHandler.getContextParameters(name);
+			String s = XMLHandler.getContextParameters(name);
+			LogHandler.close();
+			return s;
 		} catch (XMLException e) {
+			LogHandler.close();
 			return null;
 		}
 	}
@@ -159,8 +183,11 @@ public class CoreServices {
 	public String getContextContract(int id){
 		LogHandler.getLogger().info("Starting to get a context contract...");
 		try {
-			return XMLHandler.getContextContract(id);
+			String s = XMLHandler.getContextContract(id);
+			LogHandler.close();
+			return s;
 		} catch (DBHandlerException e) {
+			LogHandler.close();
 			return null;
 		}
 	}
@@ -174,8 +201,11 @@ public class CoreServices {
 	public Integer addAbstractUnit(String cmp){
 		LogHandler.getLogger().info("Starting to add an abstract unit...");
 		try {
-			return XMLHandler.addAbstractUnitFromXML(cmp);
+			int i = XMLHandler.addAbstractUnitFromXML(cmp);
+			LogHandler.close();
+			return i;
 		} catch (XMLException e) {
+			LogHandler.close();
 			return null;
 		}
 	}
@@ -189,8 +219,10 @@ public class CoreServices {
 		LogHandler.getLogger().info("Starting to add a concrete unit...");
 		try {
 			XMLHandler.addConcreteUnit(cmp);
+			LogHandler.close();
 			return true;
 		} catch (XMLException e) {
+			LogHandler.close();
 			return false;
 		}
 	}
@@ -205,8 +237,10 @@ public class CoreServices {
 		LogHandler.getLogger().info("Starting to add an unit file...");
 		try {
 			XMLHandler.addUnitFile(xml, data);
+			LogHandler.close();
 			return true;
 		} catch (XMLException e) {
+			LogHandler.close();
 			return false;
 		}
 	}
@@ -220,8 +254,10 @@ public class CoreServices {
 		LogHandler.getLogger().info("Starting to set a component obsolete...");
 		try {
 			AbstractComponentHandler.setObsolete(cmp);
+			LogHandler.close();
 			return true;
-		} catch (DBHandlerException e) {
+		} catch (DBHandlerException e){
+			LogHandler.close();
 			return false;
 		}
 	}
@@ -233,15 +269,20 @@ public class CoreServices {
 	public String list(){
 		LogHandler.getLogger().info("Starting to create a list of abstract components...");
 		try {
-			return XMLHandler.listComponent();
+			String s = XMLHandler.listComponent();
+			LogHandler.close();
+			return s;
 		} catch (XMLException e) {
+			LogHandler.close();
 			return null;
 		}
 	}
 
 	public static String listContract(int ac_id) throws DBHandlerException{
 		LogHandler.getLogger().info("Starting to create a list of context contracts...");
-		return XMLHandler.listContextContract(ac_id);
+		String s = XMLHandler.listContextContract(ac_id);
+		LogHandler.close();
+		return s;
 	}
 
 	/**
@@ -253,9 +294,10 @@ public class CoreServices {
 		try {
 			LogHandler.getLogger().info("Starting to resolve a context contract...");
 			String str = XMLHandler.resolve(cmp);
-			//LogHandler.close();
+			LogHandler.close();
 			return str;
 		} catch (XMLException e) {
+			LogHandler.close();
 			return null;
 		}
 		
@@ -269,7 +311,9 @@ public class CoreServices {
 
 	public boolean releasePlatform(String uri){
 		LogHandler.getLogger().info("Starting to reease a platform...");
-		return BackendHandler.releasePlatform(uri);
+		boolean b = BackendHandler.releasePlatform(uri);
+		LogHandler.close();
+		return b;
 	}
 
 	/**
@@ -282,8 +326,11 @@ public class CoreServices {
 		try {
 			CandidateListType clist = XMLHandler.getCandidateList(cmp);
 			SessionHandler.createSession(sessionID);
-			return(Deployer.deploy(clist));
+			String str = (Deployer.deploy(clist));
+			LogHandler.close();
+			return str;
 		} catch (Exception e) {
+			LogHandler.close();
 			return null;
 		}
 	}
@@ -295,22 +342,28 @@ public class CoreServices {
 	 */
 	public String instantiate(String uri){
 		LogHandler.getLogger().info("Starting to instantiate an application...");
-		return BackendHandler.instantiate(uri);
+		String s = BackendHandler.instantiate(uri);
+		LogHandler.close();
+		return s;
 	}
 
 	public boolean cancelSession(int sessionID){
 		LogHandler.getLogger().info("Starting to cancel a session...");
 		try {
 			SessionHandler.destroySession(sessionID);
+			LogHandler.close();
 			return true;
 		} catch (DBHandlerException e) {
+			LogHandler.close();
 			return false;
 		}
 	}
 
 	public String instantiateACK(String address){
 		LogHandler.getLogger().info("Starting to ack a session...");
-		return SAFeServices.sendAck(address);
+		String s = SAFeServices.sendAck(address);
+		LogHandler.close();
+		return s;
 	}
 
 
@@ -321,8 +374,11 @@ public class CoreServices {
 	public int addQualityFunction(String func){
 		LogHandler.getLogger().info("Starting to add a quality function...");
 		try {
-			return XMLHandler.addQualityFunction(func);
+			int i = XMLHandler.addQualityFunction(func);
+			LogHandler.close();
+			return i;
 		} catch (XMLException e) {
+			LogHandler.close();
 			return -1;
 		}
 	}

@@ -76,7 +76,8 @@ public class RankingHandler extends DBHandler{
 				rf.setFunctionValue(resultSet.getString("function_value"));
 				return rf;	
 			}else{
-				throw new DBHandlerException("");
+//				throw new DBHandlerException("");
+				return null;
 			}
 		} catch (SQLException e) { 
 			throw new DBHandlerException("A sql error occurred: ", e);

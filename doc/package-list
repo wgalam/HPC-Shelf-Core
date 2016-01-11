@@ -1,8 +1,11 @@
 
-Exception
-br.ufc.storm.Control
-br.ufc.storm.Model
-br.ufc.storm.WServices
+br.ufc.storm.control
+br.ufc.storm.exception
+br.ufc.storm.io
 br.ufc.storm.jaxb
+br.ufc.storm.model
+br.ufc.storm.properties
+br.ufc.storm.sql
+br.ufc.storm.webservices
+br.ufc.storm.xml
 com.udojava.evalex
-properties

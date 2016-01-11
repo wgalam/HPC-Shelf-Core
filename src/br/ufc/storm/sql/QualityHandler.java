@@ -109,8 +109,11 @@ public class QualityHandler extends DBHandler{
 				qf.setFunctionValue(resultSet.getString("function_value"));
 				return qf;
 			}else{
-				throw new DBHandlerException("Quality function not found with cp_id = "+cp_id);
+				return null;
 			}
+//			else{
+//				throw new DBHandlerException("Quality function not found with cp_id = "+cp_id);
+//			}
 
 		} catch (SQLException e) { 
 			throw new DBHandlerException("A sql error occurred: ", e);
