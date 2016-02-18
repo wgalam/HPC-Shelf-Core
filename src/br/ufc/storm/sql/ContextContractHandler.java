@@ -42,7 +42,7 @@ public class ContextContractHandler extends DBHandler{
 					ContextArgumentHandler.addContextArgument(cat);
 				}
 				//Add Platform
-				addContextContract(cc.getPlatform());
+				addContextContract(cc.getPlatform().getPlatformContract());
 				
 				//Add inner components
 				for(ContextContract inner : cc.getInnerComponents()){

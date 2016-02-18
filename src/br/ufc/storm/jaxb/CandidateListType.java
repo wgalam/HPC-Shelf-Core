@@ -2,7 +2,7 @@
 // Este arquivo foi gerado pela Arquitetura JavaTM para Implementação de Referência (JAXB) de Bind XML, v2.2.8-b130911.1802 
 // Consulte <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Todas as modificações neste arquivo serão perdidas após a recompilação do esquema de origem. 
-// Gerado em: 2016.01.03 às 05:52:03 PM BRT 
+// Gerado em: 2016.02.18 às 02:55:50 PM BRT 
 //
 
 
@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -27,6 +28,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence>
  *         &lt;element name="candidate" type="{http://storm.lia.ufc.br}context_contract" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
+ *       &lt;attribute name="user_id" type="{http://www.w3.org/2001/XMLSchema}int" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -41,6 +43,8 @@ import javax.xml.bind.annotation.XmlType;
 public class CandidateListType {
 
     protected List<ContextContract> candidate;
+    @XmlAttribute(name = "user_id")
+    protected Integer userId;
 
     /**
      * Gets the value of the candidate property.
@@ -69,6 +73,30 @@ public class CandidateListType {
             candidate = new ArrayList<ContextContract>();
         }
         return this.candidate;
+    }
+
+    /**
+     * Obtém o valor da propriedade userId.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Integer }
+     *     
+     */
+    public Integer getUserId() {
+        return userId;
+    }
+
+    /**
+     * Define o valor da propriedade userId.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Integer }
+     *     
+     */
+    public void setUserId(Integer value) {
+        this.userId = value;
     }
 
 }

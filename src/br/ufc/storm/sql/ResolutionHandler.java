@@ -57,7 +57,7 @@ public class ResolutionHandler extends DBHandler {
 
 
 					//					--------------------------------------------------------------
-					cc.setPlatform(PlatformHandler.getPlatform(cc_id));
+					cc.getPlatform().setPlatformContract(PlatformHandler.getPlatform(cc_id));
 					list.add(cc); 
 				}
 				supertype = resolutionTree.findNode(list.get(list.size()-1).getAbstractComponent().getIdAc()).getSupertype().getAc_id();

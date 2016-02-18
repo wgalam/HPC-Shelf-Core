@@ -48,6 +48,14 @@ public class FileHandler {
 		}
 		return false;
 	}
+	
+	public static byte[] readFile(String pathname) throws IOException {
+
+		Path path = Paths.get(pathname);
+		byte[] data = Files.readAllBytes(path);
+		return data;
+	}
+
 
 	/**
 	 * This method read a file from hard disk and return its content as a string
@@ -56,12 +64,6 @@ public class FileHandler {
 	 * @throws IOException
 	 */
 
-	public static byte[] readFile(String pathname) throws IOException {
-
-		Path path = Paths.get(pathname);
-		byte[] data = Files.readAllBytes(path);
-		return data;
-	}
 
 	public static String readFileAsString(String pathname) throws IOException {
 

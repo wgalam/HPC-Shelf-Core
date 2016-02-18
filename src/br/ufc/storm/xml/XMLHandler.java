@@ -36,6 +36,7 @@ import br.ufc.storm.io.FileHandler;
 import br.ufc.storm.jaxb.AbstractComponentType;
 import br.ufc.storm.jaxb.AbstractUnitType;
 import br.ufc.storm.jaxb.CandidateListType;
+import br.ufc.storm.jaxb.ComputationalSystemType;
 import br.ufc.storm.jaxb.ConcreteUnitType;
 import br.ufc.storm.jaxb.ContextContract;
 import br.ufc.storm.jaxb.ContextParameterType;
@@ -733,7 +734,25 @@ public class XMLHandler {
 	}
 
 
+	public static String getComputationalSystem(ComputationalSystemType cst) {
+		JAXBContext context;
+		java.io.StringWriter sw = new StringWriter();
+		try {
+			context = JAXBContext.newInstance(br.ufc.storm.jaxb.ObjectFactory.class.getPackage().getName(),
+					br.ufc.storm.jaxb.ObjectFactory.class.getClassLoader());
+			Marshaller marshaller = context.createMarshaller();
+			marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+			JAXBElement<ComputationalSystemType> element = new ObjectFactory().createComputationalSystem(cst);
+			marshaller.marshal(element, sw);
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		}
+		return sw.toString();
+	}
 
+
+	
 
 
 

@@ -8,13 +8,16 @@ import org.xml.sax.SAXException;
 
 import br.ufc.storm.jaxb.AbstractComponentType;
 import br.ufc.storm.jaxb.CandidateListType;
+import br.ufc.storm.jaxb.ComputationalSystemType;
+import br.ufc.storm.jaxb.ContextContract;
+import br.ufc.storm.jaxb.PlatformProfileType;
 import br.ufc.storm.sql.AbstractComponentHandler;
 import br.ufc.storm.sql.SessionHandler;
 import br.ufc.storm.xml.XMLHandler;
-import br.ufc.storm.control.BackendHandler;
-import br.ufc.storm.control.Deployer;
+import br.ufc.storm.backend.BackendHandler;
 import br.ufc.storm.exception.DBHandlerException;
 import br.ufc.storm.exception.ResolveException;
+import br.ufc.storm.exception.ShelfRuntimeException;
 import br.ufc.storm.exception.XMLException;
 import br.ufc.storm.io.LogHandler;
 
@@ -318,21 +321,22 @@ public class CoreServices {
 
 	/**
 	 * This method deploy the application in selected backend infrastructure.
-	 * @param cmp - component in xml as string
+	 * @param candidateList - component in xml as string
 	 * @return session URI 
 	 */
-	public String deploy(int sessionID, String cmp){
-		LogHandler.getLogger().info("Starting to deploy an application...");
+	public String deploy(String candidateList){
+		CandidateListType clt;
 		try {
-			CandidateListType clist = XMLHandler.getCandidateList(cmp);
-			SessionHandler.createSession(sessionID);
-			String str = (Deployer.deploy(clist));
+			clt = XMLHandler.getCandidateList(candidateList);
+			LogHandler.getLogger().info("Starting to deploy an application...");
+			ComputationalSystemType ppt = BackendHandler.deployComponent(clt);
 			LogHandler.close();
-			return str;
-		} catch (Exception e) {
-			LogHandler.close();
-			return null;
+			return XMLHandler.getComputationalSystem(ppt);
+		} catch (XMLException | ShelfRuntimeException e) {
+			return "An error occurred while deploying application";
 		}
+		
+		
 	}
 
 	/**
@@ -340,12 +344,12 @@ public class CoreServices {
 	 * @param uri
 	 * @return
 	 */
-	public String instantiate(String uri){
-		LogHandler.getLogger().info("Starting to instantiate an application...");
-		String s = BackendHandler.instantiate(uri);
-		LogHandler.close();
-		return s;
-	}
+//	public String instantiate(String uri){
+//		LogHandler.getLogger().info("Starting to instantiate an application...");
+//		String s = BackendHandler.instantiate(uri);
+//		LogHandler.close();
+//		return s;
+//	}
 
 	public boolean cancelSession(int sessionID){
 		LogHandler.getLogger().info("Starting to cancel a session...");

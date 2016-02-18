@@ -2,7 +2,7 @@
 // Este arquivo foi gerado pela Arquitetura JavaTM para Implementação de Referência (JAXB) de Bind XML, v2.2.8-b130911.1802 
 // Consulte <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Todas as modificações neste arquivo serão perdidas após a recompilação do esquema de origem. 
-// Gerado em: 2016.01.03 às 05:52:03 PM BRT 
+// Gerado em: 2016.02.18 às 02:55:50 PM BRT 
 //
 
 
@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence>
  *         &lt;element name="context_arguments" type="{http://storm.lia.ufc.br}context_argument_type" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="abstract_component" type="{http://storm.lia.ufc.br}abstract_component_type"/>
- *         &lt;element name="platform" type="{http://storm.lia.ufc.br}context_contract" minOccurs="0"/>
+ *         &lt;element name="platform" type="{http://storm.lia.ufc.br}platform_profile_type" minOccurs="0"/>
  *         &lt;element name="quality_arguments" type="{http://storm.lia.ufc.br}quality_argument_type" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="ranking_arguments" type="{http://storm.lia.ufc.br}ranking_argument_type" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="cost_arguments" type="{http://storm.lia.ufc.br}cost_argument_type" maxOccurs="unbounded" minOccurs="0"/>
@@ -65,7 +65,7 @@ public class ContextContract {
     protected List<ContextArgumentType> contextArguments;
     @XmlElement(name = "abstract_component", required = true)
     protected AbstractComponentType abstractComponent;
-    protected ContextContract platform;
+    protected PlatformProfileType platform;
     @XmlElement(name = "quality_arguments")
     protected List<QualityArgumentType> qualityArguments;
     @XmlElement(name = "ranking_arguments")
@@ -141,10 +141,10 @@ public class ContextContract {
      * 
      * @return
      *     possible object is
-     *     {@link ContextContract }
+     *     {@link PlatformProfileType }
      *     
      */
-    public ContextContract getPlatform() {
+    public PlatformProfileType getPlatform() {
         return platform;
     }
 
@@ -153,10 +153,10 @@ public class ContextContract {
      * 
      * @param value
      *     allowed object is
-     *     {@link ContextContract }
+     *     {@link PlatformProfileType }
      *     
      */
-    public void setPlatform(ContextContract value) {
+    public void setPlatform(PlatformProfileType value) {
         this.platform = value;
     }
 

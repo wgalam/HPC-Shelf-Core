@@ -2,7 +2,7 @@
 // Este arquivo foi gerado pela Arquitetura JavaTM para Implementação de Referência (JAXB) de Bind XML, v2.2.8-b130911.1802 
 // Consulte <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Todas as modificações neste arquivo serão perdidas após a recompilação do esquema de origem. 
-// Gerado em: 2016.01.03 às 05:52:03 PM BRT 
+// Gerado em: 2016.02.18 às 02:55:50 PM BRT 
 //
 
 
@@ -10,6 +10,7 @@ package br.ufc.storm.jaxb;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -26,6 +27,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence>
  *         &lt;element name="platform_contract" type="{http://storm.lia.ufc.br}context_contract"/>
  *       &lt;/sequence>
+ *       &lt;attribute name="network_ip_address" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -41,6 +43,8 @@ public class PlatformProfileType {
 
     @XmlElement(name = "platform_contract", required = true)
     protected ContextContract platformContract;
+    @XmlAttribute(name = "network_ip_address")
+    protected String networkIpAddress;
 
     /**
      * Obtém o valor da propriedade platformContract.
@@ -64,6 +68,30 @@ public class PlatformProfileType {
      */
     public void setPlatformContract(ContextContract value) {
         this.platformContract = value;
+    }
+
+    /**
+     * Obtém o valor da propriedade networkIpAddress.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getNetworkIpAddress() {
+        return networkIpAddress;
+    }
+
+    /**
+     * Define o valor da propriedade networkIpAddress.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setNetworkIpAddress(String value) {
+        this.networkIpAddress = value;
     }
 
 }

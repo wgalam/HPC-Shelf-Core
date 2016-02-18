@@ -2,7 +2,7 @@
 // Este arquivo foi gerado pela Arquitetura JavaTM para Implementação de Referência (JAXB) de Bind XML, v2.2.8-b130911.1802 
 // Consulte <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Todas as modificações neste arquivo serão perdidas após a recompilação do esquema de origem. 
-// Gerado em: 2016.01.03 às 05:52:03 PM BRT 
+// Gerado em: 2016.02.18 às 02:55:50 PM BRT 
 //
 
 
@@ -28,6 +28,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="context_contract" type="{http://storm.lia.ufc.br}context_contract"/>
  *       &lt;/sequence>
  *       &lt;attribute name="session" type="{http://www.w3.org/2001/XMLSchema}int" />
+ *       &lt;attribute name="network_address" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -45,6 +46,8 @@ public class ComputationalSystemType {
     protected ContextContract contextContract;
     @XmlAttribute(name = "session")
     protected Integer session;
+    @XmlAttribute(name = "network_address")
+    protected String networkAddress;
 
     /**
      * Obtém o valor da propriedade contextContract.
@@ -92,6 +95,30 @@ public class ComputationalSystemType {
      */
     public void setSession(Integer value) {
         this.session = value;
+    }
+
+    /**
+     * Obtém o valor da propriedade networkAddress.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getNetworkAddress() {
+        return networkAddress;
+    }
+
+    /**
+     * Define o valor da propriedade networkAddress.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setNetworkAddress(String value) {
+        this.networkAddress = value;
     }
 
 }

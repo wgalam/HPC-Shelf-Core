@@ -2,7 +2,7 @@
 // Este arquivo foi gerado pela Arquitetura JavaTM para Implementação de Referência (JAXB) de Bind XML, v2.2.8-b130911.1802 
 // Consulte <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Todas as modificações neste arquivo serão perdidas após a recompilação do esquema de origem. 
-// Gerado em: 2016.01.03 às 05:52:03 PM BRT 
+// Gerado em: 2016.02.18 às 02:55:50 PM BRT 
 //
 
 
@@ -92,6 +92,14 @@ public class ObjectFactory {
      */
     public AbstractComponentType createAbstractComponentType() {
         return new AbstractComponentType();
+    }
+
+    /**
+     * Create an instance of {@link ComputationalSystemType }
+     * 
+     */
+    public ComputationalSystemType createComputationalSystemType() {
+        return new ComputationalSystemType();
     }
 
     /**
@@ -215,14 +223,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ComputationalSystemType }
-     * 
-     */
-    public ComputationalSystemType createComputationalSystemType() {
-        return new ComputationalSystemType();
-    }
-
-    /**
      * Create an instance of {@link ConcreteComponentType }
      * 
      */
@@ -309,12 +309,12 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link ComputationalSystemType }{@code >}}
      * 
      */
     @XmlElementDecl(namespace = "http://storm.lia.ufc.br", name = "computational_system")
-    public JAXBElement<String> createComputationalSystem(String value) {
-        return new JAXBElement<String>(_ComputationalSystem_QNAME, String.class, null, value);
+    public JAXBElement<ComputationalSystemType> createComputationalSystem(ComputationalSystemType value) {
+        return new JAXBElement<ComputationalSystemType>(_ComputationalSystem_QNAME, ComputationalSystemType.class, null, value);
     }
 
 }
