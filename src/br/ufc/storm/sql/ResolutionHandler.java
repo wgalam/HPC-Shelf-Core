@@ -11,6 +11,7 @@ import br.ufc.storm.exception.DBHandlerException;
 import br.ufc.storm.jaxb.ContextContract;
 import br.ufc.storm.jaxb.ContextParameterType;
 import br.ufc.storm.jaxb.CostParameterType;
+import br.ufc.storm.jaxb.PlatformProfileType;
 import br.ufc.storm.jaxb.QualityParameterType;
 import br.ufc.storm.jaxb.RankingParameterType;
 import br.ufc.storm.model.ResolutionNode;
@@ -57,6 +58,7 @@ public class ResolutionHandler extends DBHandler {
 
 
 					//					--------------------------------------------------------------
+					cc.setPlatform(new PlatformProfileType());
 					cc.getPlatform().setPlatformContract(PlatformHandler.getPlatform(cc_id));
 					list.add(cc); 
 				}

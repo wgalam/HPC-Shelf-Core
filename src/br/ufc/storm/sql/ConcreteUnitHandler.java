@@ -185,6 +185,7 @@ public class ConcreteUnitHandler extends DBHandler {
 			Connection con = getConnection();  
 			PreparedStatement prepared = con.prepareStatement(SELECT_UNIT_PATH);
 			prepared.setInt(1, uft.getUid());
+			System.out.println(prepared);
 			ResultSet resultSet = prepared.executeQuery(); 
 			if(resultSet.next()) { 
 				uft.setPath(ResolutionHandler.generateResolutionTree().findNode(resultSet.getInt("ac_id")).getPath()); 

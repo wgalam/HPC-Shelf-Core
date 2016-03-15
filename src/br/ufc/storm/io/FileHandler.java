@@ -23,6 +23,7 @@ public class FileHandler {
 			Files.createDirectories(pathToFile.getParent());
 			Files.createFile(pathToFile);
 			Files.write(pathToFile, data, StandardOpenOption.WRITE);
+			System.out.println("File saved in this path: "+pathToFile);
 			return true;
 		} catch (IOException e) {
 			e.printStackTrace();

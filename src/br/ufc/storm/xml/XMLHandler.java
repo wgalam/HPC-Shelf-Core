@@ -537,7 +537,11 @@ public class XMLHandler {
 			System.out.println(path);
 			if(uft.getPath()!= null){
 				uft.setPath(path.replace('.', '/')+"/");
-				if(FileHandler.addFile(data, uft.getPath()+uft.getFilename()+"."+uft.getExtension())){
+				String filename = uft.getPath()+uft.getFilename();
+				if(!uft.getExtension().equals("")){
+					filename+="."+uft.getExtension();
+				}
+				if(FileHandler.addFile(data, filename)){
 					return true;
 				}
 			}

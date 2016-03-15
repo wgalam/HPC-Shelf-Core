@@ -39,6 +39,7 @@ public class Resolution{
 		plat.setCcName("Plataforma do Wagner");
 		plat.setAbstractComponent(new AbstractComponentType());
 		plat.getAbstractComponent().setIdAc(19);
+		cc.setPlatform(new PlatformProfileType());
 		cc.getPlatform().setPlatformContract(plat);
 		//------------------------------------------------------- Inners
 		ContextContract inner1 = new ContextContract();
