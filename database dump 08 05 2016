@@ -1,0 +1,2783 @@
+﻿
+
+CREATE TABLE abstract_component (
+    ac_name character varying(200),
+    ac_id integer NOT NULL,
+    supertype_id integer,
+    enabled boolean DEFAULT true
+);
+
+
+ALTER TABLE abstract_component OWNER TO "Core";
+
+--
+-- TOC entry 173 (class 1259 OID 125013)
+-- Name: abstract_component_ac_id_seq; Type: SEQUENCE; Schema: public; Owner: Core
+--
+
+CREATE SEQUENCE abstract_component_ac_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE abstract_component_ac_id_seq OWNER TO "Core";
+
+--
+-- TOC entry 2436 (class 0 OID 0)
+-- Dependencies: 173
+-- Name: abstract_component_ac_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Core
+--
+
+ALTER SEQUENCE abstract_component_ac_id_seq OWNED BY abstract_component.ac_id;
+
+
+--
+-- TOC entry 174 (class 1259 OID 125015)
+-- Name: abstract_unit; Type: TABLE; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE TABLE abstract_unit (
+    abstract_unit_id integer NOT NULL,
+    ac_id integer,
+    au_name character varying
+);
+
+
+ALTER TABLE abstract_unit OWNER TO "Core";
+
+--
+-- TOC entry 175 (class 1259 OID 125021)
+-- Name: abstract_unit_abstract_unit_id_seq; Type: SEQUENCE; Schema: public; Owner: Core
+--
+
+CREATE SEQUENCE abstract_unit_abstract_unit_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE abstract_unit_abstract_unit_id_seq OWNER TO "Core";
+
+--
+-- TOC entry 2437 (class 0 OID 0)
+-- Dependencies: 175
+-- Name: abstract_unit_abstract_unit_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Core
+--
+
+ALTER SEQUENCE abstract_unit_abstract_unit_id_seq OWNED BY abstract_unit.abstract_unit_id;
+
+
+--
+-- TOC entry 176 (class 1259 OID 125023)
+-- Name: bound_value; Type: TABLE; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE TABLE bound_value (
+    cp_id bigint NOT NULL,
+    bound_value character varying
+);
+
+
+ALTER TABLE bound_value OWNER TO "Core";
+
+--
+-- TOC entry 177 (class 1259 OID 125029)
+-- Name: closed_argument_values; Type: TABLE; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE TABLE closed_argument_values (
+    ca_id bigint NOT NULL,
+    value character varying,
+    data_type character varying
+);
+
+
+ALTER TABLE closed_argument_values OWNER TO "Core";
+
+--
+-- TOC entry 178 (class 1259 OID 125035)
+-- Name: closed_arguments_context_contract; Type: TABLE; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE TABLE closed_arguments_context_contract (
+    ca_id bigint NOT NULL,
+    cc_id bigint
+);
+
+
+ALTER TABLE closed_arguments_context_contract OWNER TO "Core";
+
+--
+-- TOC entry 179 (class 1259 OID 125038)
+-- Name: component_kind; Type: TABLE; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE TABLE component_kind (
+    kind_id integer NOT NULL,
+    kind_name character varying,
+    description character varying
+);
+
+
+ALTER TABLE component_kind OWNER TO "Core";
+
+--
+-- TOC entry 180 (class 1259 OID 125044)
+-- Name: component_kind_kind_id_seq; Type: SEQUENCE; Schema: public; Owner: Core
+--
+
+CREATE SEQUENCE component_kind_kind_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE component_kind_kind_id_seq OWNER TO "Core";
+
+--
+-- TOC entry 2438 (class 0 OID 0)
+-- Dependencies: 180
+-- Name: component_kind_kind_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Core
+--
+
+ALTER SEQUENCE component_kind_kind_id_seq OWNED BY component_kind.kind_id;
+
+
+--
+-- TOC entry 181 (class 1259 OID 125046)
+-- Name: component_platform; Type: TABLE; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE TABLE component_platform (
+    cc_id bigint NOT NULL,
+    platform_cc_id bigint NOT NULL
+);
+
+
+ALTER TABLE component_platform OWNER TO "Core";
+
+--
+-- TOC entry 182 (class 1259 OID 125049)
+-- Name: concrete_unit; Type: TABLE; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE TABLE concrete_unit (
+    unit_id integer NOT NULL,
+    cc_id integer,
+    au_id integer
+);
+
+
+ALTER TABLE concrete_unit OWNER TO "Core";
+
+--
+-- TOC entry 183 (class 1259 OID 125052)
+-- Name: context_argument; Type: TABLE; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE TABLE context_argument (
+    ca_id bigint NOT NULL,
+    "hasValue" boolean DEFAULT false,
+    variable_cp_id bigint,
+    cc_id bigint
+);
+
+
+ALTER TABLE context_argument OWNER TO "Core";
+
+--
+-- TOC entry 184 (class 1259 OID 125056)
+-- Name: context_argument_ca_id_seq; Type: SEQUENCE; Schema: public; Owner: Core
+--
+
+CREATE SEQUENCE context_argument_ca_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE context_argument_ca_id_seq OWNER TO "Core";
+
+--
+-- TOC entry 2439 (class 0 OID 0)
+-- Dependencies: 184
+-- Name: context_argument_ca_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Core
+--
+
+ALTER SEQUENCE context_argument_ca_id_seq OWNED BY context_argument.ca_id;
+
+
+--
+-- TOC entry 185 (class 1259 OID 125058)
+-- Name: instantiation_type_it_id_seq; Type: SEQUENCE; Schema: public; Owner: Core
+--
+
+CREATE SEQUENCE instantiation_type_it_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE instantiation_type_it_id_seq OWNER TO "Core";
+
+--
+-- TOC entry 186 (class 1259 OID 125060)
+-- Name: context_contract; Type: TABLE; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE TABLE context_contract (
+    cc_id integer DEFAULT nextval('instantiation_type_it_id_seq'::regclass) NOT NULL,
+    ac_id integer,
+    cc_name character varying,
+    kind_id bigint,
+    type_id integer,
+    owner_id integer
+);
+
+
+ALTER TABLE context_contract OWNER TO "Core";
+
+--
+-- TOC entry 187 (class 1259 OID 125067)
+-- Name: context_parameter; Type: TABLE; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE TABLE context_parameter (
+    cp_id bigint NOT NULL,
+    cp_name character varying,
+    ac_id integer,
+    "isShared" boolean DEFAULT false,
+    kind_id bigint DEFAULT 1,
+    parameter_type integer,
+    bound_id bigint
+);
+
+
+ALTER TABLE context_parameter OWNER TO "Core";
+
+--
+-- TOC entry 188 (class 1259 OID 125075)
+-- Name: context_parameter_cp_id_seq; Type: SEQUENCE; Schema: public; Owner: Core
+--
+
+CREATE SEQUENCE context_parameter_cp_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE context_parameter_cp_id_seq OWNER TO "Core";
+
+--
+-- TOC entry 2440 (class 0 OID 0)
+-- Dependencies: 188
+-- Name: context_parameter_cp_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Core
+--
+
+ALTER SEQUENCE context_parameter_cp_id_seq OWNED BY context_parameter.cp_id;
+
+
+--
+-- TOC entry 189 (class 1259 OID 125077)
+-- Name: context_variable_provided; Type: TABLE; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE TABLE context_variable_provided (
+    cp_id bigint NOT NULL,
+    variable_name character varying
+);
+
+
+ALTER TABLE context_variable_provided OWNER TO "Core";
+
+--
+-- TOC entry 190 (class 1259 OID 125083)
+-- Name: context_variable_required; Type: TABLE; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE TABLE context_variable_required (
+    refers_to_var bigint,
+    cp_id bigint NOT NULL
+);
+
+
+ALTER TABLE context_variable_required OWNER TO "Core";
+
+--
+-- TOC entry 191 (class 1259 OID 125086)
+-- Name: cost_function; Type: TABLE; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE TABLE cost_function (
+    cp_id bigint NOT NULL,
+    function_value character varying,
+    function_name character varying,
+    cc_id bigint,
+    cof_id bigint NOT NULL
+);
+
+
+ALTER TABLE cost_function OWNER TO "Core";
+
+--
+-- TOC entry 192 (class 1259 OID 125092)
+-- Name: cost_function_qf_id_seq; Type: SEQUENCE; Schema: public; Owner: Core
+--
+
+CREATE SEQUENCE cost_function_qf_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE cost_function_qf_id_seq OWNER TO "Core";
+
+--
+-- TOC entry 2441 (class 0 OID 0)
+-- Dependencies: 192
+-- Name: cost_function_qf_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Core
+--
+
+ALTER SEQUENCE cost_function_qf_id_seq OWNED BY cost_function.cof_id;
+
+
+--
+-- TOC entry 193 (class 1259 OID 125094)
+-- Name: cost_function_terms; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE cost_function_terms (
+    term_order integer,
+    cof_id bigint,
+    cp_id bigint,
+    coft_id bigint NOT NULL
+);
+
+
+ALTER TABLE cost_function_terms OWNER TO postgres;
+
+--
+-- TOC entry 2442 (class 0 OID 0)
+-- Dependencies: 193
+-- Name: COLUMN cost_function_terms.coft_id; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN cost_function_terms.coft_id IS '
+';
+
+
+--
+-- TOC entry 194 (class 1259 OID 125097)
+-- Name: cost_function_terms_qft_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE cost_function_terms_qft_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE cost_function_terms_qft_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2443 (class 0 OID 0)
+-- Dependencies: 194
+-- Name: cost_function_terms_qft_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE cost_function_terms_qft_id_seq OWNED BY cost_function_terms.coft_id;
+
+
+--
+-- TOC entry 195 (class 1259 OID 125099)
+-- Name: dependencies; Type: TABLE; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE TABLE dependencies (
+    file_id integer NOT NULL,
+    parent_id integer
+);
+
+
+ALTER TABLE dependencies OWNER TO "Core";
+
+--
+-- TOC entry 196 (class 1259 OID 125102)
+-- Name: file_type; Type: TABLE; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE TABLE file_type (
+    type_id integer NOT NULL,
+    type_name character varying NOT NULL
+);
+
+
+ALTER TABLE file_type OWNER TO "Core";
+
+--
+-- TOC entry 197 (class 1259 OID 125108)
+-- Name: file_type_type_id_seq; Type: SEQUENCE; Schema: public; Owner: Core
+--
+
+CREATE SEQUENCE file_type_type_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE file_type_type_id_seq OWNER TO "Core";
+
+--
+-- TOC entry 2444 (class 0 OID 0)
+-- Dependencies: 197
+-- Name: file_type_type_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Core
+--
+
+ALTER SEQUENCE file_type_type_id_seq OWNED BY file_type.type_id;
+
+
+--
+-- TOC entry 198 (class 1259 OID 125110)
+-- Name: files; Type: TABLE; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE TABLE files (
+    file_id integer NOT NULL,
+    u_id integer,
+    file_name character varying,
+    file_extension character varying(4),
+    current_version integer,
+    build_cfg character varying,
+    file_type integer,
+    path character varying
+);
+
+
+ALTER TABLE files OWNER TO "Core";
+
+--
+-- TOC entry 199 (class 1259 OID 125116)
+-- Name: files_file_id_seq; Type: SEQUENCE; Schema: public; Owner: Core
+--
+
+CREATE SEQUENCE files_file_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE files_file_id_seq OWNER TO "Core";
+
+--
+-- TOC entry 2445 (class 0 OID 0)
+-- Dependencies: 199
+-- Name: files_file_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Core
+--
+
+ALTER SEQUENCE files_file_id_seq OWNED BY files.file_id;
+
+
+--
+-- TOC entry 200 (class 1259 OID 125118)
+-- Name: inner_components; Type: TABLE; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE TABLE inner_components (
+    ic_id integer NOT NULL,
+    parent_id integer,
+    ac_id integer
+);
+
+
+ALTER TABLE inner_components OWNER TO "Core";
+
+--
+-- TOC entry 201 (class 1259 OID 125121)
+-- Name: inner_components_inner_component_id_seq; Type: SEQUENCE; Schema: public; Owner: Core
+--
+
+CREATE SEQUENCE inner_components_inner_component_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE inner_components_inner_component_id_seq OWNER TO "Core";
+
+--
+-- TOC entry 2446 (class 0 OID 0)
+-- Dependencies: 201
+-- Name: inner_components_inner_component_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Core
+--
+
+ALTER SEQUENCE inner_components_inner_component_id_seq OWNED BY inner_components.ic_id;
+
+
+--
+-- TOC entry 202 (class 1259 OID 125123)
+-- Name: maintainer; Type: TABLE; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE TABLE maintainer (
+    maintainer_id bigint NOT NULL,
+    maintainer_name character varying,
+    maintainer_url character varying,
+    contact character varying,
+    port integer,
+    accountable_name character varying
+);
+
+
+ALTER TABLE maintainer OWNER TO "Core";
+
+--
+-- TOC entry 203 (class 1259 OID 125129)
+-- Name: maintainer_m_id_seq; Type: SEQUENCE; Schema: public; Owner: Core
+--
+
+CREATE SEQUENCE maintainer_m_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE maintainer_m_id_seq OWNER TO "Core";
+
+--
+-- TOC entry 2447 (class 0 OID 0)
+-- Dependencies: 203
+-- Name: maintainer_m_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Core
+--
+
+ALTER SEQUENCE maintainer_m_id_seq OWNED BY maintainer.maintainer_id;
+
+
+--
+-- TOC entry 204 (class 1259 OID 125131)
+-- Name: parameter_type; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE parameter_type (
+    p_id integer NOT NULL,
+    p_name character varying
+);
+
+
+ALTER TABLE parameter_type OWNER TO postgres;
+
+--
+-- TOC entry 205 (class 1259 OID 125137)
+-- Name: platform_owner; Type: TABLE; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE TABLE platform_owner (
+    own_id bigint NOT NULL,
+    platform_cc_id bigint,
+    maintainer_id bigint
+);
+
+
+ALTER TABLE platform_owner OWNER TO "Core";
+
+--
+-- TOC entry 206 (class 1259 OID 125140)
+-- Name: platform_owner_own_id_seq; Type: SEQUENCE; Schema: public; Owner: Core
+--
+
+CREATE SEQUENCE platform_owner_own_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE platform_owner_own_id_seq OWNER TO "Core";
+
+--
+-- TOC entry 2448 (class 0 OID 0)
+-- Dependencies: 206
+-- Name: platform_owner_own_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Core
+--
+
+ALTER SEQUENCE platform_owner_own_id_seq OWNED BY platform_owner.own_id;
+
+
+--
+-- TOC entry 207 (class 1259 OID 125142)
+-- Name: quality_function; Type: TABLE; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE TABLE quality_function (
+    cp_id bigint NOT NULL,
+    function_value character varying,
+    function_name character varying,
+    cc_id bigint,
+    qf_id bigint NOT NULL
+);
+
+
+ALTER TABLE quality_function OWNER TO "Core";
+
+--
+-- TOC entry 208 (class 1259 OID 125148)
+-- Name: quality_function_qf_id_seq; Type: SEQUENCE; Schema: public; Owner: Core
+--
+
+CREATE SEQUENCE quality_function_qf_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE quality_function_qf_id_seq OWNER TO "Core";
+
+--
+-- TOC entry 2449 (class 0 OID 0)
+-- Dependencies: 208
+-- Name: quality_function_qf_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Core
+--
+
+ALTER SEQUENCE quality_function_qf_id_seq OWNED BY quality_function.qf_id;
+
+
+--
+-- TOC entry 209 (class 1259 OID 125150)
+-- Name: quality_function_terms; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE quality_function_terms (
+    term_order integer,
+    qf_id bigint,
+    cp_id bigint,
+    qft_id bigint NOT NULL
+);
+
+
+ALTER TABLE quality_function_terms OWNER TO postgres;
+
+--
+-- TOC entry 2450 (class 0 OID 0)
+-- Dependencies: 209
+-- Name: COLUMN quality_function_terms.qft_id; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN quality_function_terms.qft_id IS '
+';
+
+
+--
+-- TOC entry 210 (class 1259 OID 125153)
+-- Name: quality_function_terms_qft_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE quality_function_terms_qft_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE quality_function_terms_qft_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2451 (class 0 OID 0)
+-- Dependencies: 210
+-- Name: quality_function_terms_qft_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE quality_function_terms_qft_id_seq OWNED BY quality_function_terms.qft_id;
+
+
+--
+-- TOC entry 211 (class 1259 OID 125155)
+-- Name: ranking_function; Type: TABLE; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE TABLE ranking_function (
+    cp_id bigint NOT NULL,
+    function_value character varying,
+    function_name character varying,
+    cc_id bigint,
+    rf_id bigint NOT NULL
+);
+
+
+ALTER TABLE ranking_function OWNER TO "Core";
+
+--
+-- TOC entry 212 (class 1259 OID 125161)
+-- Name: ranking_function_rf_id_seq; Type: SEQUENCE; Schema: public; Owner: Core
+--
+
+CREATE SEQUENCE ranking_function_rf_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE ranking_function_rf_id_seq OWNER TO "Core";
+
+--
+-- TOC entry 2452 (class 0 OID 0)
+-- Dependencies: 212
+-- Name: ranking_function_rf_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Core
+--
+
+ALTER SEQUENCE ranking_function_rf_id_seq OWNED BY ranking_function.rf_id;
+
+
+--
+-- TOC entry 213 (class 1259 OID 125163)
+-- Name: ranking_function_terms; Type: TABLE; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE TABLE ranking_function_terms (
+    term_order integer,
+    rf_id bigint,
+    cp_id bigint,
+    rft_id bigint NOT NULL
+);
+
+
+ALTER TABLE ranking_function_terms OWNER TO "Core";
+
+--
+-- TOC entry 214 (class 1259 OID 125166)
+-- Name: ranking_function_terms_rft_id_seq; Type: SEQUENCE; Schema: public; Owner: Core
+--
+
+CREATE SEQUENCE ranking_function_terms_rft_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE ranking_function_terms_rft_id_seq OWNER TO "Core";
+
+--
+-- TOC entry 2453 (class 0 OID 0)
+-- Dependencies: 214
+-- Name: ranking_function_terms_rft_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Core
+--
+
+ALTER SEQUENCE ranking_function_terms_rft_id_seq OWNED BY ranking_function_terms.rft_id;
+
+
+--
+-- TOC entry 215 (class 1259 OID 125168)
+-- Name: session; Type: TABLE; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE TABLE session (
+    session_id bigint NOT NULL,
+    user_id bigint,
+    start_time timestamp without time zone DEFAULT now(),
+    backend_id bigint,
+    profile_id bigint,
+    platform_state boolean DEFAULT false,
+    platform_id bigint
+);
+
+
+ALTER TABLE session OWNER TO "Core";
+
+--
+-- TOC entry 216 (class 1259 OID 125173)
+-- Name: session_history; Type: TABLE; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE TABLE session_history (
+    session_id bigint NOT NULL,
+    user_id bigint,
+    start_time timestamp without time zone,
+    end_time timestamp without time zone,
+    backend_id bigint,
+    profile_id bigint,
+    platform_id bigint
+);
+
+
+ALTER TABLE session_history OWNER TO "Core";
+
+--
+-- TOC entry 217 (class 1259 OID 125176)
+-- Name: session_session_id_seq; Type: SEQUENCE; Schema: public; Owner: Core
+--
+
+CREATE SEQUENCE session_session_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE session_session_id_seq OWNER TO "Core";
+
+--
+-- TOC entry 2454 (class 0 OID 0)
+-- Dependencies: 217
+-- Name: session_session_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Core
+--
+
+ALTER SEQUENCE session_session_id_seq OWNED BY session.session_id;
+
+
+--
+-- TOC entry 218 (class 1259 OID 125178)
+-- Name: slice; Type: TABLE; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE TABLE slice (
+    slice_id integer NOT NULL,
+    inner_component_id integer,
+    inner_unit_id integer,
+    ac_id integer
+);
+
+
+ALTER TABLE slice OWNER TO "Core";
+
+--
+-- TOC entry 219 (class 1259 OID 125181)
+-- Name: slice_slice_id_seq; Type: SEQUENCE; Schema: public; Owner: Core
+--
+
+CREATE SEQUENCE slice_slice_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE slice_slice_id_seq OWNER TO "Core";
+
+--
+-- TOC entry 2455 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: slice_slice_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Core
+--
+
+ALTER SEQUENCE slice_slice_id_seq OWNED BY slice.slice_id;
+
+
+--
+-- TOC entry 220 (class 1259 OID 125183)
+-- Name: unit_unit_id_seq; Type: SEQUENCE; Schema: public; Owner: Core
+--
+
+CREATE SEQUENCE unit_unit_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE unit_unit_id_seq OWNER TO "Core";
+
+--
+-- TOC entry 2456 (class 0 OID 0)
+-- Dependencies: 220
+-- Name: unit_unit_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Core
+--
+
+ALTER SEQUENCE unit_unit_id_seq OWNED BY concrete_unit.unit_id;
+
+
+--
+-- TOC entry 221 (class 1259 OID 125185)
+-- Name: user; Type: TABLE; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE TABLE "user" (
+    user_id integer NOT NULL,
+    username character varying,
+    password character varying,
+    email character varying,
+    user_kind_id integer
+);
+
+
+ALTER TABLE "user" OWNER TO "Core";
+
+--
+-- TOC entry 222 (class 1259 OID 125191)
+-- Name: user_kind; Type: TABLE; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE TABLE user_kind (
+    user_kind_id integer NOT NULL,
+    "user_kind name" character varying
+);
+
+
+ALTER TABLE user_kind OWNER TO "Core";
+
+--
+-- TOC entry 223 (class 1259 OID 125197)
+-- Name: user_kind_user_kind_id_seq; Type: SEQUENCE; Schema: public; Owner: Core
+--
+
+CREATE SEQUENCE user_kind_user_kind_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE user_kind_user_kind_id_seq OWNER TO "Core";
+
+--
+-- TOC entry 2457 (class 0 OID 0)
+-- Dependencies: 223
+-- Name: user_kind_user_kind_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Core
+--
+
+ALTER SEQUENCE user_kind_user_kind_id_seq OWNED BY user_kind.user_kind_id;
+
+
+--
+-- TOC entry 224 (class 1259 OID 125199)
+-- Name: user_user_id_seq; Type: SEQUENCE; Schema: public; Owner: Core
+--
+
+CREATE SEQUENCE user_user_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE user_user_id_seq OWNER TO "Core";
+
+--
+-- TOC entry 2458 (class 0 OID 0)
+-- Dependencies: 224
+-- Name: user_user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Core
+--
+
+ALTER SEQUENCE user_user_id_seq OWNED BY "user".user_id;
+
+
+--
+-- TOC entry 225 (class 1259 OID 125201)
+-- Name: version; Type: TABLE; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE TABLE version (
+    file_id integer,
+    version_id integer,
+    url character varying,
+    date date,
+    hour timestamp with time zone,
+    owner_id integer
+);
+
+
+ALTER TABLE version OWNER TO "Core";
+
+--
+-- TOC entry 2105 (class 2604 OID 125207)
+-- Name: ac_id; Type: DEFAULT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY abstract_component ALTER COLUMN ac_id SET DEFAULT nextval('abstract_component_ac_id_seq'::regclass);
+
+
+--
+-- TOC entry 2106 (class 2604 OID 125208)
+-- Name: abstract_unit_id; Type: DEFAULT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY abstract_unit ALTER COLUMN abstract_unit_id SET DEFAULT nextval('abstract_unit_abstract_unit_id_seq'::regclass);
+
+
+--
+-- TOC entry 2107 (class 2604 OID 125209)
+-- Name: kind_id; Type: DEFAULT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY component_kind ALTER COLUMN kind_id SET DEFAULT nextval('component_kind_kind_id_seq'::regclass);
+
+
+--
+-- TOC entry 2108 (class 2604 OID 125210)
+-- Name: unit_id; Type: DEFAULT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY concrete_unit ALTER COLUMN unit_id SET DEFAULT nextval('unit_unit_id_seq'::regclass);
+
+
+--
+-- TOC entry 2110 (class 2604 OID 125211)
+-- Name: ca_id; Type: DEFAULT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY context_argument ALTER COLUMN ca_id SET DEFAULT nextval('context_argument_ca_id_seq'::regclass);
+
+
+--
+-- TOC entry 2114 (class 2604 OID 125212)
+-- Name: cp_id; Type: DEFAULT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY context_parameter ALTER COLUMN cp_id SET DEFAULT nextval('context_parameter_cp_id_seq'::regclass);
+
+
+--
+-- TOC entry 2115 (class 2604 OID 125213)
+-- Name: cof_id; Type: DEFAULT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY cost_function ALTER COLUMN cof_id SET DEFAULT nextval('cost_function_qf_id_seq'::regclass);
+
+
+--
+-- TOC entry 2116 (class 2604 OID 125214)
+-- Name: coft_id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY cost_function_terms ALTER COLUMN coft_id SET DEFAULT nextval('cost_function_terms_qft_id_seq'::regclass);
+
+
+--
+-- TOC entry 2117 (class 2604 OID 125215)
+-- Name: type_id; Type: DEFAULT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY file_type ALTER COLUMN type_id SET DEFAULT nextval('file_type_type_id_seq'::regclass);
+
+
+--
+-- TOC entry 2118 (class 2604 OID 125216)
+-- Name: file_id; Type: DEFAULT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY files ALTER COLUMN file_id SET DEFAULT nextval('files_file_id_seq'::regclass);
+
+
+--
+-- TOC entry 2119 (class 2604 OID 125217)
+-- Name: ic_id; Type: DEFAULT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY inner_components ALTER COLUMN ic_id SET DEFAULT nextval('inner_components_inner_component_id_seq'::regclass);
+
+
+--
+-- TOC entry 2120 (class 2604 OID 125218)
+-- Name: maintainer_id; Type: DEFAULT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY maintainer ALTER COLUMN maintainer_id SET DEFAULT nextval('maintainer_m_id_seq'::regclass);
+
+
+--
+-- TOC entry 2121 (class 2604 OID 125219)
+-- Name: own_id; Type: DEFAULT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY platform_owner ALTER COLUMN own_id SET DEFAULT nextval('platform_owner_own_id_seq'::regclass);
+
+
+--
+-- TOC entry 2122 (class 2604 OID 125220)
+-- Name: qf_id; Type: DEFAULT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY quality_function ALTER COLUMN qf_id SET DEFAULT nextval('quality_function_qf_id_seq'::regclass);
+
+
+--
+-- TOC entry 2123 (class 2604 OID 125221)
+-- Name: qft_id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY quality_function_terms ALTER COLUMN qft_id SET DEFAULT nextval('quality_function_terms_qft_id_seq'::regclass);
+
+
+--
+-- TOC entry 2124 (class 2604 OID 125222)
+-- Name: rf_id; Type: DEFAULT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY ranking_function ALTER COLUMN rf_id SET DEFAULT nextval('ranking_function_rf_id_seq'::regclass);
+
+
+--
+-- TOC entry 2125 (class 2604 OID 125223)
+-- Name: rft_id; Type: DEFAULT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY ranking_function_terms ALTER COLUMN rft_id SET DEFAULT nextval('ranking_function_terms_rft_id_seq'::regclass);
+
+
+--
+-- TOC entry 2128 (class 2604 OID 125224)
+-- Name: session_id; Type: DEFAULT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY session ALTER COLUMN session_id SET DEFAULT nextval('session_session_id_seq'::regclass);
+
+
+--
+-- TOC entry 2129 (class 2604 OID 125225)
+-- Name: slice_id; Type: DEFAULT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY slice ALTER COLUMN slice_id SET DEFAULT nextval('slice_slice_id_seq'::regclass);
+
+
+--
+-- TOC entry 2130 (class 2604 OID 125226)
+-- Name: user_id; Type: DEFAULT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY "user" ALTER COLUMN user_id SET DEFAULT nextval('user_user_id_seq'::regclass);
+
+
+--
+-- TOC entry 2131 (class 2604 OID 125227)
+-- Name: user_kind_id; Type: DEFAULT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY user_kind ALTER COLUMN user_kind_id SET DEFAULT nextval('user_kind_user_kind_id_seq'::regclass);
+
+
+--
+-- TOC entry 2374 (class 0 OID 125009)
+-- Dependencies: 172
+-- Data for Name: abstract_component; Type: TABLE DATA; Schema: public; Owner: Core
+--
+
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('LinearSystemSolver', 35, 55, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('AcceleratorType', 38, 2, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('MulticoreSupport', 39, 2, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('MatrixPattern', 40, 2, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('MatrixPartition', 41, 2, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('MatrixType', 42, 2, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('XEON', 89, 3, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('CORE', 90, 3, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('root', 0, NULL, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('Platform', 1, 0, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('Software', 2, 0, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('Processor', 3, 1, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('Memory', 4, 1, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('Architecture', 5, 1, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('Communication', 6, 1, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('Accelerator', 7, 1, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('Disc', 8, 1, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('Storage', 9, 1, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('ProcessorArchitecture', 10, 3, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('ProcessorManufacturer', 11, 3, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('GPU', 12, 15, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('MIC', 13, 15, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('FPGA', 14, 15, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('AcceleratorArchitecture', 15, 7, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('Topology', 16, 6, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('Interconect', 17, 6, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('Locale', 18, 1, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('Cluster', 19, 5, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('MPP', 20, 5, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('SingleProcessor', 21, 5, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('SIMD', 22, 5, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('Constelations', 23, 5, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('SMP', 24, 5, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('Node', 25, 5, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('KeplerGPU', 43, 38, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('FermiGPU', 44, 38, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('MaxwellGPU', 45, 38, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('SingleCore', 50, 39, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('MultipleCores', 51, 39, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('SparseMatrix', 52, 40, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('BlockTridiagonal', 53, 52, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('CRSMatrixFormat', 54, 42, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('Solver', 55, 2, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('Data', 94, 0, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('TesteTrigiagonal', 95, 40, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('DataStructure', 96, 0, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('String', 97, 96, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('Int', 98, 96, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('Complex', 99, 96, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('Image', 100, 99, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('Table', 101, 99, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('Template', 102, 99, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('Directory', 103, 99, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('jpg', 104, 100, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('fits', 105, 100, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('tbl', 106, 101, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('hdr', 107, 102, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('Montage', 108, 2, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('mImgtbl', 109, 108, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('mProjExec', 110, 108, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('mAdd', 111, 108, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('mJpeg', 112, 108, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('mOverlaps', 113, 108, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('mFitExec', 115, 108, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('mBgModel', 116, 108, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('mBgExec', 117, 108, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('mDiffexec', 114, 108, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('ProgrammingLanguageType', 118, 2, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('Java', 119, 118, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('C', 120, 118, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('Dafny', 121, 118, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('Bind', 122, 2, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('fileBind', 125, 122, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('paramBind', 124, 122, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('dirBindIntra', 123, 122, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('dirBindInter', 126, 122, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('logic', 127, 2, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('separationLogic', 128, 127, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('nonSeparationLogic', 129, 127, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('Teste 12 10 2015', 131, 2, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('Teste 12 10 2015 A', 132, 2, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('Teste 12 10 2015 D', 133, 2, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('Teste 12 10 2015 E', 134, 2, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('Teste 12 10 2015 F', 135, 2, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('Teste 12 10 2015 G', 136, 2, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('Novo', 138, 35, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('NovoTeste', 139, 38, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('NovoTeste2', 140, 39, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('NovoTeste3', 141, 1, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('NovoTeste4', 142, 39, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('NovoTeste5', 143, 19, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('NovoTeste6', 145, 35, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('NovoTeste7', 148, 35, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('New Platform', 149, 1, true);
+INSERT INTO abstract_component (ac_name, ac_id, supertype_id, enabled) VALUES ('New Abstract Component', 150, 35, true);
+
+
+--
+-- TOC entry 2459 (class 0 OID 0)
+-- Dependencies: 173
+-- Name: abstract_component_ac_id_seq; Type: SEQUENCE SET; Schema: public; Owner: Core
+--
+
+SELECT pg_catalog.setval('abstract_component_ac_id_seq', 150, true);
+
+
+--
+-- TOC entry 2376 (class 0 OID 125015)
+-- Dependencies: 174
+-- Data for Name: abstract_unit; Type: TABLE DATA; Schema: public; Owner: Core
+--
+
+INSERT INTO abstract_unit (abstract_unit_id, ac_id, au_name) VALUES (25, 109, 'unique');
+INSERT INTO abstract_unit (abstract_unit_id, ac_id, au_name) VALUES (26, 123, 'read_dir');
+INSERT INTO abstract_unit (abstract_unit_id, ac_id, au_name) VALUES (27, 109, 'mImgTbl_bin');
+
+
+--
+-- TOC entry 2460 (class 0 OID 0)
+-- Dependencies: 175
+-- Name: abstract_unit_abstract_unit_id_seq; Type: SEQUENCE SET; Schema: public; Owner: Core
+--
+
+SELECT pg_catalog.setval('abstract_unit_abstract_unit_id_seq', 27, true);
+
+
+--
+-- TOC entry 2378 (class 0 OID 125023)
+-- Dependencies: 176
+-- Data for Name: bound_value; Type: TABLE DATA; Schema: public; Owner: Core
+--
+
+INSERT INTO bound_value (cp_id, bound_value) VALUES (88, NULL);
+INSERT INTO bound_value (cp_id, bound_value) VALUES (90, NULL);
+
+
+--
+-- TOC entry 2379 (class 0 OID 125029)
+-- Dependencies: 177
+-- Data for Name: closed_argument_values; Type: TABLE DATA; Schema: public; Owner: Core
+--
+
+INSERT INTO closed_argument_values (ca_id, value, data_type) VALUES (18, '2', 'Integer');
+INSERT INTO closed_argument_values (ca_id, value, data_type) VALUES (19, '6', 'Integer');
+
+
+--
+-- TOC entry 2380 (class 0 OID 125035)
+-- Dependencies: 178
+-- Data for Name: closed_arguments_context_contract; Type: TABLE DATA; Schema: public; Owner: Core
+--
+
+INSERT INTO closed_arguments_context_contract (ca_id, cc_id) VALUES (5, 22);
+INSERT INTO closed_arguments_context_contract (ca_id, cc_id) VALUES (6, 23);
+INSERT INTO closed_arguments_context_contract (ca_id, cc_id) VALUES (7, 24);
+INSERT INTO closed_arguments_context_contract (ca_id, cc_id) VALUES (8, 27);
+INSERT INTO closed_arguments_context_contract (ca_id, cc_id) VALUES (9, 26);
+INSERT INTO closed_arguments_context_contract (ca_id, cc_id) VALUES (21, 41);
+INSERT INTO closed_arguments_context_contract (ca_id, cc_id) VALUES (25, 36);
+
+
+--
+-- TOC entry 2381 (class 0 OID 125038)
+-- Dependencies: 179
+-- Data for Name: component_kind; Type: TABLE DATA; Schema: public; Owner: Core
+--
+
+INSERT INTO component_kind (kind_id, kind_name, description) VALUES (1, 'QUALIFIER', NULL);
+INSERT INTO component_kind (kind_id, kind_name, description) VALUES (2, 'PROFILE', NULL);
+INSERT INTO component_kind (kind_id, kind_name, description) VALUES (4, 'INTEGER BIGGER CHOSEN', NULL);
+INSERT INTO component_kind (kind_id, kind_name, description) VALUES (5, 'INTEGER SMALLER CHOSEN', NULL);
+INSERT INTO component_kind (kind_id, kind_name, description) VALUES (3, 'DATA', 'Numeric Data');
+
+
+--
+-- TOC entry 2461 (class 0 OID 0)
+-- Dependencies: 180
+-- Name: component_kind_kind_id_seq; Type: SEQUENCE SET; Schema: public; Owner: Core
+--
+
+SELECT pg_catalog.setval('component_kind_kind_id_seq', 6, true);
+
+
+--
+-- TOC entry 2383 (class 0 OID 125046)
+-- Dependencies: 181
+-- Data for Name: component_platform; Type: TABLE DATA; Schema: public; Owner: Core
+--
+
+INSERT INTO component_platform (cc_id, platform_cc_id) VALUES (21, 42);
+INSERT INTO component_platform (cc_id, platform_cc_id) VALUES (50, 42);
+INSERT INTO component_platform (cc_id, platform_cc_id) VALUES (51, 42);
+INSERT INTO component_platform (cc_id, platform_cc_id) VALUES (52, 42);
+INSERT INTO component_platform (cc_id, platform_cc_id) VALUES (53, 42);
+INSERT INTO component_platform (cc_id, platform_cc_id) VALUES (54, 42);
+INSERT INTO component_platform (cc_id, platform_cc_id) VALUES (55, 42);
+INSERT INTO component_platform (cc_id, platform_cc_id) VALUES (56, 42);
+INSERT INTO component_platform (cc_id, platform_cc_id) VALUES (57, 42);
+INSERT INTO component_platform (cc_id, platform_cc_id) VALUES (58, 42);
+INSERT INTO component_platform (cc_id, platform_cc_id) VALUES (60, 42);
+
+
+--
+-- TOC entry 2384 (class 0 OID 125049)
+-- Dependencies: 182
+-- Data for Name: concrete_unit; Type: TABLE DATA; Schema: public; Owner: Core
+--
+
+INSERT INTO concrete_unit (unit_id, cc_id, au_id) VALUES (16, 24, 26);
+INSERT INTO concrete_unit (unit_id, cc_id, au_id) VALUES (17, 50, 27);
+
+
+--
+-- TOC entry 2385 (class 0 OID 125052)
+-- Dependencies: 183
+-- Data for Name: context_argument; Type: TABLE DATA; Schema: public; Owner: Core
+--
+
+INSERT INTO context_argument (ca_id, "hasValue", variable_cp_id, cc_id) VALUES (5, false, 15, 21);
+INSERT INTO context_argument (ca_id, "hasValue", variable_cp_id, cc_id) VALUES (6, false, 16, 21);
+INSERT INTO context_argument (ca_id, "hasValue", variable_cp_id, cc_id) VALUES (7, false, 17, 21);
+INSERT INTO context_argument (ca_id, "hasValue", variable_cp_id, cc_id) VALUES (8, false, 18, 21);
+INSERT INTO context_argument (ca_id, "hasValue", variable_cp_id, cc_id) VALUES (9, false, 19, 21);
+INSERT INTO context_argument (ca_id, "hasValue", variable_cp_id, cc_id) VALUES (21, false, 23, 35);
+INSERT INTO context_argument (ca_id, "hasValue", variable_cp_id, cc_id) VALUES (18, true, 32, 41);
+INSERT INTO context_argument (ca_id, "hasValue", variable_cp_id, cc_id) VALUES (19, true, 33, 36);
+INSERT INTO context_argument (ca_id, "hasValue", variable_cp_id, cc_id) VALUES (25, false, 28, 41);
+
+
+--
+-- TOC entry 2462 (class 0 OID 0)
+-- Dependencies: 184
+-- Name: context_argument_ca_id_seq; Type: SEQUENCE SET; Schema: public; Owner: Core
+--
+
+SELECT pg_catalog.setval('context_argument_ca_id_seq', 62, true);
+
+
+--
+-- TOC entry 2388 (class 0 OID 125060)
+-- Dependencies: 186
+-- Data for Name: context_contract; Type: TABLE DATA; Schema: public; Owner: Core
+--
+
+INSERT INTO context_contract (cc_id, ac_id, cc_name, kind_id, type_id, owner_id) VALUES (21, 35, 'SparseLinearSystemSolver', NULL, 0, 1);
+INSERT INTO context_contract (cc_id, ac_id, cc_name, kind_id, type_id, owner_id) VALUES (22, 43, 'KeplerGPU', NULL, 0, 1);
+INSERT INTO context_contract (cc_id, ac_id, cc_name, kind_id, type_id, owner_id) VALUES (23, 51, 'MultipleCores', NULL, 0, 1);
+INSERT INTO context_contract (cc_id, ac_id, cc_name, kind_id, type_id, owner_id) VALUES (24, 52, 'SparseMatrix', NULL, 0, 1);
+INSERT INTO context_contract (cc_id, ac_id, cc_name, kind_id, type_id, owner_id) VALUES (25, 53, 'BlockTridiagonal', NULL, 0, 1);
+INSERT INTO context_contract (cc_id, ac_id, cc_name, kind_id, type_id, owner_id) VALUES (26, 54, 'CRSMatrixFormat', NULL, 0, 1);
+INSERT INTO context_contract (cc_id, ac_id, cc_name, kind_id, type_id, owner_id) VALUES (27, 41, 'MatrixPartition', NULL, 0, 1);
+INSERT INTO context_contract (cc_id, ac_id, cc_name, kind_id, type_id, owner_id) VALUES (28, 38, 'AcceleratorType', NULL, 0, 1);
+INSERT INTO context_contract (cc_id, ac_id, cc_name, kind_id, type_id, owner_id) VALUES (29, 39, 'MulticoreSupport', NULL, 0, 1);
+INSERT INTO context_contract (cc_id, ac_id, cc_name, kind_id, type_id, owner_id) VALUES (30, 40, 'MatrixPattern', NULL, 0, 1);
+INSERT INTO context_contract (cc_id, ac_id, cc_name, kind_id, type_id, owner_id) VALUES (31, 42, 'MatrixType', NULL, 0, 1);
+INSERT INTO context_contract (cc_id, ac_id, cc_name, kind_id, type_id, owner_id) VALUES (33, 19, 'CENAPAD-UFC-LOW', NULL, 1, 1);
+INSERT INTO context_contract (cc_id, ac_id, cc_name, kind_id, type_id, owner_id) VALUES (34, 19, 'CENAPAD-UFC-MID', NULL, 1, 1);
+INSERT INTO context_contract (cc_id, ac_id, cc_name, kind_id, type_id, owner_id) VALUES (35, 19, 'CENAPAD-UFC-HIGH', NULL, 1, 1);
+INSERT INTO context_contract (cc_id, ac_id, cc_name, kind_id, type_id, owner_id) VALUES (36, 89, 'X5650EP', NULL, 0, 1);
+INSERT INTO context_contract (cc_id, ac_id, cc_name, kind_id, type_id, owner_id) VALUES (38, 3, 'XEON', NULL, 0, 1);
+INSERT INTO context_contract (cc_id, ac_id, cc_name, kind_id, type_id, owner_id) VALUES (39, 89, '2698ES', NULL, 0, 1);
+INSERT INTO context_contract (cc_id, ac_id, cc_name, kind_id, type_id, owner_id) VALUES (41, 25, 'CENAPAD-UFC-NODE1', NULL, 0, 1);
+INSERT INTO context_contract (cc_id, ac_id, cc_name, kind_id, type_id, owner_id) VALUES (42, 19, '21Platform', NULL, 0, 1);
+INSERT INTO context_contract (cc_id, ac_id, cc_name, kind_id, type_id, owner_id) VALUES (43, 96, 'String', NULL, 0, 1);
+INSERT INTO context_contract (cc_id, ac_id, cc_name, kind_id, type_id, owner_id) VALUES (44, 96, 'int', NULL, 0, 1);
+INSERT INTO context_contract (cc_id, ac_id, cc_name, kind_id, type_id, owner_id) VALUES (45, 104, 'jpg', NULL, 0, 1);
+INSERT INTO context_contract (cc_id, ac_id, cc_name, kind_id, type_id, owner_id) VALUES (46, 105, 'fits', NULL, 0, 1);
+INSERT INTO context_contract (cc_id, ac_id, cc_name, kind_id, type_id, owner_id) VALUES (47, 106, 'tbl', NULL, 0, 1);
+INSERT INTO context_contract (cc_id, ac_id, cc_name, kind_id, type_id, owner_id) VALUES (48, 107, 'hdr', NULL, 0, 1);
+INSERT INTO context_contract (cc_id, ac_id, cc_name, kind_id, type_id, owner_id) VALUES (49, 103, 'directory', NULL, 0, 1);
+INSERT INTO context_contract (cc_id, ac_id, cc_name, kind_id, type_id, owner_id) VALUES (50, 109, 'mImgtbl', NULL, 1, 1);
+INSERT INTO context_contract (cc_id, ac_id, cc_name, kind_id, type_id, owner_id) VALUES (51, 110, 'mProjExec', NULL, 1, 1);
+INSERT INTO context_contract (cc_id, ac_id, cc_name, kind_id, type_id, owner_id) VALUES (52, 111, 'mAdd', NULL, 1, 1);
+INSERT INTO context_contract (cc_id, ac_id, cc_name, kind_id, type_id, owner_id) VALUES (53, 112, 'mJpeg', NULL, 1, 1);
+INSERT INTO context_contract (cc_id, ac_id, cc_name, kind_id, type_id, owner_id) VALUES (54, 113, 'mOverlaps', NULL, 1, 1);
+INSERT INTO context_contract (cc_id, ac_id, cc_name, kind_id, type_id, owner_id) VALUES (55, 114, 'mDiffexec', NULL, 1, 1);
+INSERT INTO context_contract (cc_id, ac_id, cc_name, kind_id, type_id, owner_id) VALUES (56, 115, 'mFitExec', NULL, 1, 1);
+INSERT INTO context_contract (cc_id, ac_id, cc_name, kind_id, type_id, owner_id) VALUES (57, 116, 'mBgModel', NULL, 1, 1);
+INSERT INTO context_contract (cc_id, ac_id, cc_name, kind_id, type_id, owner_id) VALUES (58, 117, 'mBrExec', NULL, 1, 1);
+INSERT INTO context_contract (cc_id, ac_id, cc_name, kind_id, type_id, owner_id) VALUES (60, 123, 'dirBindIntraImpl', NULL, 1, 1);
+INSERT INTO context_contract (cc_id, ac_id, cc_name, kind_id, type_id, owner_id) VALUES (61, 126, 'dirBindInterImpl', NULL, 1, 1);
+INSERT INTO context_contract (cc_id, ac_id, cc_name, kind_id, type_id, owner_id) VALUES (62, 124, 'paramBind', NULL, 1, 1);
+INSERT INTO context_contract (cc_id, ac_id, cc_name, kind_id, type_id, owner_id) VALUES (63, 125, 'fileBind', NULL, 1, 1);
+INSERT INTO context_contract (cc_id, ac_id, cc_name, kind_id, type_id, owner_id) VALUES (64, 20, 'BlueGeneExample', NULL, 1, 1);
+
+
+--
+-- TOC entry 2389 (class 0 OID 125067)
+-- Dependencies: 187
+-- Data for Name: context_parameter; Type: TABLE DATA; Schema: public; Owner: Core
+--
+
+INSERT INTO context_parameter (cp_id, cp_name, ac_id, "isShared", kind_id, parameter_type, bound_id) VALUES (20, 'multicore', 41, true, 1, 1, NULL);
+INSERT INTO context_parameter (cp_id, cp_name, ac_id, "isShared", kind_id, parameter_type, bound_id) VALUES (21, 'property', 42, true, 1, 1, NULL);
+INSERT INTO context_parameter (cp_id, cp_name, ac_id, "isShared", kind_id, parameter_type, bound_id) VALUES (22, 'partition', 42, true, 1, 1, NULL);
+INSERT INTO context_parameter (cp_id, cp_name, ac_id, "isShared", kind_id, parameter_type, bound_id) VALUES (23, 'node', 19, false, 1, 1, NULL);
+INSERT INTO context_parameter (cp_id, cp_name, ac_id, "isShared", kind_id, parameter_type, bound_id) VALUES (24, 'interconect', 19, false, 1, 1, NULL);
+INSERT INTO context_parameter (cp_id, cp_name, ac_id, "isShared", kind_id, parameter_type, bound_id) VALUES (25, 'storage', 19, false, 1, 1, NULL);
+INSERT INTO context_parameter (cp_id, cp_name, ac_id, "isShared", kind_id, parameter_type, bound_id) VALUES (26, 'locale', 19, false, 1, 1, NULL);
+INSERT INTO context_parameter (cp_id, cp_name, ac_id, "isShared", kind_id, parameter_type, bound_id) VALUES (27, 'num_of_nodes', 19, false, 4, 1, NULL);
+INSERT INTO context_parameter (cp_id, cp_name, ac_id, "isShared", kind_id, parameter_type, bound_id) VALUES (28, 'node_processor', 25, false, 1, 1, NULL);
+INSERT INTO context_parameter (cp_id, cp_name, ac_id, "isShared", kind_id, parameter_type, bound_id) VALUES (29, 'node_memory', 25, false, 4, 1, NULL);
+INSERT INTO context_parameter (cp_id, cp_name, ac_id, "isShared", kind_id, parameter_type, bound_id) VALUES (32, 'num_of_processors', 25, false, 4, 1, NULL);
+INSERT INTO context_parameter (cp_id, cp_name, ac_id, "isShared", kind_id, parameter_type, bound_id) VALUES (33, 'cores_per_processor', 3, false, 4, 1, NULL);
+INSERT INTO context_parameter (cp_id, cp_name, ac_id, "isShared", kind_id, parameter_type, bound_id) VALUES (34, 'processor_architecture', 3, false, 1, 1, NULL);
+INSERT INTO context_parameter (cp_id, cp_name, ac_id, "isShared", kind_id, parameter_type, bound_id) VALUES (35, 'virtualization', 19, false, 1, 1, NULL);
+INSERT INTO context_parameter (cp_id, cp_name, ac_id, "isShared", kind_id, parameter_type, bound_id) VALUES (1, 'TotalOfCores', 19, false, 4, 2, NULL);
+INSERT INTO context_parameter (cp_id, cp_name, ac_id, "isShared", kind_id, parameter_type, bound_id) VALUES (15, 'accelerator_type', 35, false, 1, 1, 28);
+INSERT INTO context_parameter (cp_id, cp_name, ac_id, "isShared", kind_id, parameter_type, bound_id) VALUES (16, 'multicore_support', 35, false, 1, 1, 29);
+INSERT INTO context_parameter (cp_id, cp_name, ac_id, "isShared", kind_id, parameter_type, bound_id) VALUES (17, 'matrix_property', 35, false, 1, 1, 30);
+INSERT INTO context_parameter (cp_id, cp_name, ac_id, "isShared", kind_id, parameter_type, bound_id) VALUES (18, 'matrix_partition', 35, false, 1, 1, 27);
+INSERT INTO context_parameter (cp_id, cp_name, ac_id, "isShared", kind_id, parameter_type, bound_id) VALUES (19, 'matrix_type', 35, false, 1, 1, 31);
+INSERT INTO context_parameter (cp_id, cp_name, ac_id, "isShared", kind_id, parameter_type, bound_id) VALUES (73, 'cost_per_core', 3, false, 4, 1, NULL);
+INSERT INTO context_parameter (cp_id, cp_name, ac_id, "isShared", kind_id, parameter_type, bound_id) VALUES (2, 'TotalCost', 19, false, 4, 3, NULL);
+INSERT INTO context_parameter (cp_id, cp_name, ac_id, "isShared", kind_id, parameter_type, bound_id) VALUES (3, 'media_ponderada', 19, false, 4, 4, NULL);
+INSERT INTO context_parameter (cp_id, cp_name, ac_id, "isShared", kind_id, parameter_type, bound_id) VALUES (76, 'cp teste 12 10 2015', 131, false, 1, NULL, 25);
+INSERT INTO context_parameter (cp_id, cp_name, ac_id, "isShared", kind_id, parameter_type, bound_id) VALUES (77, 'cp teste 12 10 2015 B', 132, false, 1, NULL, 25);
+INSERT INTO context_parameter (cp_id, cp_name, ac_id, "isShared", kind_id, parameter_type, bound_id) VALUES (78, 'cp teste 12 10 2015 D', 133, false, 1, NULL, 25);
+INSERT INTO context_parameter (cp_id, cp_name, ac_id, "isShared", kind_id, parameter_type, bound_id) VALUES (79, 'cp teste 12 10 2015 E', 134, false, 1, NULL, 25);
+INSERT INTO context_parameter (cp_id, cp_name, ac_id, "isShared", kind_id, parameter_type, bound_id) VALUES (80, 'cp teste 12 10 2015 F', 135, false, 1, NULL, NULL);
+INSERT INTO context_parameter (cp_id, cp_name, ac_id, "isShared", kind_id, parameter_type, bound_id) VALUES (81, 'cp teste 12 10 2015 G', 136, false, 1, NULL, 25);
+INSERT INTO context_parameter (cp_id, cp_name, ac_id, "isShared", kind_id, parameter_type, bound_id) VALUES (88, 'paramtro_1', 139, false, 1, NULL, NULL);
+INSERT INTO context_parameter (cp_id, cp_name, ac_id, "isShared", kind_id, parameter_type, bound_id) VALUES (90, 'parametro', 145, false, 1, NULL, NULL);
+INSERT INTO context_parameter (cp_id, cp_name, ac_id, "isShared", kind_id, parameter_type, bound_id) VALUES (93, 'param', 148, false, 1, NULL, 21);
+INSERT INTO context_parameter (cp_id, cp_name, ac_id, "isShared", kind_id, parameter_type, bound_id) VALUES (94, 'num_cores', 149, false, 1, NULL, 38);
+
+
+--
+-- TOC entry 2463 (class 0 OID 0)
+-- Dependencies: 188
+-- Name: context_parameter_cp_id_seq; Type: SEQUENCE SET; Schema: public; Owner: Core
+--
+
+SELECT pg_catalog.setval('context_parameter_cp_id_seq', 94, true);
+
+
+--
+-- TOC entry 2391 (class 0 OID 125077)
+-- Dependencies: 189
+-- Data for Name: context_variable_provided; Type: TABLE DATA; Schema: public; Owner: Core
+--
+
+INSERT INTO context_variable_provided (cp_id, variable_name) VALUES (15, 'A');
+INSERT INTO context_variable_provided (cp_id, variable_name) VALUES (16, 'M');
+INSERT INTO context_variable_provided (cp_id, variable_name) VALUES (17, 'P');
+INSERT INTO context_variable_provided (cp_id, variable_name) VALUES (18, 'R');
+INSERT INTO context_variable_provided (cp_id, variable_name) VALUES (19, 'T');
+
+
+--
+-- TOC entry 2392 (class 0 OID 125083)
+-- Dependencies: 190
+-- Data for Name: context_variable_required; Type: TABLE DATA; Schema: public; Owner: Core
+--
+
+INSERT INTO context_variable_required (refers_to_var, cp_id) VALUES (16, 20);
+INSERT INTO context_variable_required (refers_to_var, cp_id) VALUES (17, 21);
+INSERT INTO context_variable_required (refers_to_var, cp_id) VALUES (18, 22);
+
+
+--
+-- TOC entry 2393 (class 0 OID 125086)
+-- Dependencies: 191
+-- Data for Name: cost_function; Type: TABLE DATA; Schema: public; Owner: Core
+--
+
+INSERT INTO cost_function (cp_id, function_value, function_name, cc_id, cof_id) VALUES (2, 'v0+v1', 'testeDeCusto', 35, 1);
+
+
+--
+-- TOC entry 2464 (class 0 OID 0)
+-- Dependencies: 192
+-- Name: cost_function_qf_id_seq; Type: SEQUENCE SET; Schema: public; Owner: Core
+--
+
+SELECT pg_catalog.setval('cost_function_qf_id_seq', 1, false);
+
+
+--
+-- TOC entry 2395 (class 0 OID 125094)
+-- Dependencies: 193
+-- Data for Name: cost_function_terms; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO cost_function_terms (term_order, cof_id, cp_id, coft_id) VALUES (1, 1, 32, 1);
+INSERT INTO cost_function_terms (term_order, cof_id, cp_id, coft_id) VALUES (2, 1, 33, 2);
+
+
+--
+-- TOC entry 2465 (class 0 OID 0)
+-- Dependencies: 194
+-- Name: cost_function_terms_qft_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('cost_function_terms_qft_id_seq', 2, true);
+
+
+--
+-- TOC entry 2397 (class 0 OID 125099)
+-- Dependencies: 195
+-- Data for Name: dependencies; Type: TABLE DATA; Schema: public; Owner: Core
+--
+
+
+
+--
+-- TOC entry 2398 (class 0 OID 125102)
+-- Dependencies: 196
+-- Data for Name: file_type; Type: TABLE DATA; Schema: public; Owner: Core
+--
+
+INSERT INTO file_type (type_id, type_name) VALUES (1, 'SOURCE');
+INSERT INTO file_type (type_id, type_name) VALUES (2, 'BASE');
+INSERT INTO file_type (type_id, type_name) VALUES (3, 'MAIN');
+
+
+--
+-- TOC entry 2466 (class 0 OID 0)
+-- Dependencies: 197
+-- Name: file_type_type_id_seq; Type: SEQUENCE SET; Schema: public; Owner: Core
+--
+
+SELECT pg_catalog.setval('file_type_type_id_seq', 3, true);
+
+
+--
+-- TOC entry 2400 (class 0 OID 125110)
+-- Dependencies: 198
+-- Data for Name: files; Type: TABLE DATA; Schema: public; Owner: Core
+--
+
+INSERT INTO files (file_id, u_id, file_name, file_extension, current_version, build_cfg, file_type, path) VALUES (25, 16, 'teste2', 'txt', 1, 'build  confs', 2, 'root.Software.MatrixPattern.SparseMatrix');
+INSERT INTO files (file_id, u_id, file_name, file_extension, current_version, build_cfg, file_type, path) VALUES (26, 16, 'teste', 'txt', 1, 'build  confs', 2, 'root.Software.MatrixPattern.SparseMatrix');
+INSERT INTO files (file_id, u_id, file_name, file_extension, current_version, build_cfg, file_type, path) VALUES (37, 17, 'teste', 'sh', 1, 'build  confs', 3, 'root.Software.mImgTbl');
+
+
+--
+-- TOC entry 2467 (class 0 OID 0)
+-- Dependencies: 199
+-- Name: files_file_id_seq; Type: SEQUENCE SET; Schema: public; Owner: Core
+--
+
+SELECT pg_catalog.setval('files_file_id_seq', 37, true);
+
+
+--
+-- TOC entry 2402 (class 0 OID 125118)
+-- Dependencies: 200
+-- Data for Name: inner_components; Type: TABLE DATA; Schema: public; Owner: Core
+--
+
+INSERT INTO inner_components (ic_id, parent_id, ac_id) VALUES (18, 109, 123);
+INSERT INTO inner_components (ic_id, parent_id, ac_id) VALUES (19, 109, 124);
+INSERT INTO inner_components (ic_id, parent_id, ac_id) VALUES (20, 109, 125);
+INSERT INTO inner_components (ic_id, parent_id, ac_id) VALUES (21, 111, 123);
+
+
+--
+-- TOC entry 2468 (class 0 OID 0)
+-- Dependencies: 201
+-- Name: inner_components_inner_component_id_seq; Type: SEQUENCE SET; Schema: public; Owner: Core
+--
+
+SELECT pg_catalog.setval('inner_components_inner_component_id_seq', 21, true);
+
+
+--
+-- TOC entry 2469 (class 0 OID 0)
+-- Dependencies: 185
+-- Name: instantiation_type_it_id_seq; Type: SEQUENCE SET; Schema: public; Owner: Core
+--
+
+SELECT pg_catalog.setval('instantiation_type_it_id_seq', 122, true);
+
+
+--
+-- TOC entry 2404 (class 0 OID 125123)
+-- Dependencies: 202
+-- Data for Name: maintainer; Type: TABLE DATA; Schema: public; Owner: Core
+--
+
+INSERT INTO maintainer (maintainer_id, maintainer_name, maintainer_url, contact, port, accountable_name) VALUES (1, 'CENAPAD-UFC', '200.19.177.94', 'suporte@cenapad.ufc.br', 1234, 'Joao Marcelo');
+
+
+--
+-- TOC entry 2470 (class 0 OID 0)
+-- Dependencies: 203
+-- Name: maintainer_m_id_seq; Type: SEQUENCE SET; Schema: public; Owner: Core
+--
+
+SELECT pg_catalog.setval('maintainer_m_id_seq', 1, true);
+
+
+--
+-- TOC entry 2406 (class 0 OID 125131)
+-- Dependencies: 204
+-- Data for Name: parameter_type; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO parameter_type (p_id, p_name) VALUES (1, 'context_parameter');
+INSERT INTO parameter_type (p_id, p_name) VALUES (2, 'quality_parameter');
+INSERT INTO parameter_type (p_id, p_name) VALUES (3, 'cost_parameter');
+INSERT INTO parameter_type (p_id, p_name) VALUES (4, 'rank_parameter');
+INSERT INTO parameter_type (p_id, p_name) VALUES (0, 'platform_parameter');
+
+
+--
+-- TOC entry 2407 (class 0 OID 125137)
+-- Dependencies: 205
+-- Data for Name: platform_owner; Type: TABLE DATA; Schema: public; Owner: Core
+--
+
+INSERT INTO platform_owner (own_id, platform_cc_id, maintainer_id) VALUES (1, 35, 1);
+INSERT INTO platform_owner (own_id, platform_cc_id, maintainer_id) VALUES (3, 33, 1);
+INSERT INTO platform_owner (own_id, platform_cc_id, maintainer_id) VALUES (2, 34, 1);
+
+
+--
+-- TOC entry 2471 (class 0 OID 0)
+-- Dependencies: 206
+-- Name: platform_owner_own_id_seq; Type: SEQUENCE SET; Schema: public; Owner: Core
+--
+
+SELECT pg_catalog.setval('platform_owner_own_id_seq', 3, true);
+
+
+--
+-- TOC entry 2409 (class 0 OID 125142)
+-- Dependencies: 207
+-- Data for Name: quality_function; Type: TABLE DATA; Schema: public; Owner: Core
+--
+
+INSERT INTO quality_function (cp_id, function_value, function_name, cc_id, qf_id) VALUES (1, 'v0*v1', 'funcao teste', 35, 1);
+
+
+--
+-- TOC entry 2472 (class 0 OID 0)
+-- Dependencies: 208
+-- Name: quality_function_qf_id_seq; Type: SEQUENCE SET; Schema: public; Owner: Core
+--
+
+SELECT pg_catalog.setval('quality_function_qf_id_seq', 5, true);
+
+
+--
+-- TOC entry 2411 (class 0 OID 125150)
+-- Dependencies: 209
+-- Data for Name: quality_function_terms; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO quality_function_terms (term_order, qf_id, cp_id, qft_id) VALUES (1, 1, 32, 1);
+INSERT INTO quality_function_terms (term_order, qf_id, cp_id, qft_id) VALUES (2, 1, 33, 2);
+
+
+--
+-- TOC entry 2473 (class 0 OID 0)
+-- Dependencies: 210
+-- Name: quality_function_terms_qft_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('quality_function_terms_qft_id_seq', 5, true);
+
+
+--
+-- TOC entry 2413 (class 0 OID 125155)
+-- Dependencies: 211
+-- Data for Name: ranking_function; Type: TABLE DATA; Schema: public; Owner: Core
+--
+
+INSERT INTO ranking_function (cp_id, function_value, function_name, cc_id, rf_id) VALUES (3, '(v0+(2*v1))/3', 'funcaoderankingteste', 35, 1);
+
+
+--
+-- TOC entry 2474 (class 0 OID 0)
+-- Dependencies: 212
+-- Name: ranking_function_rf_id_seq; Type: SEQUENCE SET; Schema: public; Owner: Core
+--
+
+SELECT pg_catalog.setval('ranking_function_rf_id_seq', 1, true);
+
+
+--
+-- TOC entry 2415 (class 0 OID 125163)
+-- Dependencies: 213
+-- Data for Name: ranking_function_terms; Type: TABLE DATA; Schema: public; Owner: Core
+--
+
+INSERT INTO ranking_function_terms (term_order, rf_id, cp_id, rft_id) VALUES (1, 1, 32, 1);
+INSERT INTO ranking_function_terms (term_order, rf_id, cp_id, rft_id) VALUES (2, 1, 33, 2);
+
+
+--
+-- TOC entry 2475 (class 0 OID 0)
+-- Dependencies: 214
+-- Name: ranking_function_terms_rft_id_seq; Type: SEQUENCE SET; Schema: public; Owner: Core
+--
+
+SELECT pg_catalog.setval('ranking_function_terms_rft_id_seq', 2, true);
+
+
+--
+-- TOC entry 2417 (class 0 OID 125168)
+-- Dependencies: 215
+-- Data for Name: session; Type: TABLE DATA; Schema: public; Owner: Core
+--
+
+
+
+--
+-- TOC entry 2418 (class 0 OID 125173)
+-- Dependencies: 216
+-- Data for Name: session_history; Type: TABLE DATA; Schema: public; Owner: Core
+--
+
+INSERT INTO session_history (session_id, user_id, start_time, end_time, backend_id, profile_id, platform_id) VALUES (3, 2, '2015-08-24 23:39:31.845464', '2015-08-24 23:39:34.335329', NULL, NULL, NULL);
+INSERT INTO session_history (session_id, user_id, start_time, end_time, backend_id, profile_id, platform_id) VALUES (4, 2, '2015-08-24 23:40:08.236153', '2015-08-24 23:40:19.631796', NULL, NULL, NULL);
+INSERT INTO session_history (session_id, user_id, start_time, end_time, backend_id, profile_id, platform_id) VALUES (99, 1, '2016-05-08 22:35:52.047482', '2016-05-08 22:35:52.119943', NULL, NULL, NULL);
+INSERT INTO session_history (session_id, user_id, start_time, end_time, backend_id, profile_id, platform_id) VALUES (101, 1, '2016-05-08 22:36:23.050672', '2016-05-08 22:36:23.156966', NULL, NULL, NULL);
+INSERT INTO session_history (session_id, user_id, start_time, end_time, backend_id, profile_id, platform_id) VALUES (103, 1, '2016-05-08 22:41:00.82614', '2016-05-08 22:41:00.947261', NULL, NULL, NULL);
+INSERT INTO session_history (session_id, user_id, start_time, end_time, backend_id, profile_id, platform_id) VALUES (104, 1, '2016-05-08 22:41:17.632653', '2016-05-08 22:41:17.743153', NULL, NULL, NULL);
+
+
+--
+-- TOC entry 2476 (class 0 OID 0)
+-- Dependencies: 217
+-- Name: session_session_id_seq; Type: SEQUENCE SET; Schema: public; Owner: Core
+--
+
+SELECT pg_catalog.setval('session_session_id_seq', 104, true);
+
+
+--
+-- TOC entry 2420 (class 0 OID 125178)
+-- Dependencies: 218
+-- Data for Name: slice; Type: TABLE DATA; Schema: public; Owner: Core
+--
+
+INSERT INTO slice (slice_id, inner_component_id, inner_unit_id, ac_id) VALUES (1, 18, 26, 109);
+
+
+--
+-- TOC entry 2477 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: slice_slice_id_seq; Type: SEQUENCE SET; Schema: public; Owner: Core
+--
+
+SELECT pg_catalog.setval('slice_slice_id_seq', 3, true);
+
+
+--
+-- TOC entry 2478 (class 0 OID 0)
+-- Dependencies: 220
+-- Name: unit_unit_id_seq; Type: SEQUENCE SET; Schema: public; Owner: Core
+--
+
+SELECT pg_catalog.setval('unit_unit_id_seq', 17, true);
+
+
+--
+-- TOC entry 2423 (class 0 OID 125185)
+-- Dependencies: 221
+-- Data for Name: user; Type: TABLE DATA; Schema: public; Owner: Core
+--
+
+INSERT INTO "user" (user_id, username, password, email, user_kind_id) VALUES (1, 'Wagner', '123', 'wgalam@gmail.com', NULL);
+
+
+--
+-- TOC entry 2424 (class 0 OID 125191)
+-- Dependencies: 222
+-- Data for Name: user_kind; Type: TABLE DATA; Schema: public; Owner: Core
+--
+
+INSERT INTO user_kind (user_kind_id, "user_kind name") VALUES (1, 'admin');
+
+
+--
+-- TOC entry 2479 (class 0 OID 0)
+-- Dependencies: 223
+-- Name: user_kind_user_kind_id_seq; Type: SEQUENCE SET; Schema: public; Owner: Core
+--
+
+SELECT pg_catalog.setval('user_kind_user_kind_id_seq', 1, true);
+
+
+--
+-- TOC entry 2480 (class 0 OID 0)
+-- Dependencies: 224
+-- Name: user_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: Core
+--
+
+SELECT pg_catalog.setval('user_user_id_seq', 1, true);
+
+
+--
+-- TOC entry 2427 (class 0 OID 125201)
+-- Dependencies: 225
+-- Data for Name: version; Type: TABLE DATA; Schema: public; Owner: Core
+--
+
+
+
+--
+-- TOC entry 2170 (class 2606 OID 125229)
+-- Name: PK_scv; Type: CONSTRAINT; Schema: public; Owner: Core; Tablespace: 
+--
+
+ALTER TABLE ONLY context_variable_required
+    ADD CONSTRAINT "PK_scv" PRIMARY KEY (cp_id);
+
+
+--
+-- TOC entry 2173 (class 2606 OID 125231)
+-- Name: cofid; Type: CONSTRAINT; Schema: public; Owner: Core; Tablespace: 
+--
+
+ALTER TABLE ONLY cost_function
+    ADD CONSTRAINT cofid PRIMARY KEY (cof_id);
+
+
+--
+-- TOC entry 2175 (class 2606 OID 125233)
+-- Name: coftid; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY cost_function_terms
+    ADD CONSTRAINT coftid PRIMARY KEY (coft_id);
+
+
+--
+-- TOC entry 2146 (class 2606 OID 125235)
+-- Name: component_kind_pkey; Type: CONSTRAINT; Schema: public; Owner: Core; Tablespace: 
+--
+
+ALTER TABLE ONLY component_kind
+    ADD CONSTRAINT component_kind_pkey PRIMARY KEY (kind_id);
+
+
+--
+-- TOC entry 2161 (class 2606 OID 125237)
+-- Name: context_parameter_pkey; Type: CONSTRAINT; Schema: public; Owner: Core; Tablespace: 
+--
+
+ALTER TABLE ONLY context_parameter
+    ADD CONSTRAINT context_parameter_pkey PRIMARY KEY (cp_id);
+
+
+--
+-- TOC entry 2177 (class 2606 OID 125239)
+-- Name: dependencies_pkey; Type: CONSTRAINT; Schema: public; Owner: Core; Tablespace: 
+--
+
+ALTER TABLE ONLY dependencies
+    ADD CONSTRAINT dependencies_pkey PRIMARY KEY (file_id);
+
+
+--
+-- TOC entry 2182 (class 2606 OID 125241)
+-- Name: files_pkey; Type: CONSTRAINT; Schema: public; Owner: Core; Tablespace: 
+--
+
+ALTER TABLE ONLY files
+    ADD CONSTRAINT files_pkey PRIMARY KEY (file_id);
+
+
+--
+-- TOC entry 2159 (class 2606 OID 125243)
+-- Name: instantiatio_type_pkey; Type: CONSTRAINT; Schema: public; Owner: Core; Tablespace: 
+--
+
+ALTER TABLE ONLY context_contract
+    ADD CONSTRAINT instantiatio_type_pkey PRIMARY KEY (cc_id);
+
+
+--
+-- TOC entry 2133 (class 2606 OID 125245)
+-- Name: pk_ac; Type: CONSTRAINT; Schema: public; Owner: Core; Tablespace: 
+--
+
+ALTER TABLE ONLY abstract_component
+    ADD CONSTRAINT pk_ac PRIMARY KEY (ac_id);
+
+
+--
+-- TOC entry 2135 (class 2606 OID 125247)
+-- Name: pk_acunit; Type: CONSTRAINT; Schema: public; Owner: Core; Tablespace: 
+--
+
+ALTER TABLE ONLY abstract_unit
+    ADD CONSTRAINT pk_acunit PRIMARY KEY (abstract_unit_id);
+
+
+--
+-- TOC entry 2139 (class 2606 OID 125249)
+-- Name: pk_bound; Type: CONSTRAINT; Schema: public; Owner: Core; Tablespace: 
+--
+
+ALTER TABLE ONLY bound_value
+    ADD CONSTRAINT pk_bound PRIMARY KEY (cp_id);
+
+
+--
+-- TOC entry 2144 (class 2606 OID 125251)
+-- Name: pk_cacc_id; Type: CONSTRAINT; Schema: public; Owner: Core; Tablespace: 
+--
+
+ALTER TABLE ONLY closed_arguments_context_contract
+    ADD CONSTRAINT pk_cacc_id PRIMARY KEY (ca_id);
+
+
+--
+-- TOC entry 2156 (class 2606 OID 125253)
+-- Name: pk_caid; Type: CONSTRAINT; Schema: public; Owner: Core; Tablespace: 
+--
+
+ALTER TABLE ONLY context_argument
+    ADD CONSTRAINT pk_caid PRIMARY KEY (ca_id);
+
+
+--
+-- TOC entry 2141 (class 2606 OID 125255)
+-- Name: pk_cav_id; Type: CONSTRAINT; Schema: public; Owner: Core; Tablespace: 
+--
+
+ALTER TABLE ONLY closed_argument_values
+    ADD CONSTRAINT pk_cav_id PRIMARY KEY (ca_id);
+
+
+--
+-- TOC entry 2180 (class 2606 OID 125257)
+-- Name: pk_ft; Type: CONSTRAINT; Schema: public; Owner: Core; Tablespace: 
+--
+
+ALTER TABLE ONLY file_type
+    ADD CONSTRAINT pk_ft PRIMARY KEY (type_id);
+
+
+--
+-- TOC entry 2187 (class 2606 OID 125259)
+-- Name: pk_inner; Type: CONSTRAINT; Schema: public; Owner: Core; Tablespace: 
+--
+
+ALTER TABLE ONLY inner_components
+    ADD CONSTRAINT pk_inner PRIMARY KEY (ic_id);
+
+
+--
+-- TOC entry 2189 (class 2606 OID 125261)
+-- Name: pk_manteiner; Type: CONSTRAINT; Schema: public; Owner: Core; Tablespace: 
+--
+
+ALTER TABLE ONLY maintainer
+    ADD CONSTRAINT pk_manteiner PRIMARY KEY (maintainer_id);
+
+
+--
+-- TOC entry 2195 (class 2606 OID 125263)
+-- Name: pk_own; Type: CONSTRAINT; Schema: public; Owner: Core; Tablespace: 
+--
+
+ALTER TABLE ONLY platform_owner
+    ADD CONSTRAINT pk_own PRIMARY KEY (own_id);
+
+
+--
+-- TOC entry 2191 (class 2606 OID 125265)
+-- Name: pk_p_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY parameter_type
+    ADD CONSTRAINT pk_p_id PRIMARY KEY (p_id);
+
+
+--
+-- TOC entry 2149 (class 2606 OID 125267)
+-- Name: pk_platform; Type: CONSTRAINT; Schema: public; Owner: Core; Tablespace: 
+--
+
+ALTER TABLE ONLY component_platform
+    ADD CONSTRAINT pk_platform PRIMARY KEY (cc_id);
+
+
+--
+-- TOC entry 2199 (class 2606 OID 125269)
+-- Name: pk_qf; Type: CONSTRAINT; Schema: public; Owner: Core; Tablespace: 
+--
+
+ALTER TABLE ONLY quality_function
+    ADD CONSTRAINT pk_qf PRIMARY KEY (qf_id);
+
+
+--
+-- TOC entry 2205 (class 2606 OID 125271)
+-- Name: pk_qft_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY quality_function_terms
+    ADD CONSTRAINT pk_qft_id PRIMARY KEY (qft_id);
+
+
+--
+-- TOC entry 2213 (class 2606 OID 125273)
+-- Name: pk_sessio_hyst_id; Type: CONSTRAINT; Schema: public; Owner: Core; Tablespace: 
+--
+
+ALTER TABLE ONLY session_history
+    ADD CONSTRAINT pk_sessio_hyst_id PRIMARY KEY (session_id);
+
+
+--
+-- TOC entry 2211 (class 2606 OID 125275)
+-- Name: pk_session_id; Type: CONSTRAINT; Schema: public; Owner: Core; Tablespace: 
+--
+
+ALTER TABLE ONLY session
+    ADD CONSTRAINT pk_session_id PRIMARY KEY (session_id);
+
+
+--
+-- TOC entry 2168 (class 2606 OID 125277)
+-- Name: pk_ucv; Type: CONSTRAINT; Schema: public; Owner: Core; Tablespace: 
+--
+
+ALTER TABLE ONLY context_variable_provided
+    ADD CONSTRAINT pk_ucv PRIMARY KEY (cp_id);
+
+
+--
+-- TOC entry 2207 (class 2606 OID 125279)
+-- Name: rfid; Type: CONSTRAINT; Schema: public; Owner: Core; Tablespace: 
+--
+
+ALTER TABLE ONLY ranking_function
+    ADD CONSTRAINT rfid PRIMARY KEY (rf_id);
+
+
+--
+-- TOC entry 2209 (class 2606 OID 125281)
+-- Name: rftid; Type: CONSTRAINT; Schema: public; Owner: Core; Tablespace: 
+--
+
+ALTER TABLE ONLY ranking_function_terms
+    ADD CONSTRAINT rftid PRIMARY KEY (rft_id);
+
+
+--
+-- TOC entry 2216 (class 2606 OID 125283)
+-- Name: slice_pkey; Type: CONSTRAINT; Schema: public; Owner: Core; Tablespace: 
+--
+
+ALTER TABLE ONLY slice
+    ADD CONSTRAINT slice_pkey PRIMARY KEY (slice_id);
+
+
+--
+-- TOC entry 2201 (class 2606 OID 125285)
+-- Name: un_function; Type: CONSTRAINT; Schema: public; Owner: Core; Tablespace: 
+--
+
+ALTER TABLE ONLY quality_function
+    ADD CONSTRAINT un_function UNIQUE (function_name);
+
+
+--
+-- TOC entry 2152 (class 2606 OID 125287)
+-- Name: unit_pkey; Type: CONSTRAINT; Schema: public; Owner: Core; Tablespace: 
+--
+
+ALTER TABLE ONLY concrete_unit
+    ADD CONSTRAINT unit_pkey PRIMARY KEY (unit_id);
+
+
+--
+-- TOC entry 2137 (class 2606 OID 125289)
+-- Name: uq_auname; Type: CONSTRAINT; Schema: public; Owner: Core; Tablespace: 
+--
+
+ALTER TABLE ONLY abstract_unit
+    ADD CONSTRAINT uq_auname UNIQUE (au_name);
+
+
+--
+-- TOC entry 2221 (class 2606 OID 125291)
+-- Name: user_kind_pkey; Type: CONSTRAINT; Schema: public; Owner: Core; Tablespace: 
+--
+
+ALTER TABLE ONLY user_kind
+    ADD CONSTRAINT user_kind_pkey PRIMARY KEY (user_kind_id);
+
+
+--
+-- TOC entry 2219 (class 2606 OID 125293)
+-- Name: user_pkey; Type: CONSTRAINT; Schema: public; Owner: Core; Tablespace: 
+--
+
+ALTER TABLE ONLY "user"
+    ADD CONSTRAINT user_pkey PRIMARY KEY (user_id);
+
+
+--
+-- TOC entry 2202 (class 1259 OID 125294)
+-- Name: fki_aft_cp; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX fki_aft_cp ON quality_function_terms USING btree (cp_id);
+
+
+--
+-- TOC entry 2153 (class 1259 OID 125295)
+-- Name: fki_ca_cc; Type: INDEX; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE INDEX fki_ca_cc ON context_argument USING btree (cc_id);
+
+
+--
+-- TOC entry 2154 (class 1259 OID 125296)
+-- Name: fki_ca_cp; Type: INDEX; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE INDEX fki_ca_cp ON context_argument USING btree (variable_cp_id);
+
+
+--
+-- TOC entry 2142 (class 1259 OID 125297)
+-- Name: fki_cac_ca_id; Type: INDEX; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE INDEX fki_cac_ca_id ON closed_arguments_context_contract USING btree (ca_id);
+
+
+--
+-- TOC entry 2162 (class 1259 OID 125298)
+-- Name: fki_cp_1; Type: INDEX; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE INDEX fki_cp_1 ON context_parameter USING btree (ac_id);
+
+
+--
+-- TOC entry 2163 (class 1259 OID 125299)
+-- Name: fki_cp_bound; Type: INDEX; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE INDEX fki_cp_bound ON context_parameter USING btree (bound_id);
+
+
+--
+-- TOC entry 2164 (class 1259 OID 125300)
+-- Name: fki_cp_kind; Type: INDEX; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE INDEX fki_cp_kind ON context_parameter USING btree (kind_id);
+
+
+--
+-- TOC entry 2165 (class 1259 OID 125301)
+-- Name: fki_cp_type; Type: INDEX; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE INDEX fki_cp_type ON context_parameter USING btree (parameter_type);
+
+
+--
+-- TOC entry 2178 (class 1259 OID 125302)
+-- Name: fki_file_1; Type: INDEX; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE INDEX fki_file_1 ON dependencies USING btree (parent_id);
+
+
+--
+-- TOC entry 2183 (class 1259 OID 125303)
+-- Name: fki_files_1; Type: INDEX; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE INDEX fki_files_1 ON files USING btree (u_id);
+
+
+--
+-- TOC entry 2222 (class 1259 OID 125304)
+-- Name: fki_fk-version_1; Type: INDEX; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE INDEX "fki_fk-version_1" ON version USING btree (owner_id);
+
+
+--
+-- TOC entry 2223 (class 1259 OID 125305)
+-- Name: fki_fk-version_2; Type: INDEX; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE INDEX "fki_fk-version_2" ON version USING btree (file_id);
+
+
+--
+-- TOC entry 2184 (class 1259 OID 125306)
+-- Name: fki_inner; Type: INDEX; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE INDEX fki_inner ON inner_components USING btree (parent_id);
+
+
+--
+-- TOC entry 2157 (class 1259 OID 125307)
+-- Name: fki_it_ac; Type: INDEX; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE INDEX fki_it_ac ON context_contract USING btree (ac_id);
+
+
+--
+-- TOC entry 2192 (class 1259 OID 125308)
+-- Name: fki_owner_cc; Type: INDEX; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE INDEX fki_owner_cc ON platform_owner USING btree (platform_cc_id);
+
+
+--
+-- TOC entry 2193 (class 1259 OID 125309)
+-- Name: fki_owner_mantainer; Type: INDEX; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE INDEX fki_owner_mantainer ON platform_owner USING btree (maintainer_id);
+
+
+--
+-- TOC entry 2185 (class 1259 OID 125310)
+-- Name: fki_parent_id; Type: INDEX; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE INDEX fki_parent_id ON inner_components USING btree (ic_id);
+
+
+--
+-- TOC entry 2147 (class 1259 OID 125311)
+-- Name: fki_pla_cc; Type: INDEX; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE INDEX fki_pla_cc ON component_platform USING btree (cc_id);
+
+
+--
+-- TOC entry 2196 (class 1259 OID 125312)
+-- Name: fki_qf_cc; Type: INDEX; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE INDEX fki_qf_cc ON quality_function USING btree (cc_id);
+
+
+--
+-- TOC entry 2197 (class 1259 OID 125313)
+-- Name: fki_qf_cp; Type: INDEX; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE INDEX fki_qf_cp ON quality_function USING btree (cp_id);
+
+
+--
+-- TOC entry 2203 (class 1259 OID 125314)
+-- Name: fki_qft_qf; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX fki_qft_qf ON quality_function_terms USING btree (qf_id);
+
+
+--
+-- TOC entry 2171 (class 1259 OID 125315)
+-- Name: fki_scv_cv; Type: INDEX; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE INDEX fki_scv_cv ON context_variable_required USING btree (refers_to_var);
+
+
+--
+-- TOC entry 2214 (class 1259 OID 125316)
+-- Name: fki_slice_ac; Type: INDEX; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE INDEX fki_slice_ac ON slice USING btree (ac_id);
+
+
+--
+-- TOC entry 2150 (class 1259 OID 125317)
+-- Name: fki_unit_1; Type: INDEX; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE INDEX fki_unit_1 ON concrete_unit USING btree (cc_id);
+
+
+--
+-- TOC entry 2217 (class 1259 OID 125318)
+-- Name: fki_user_1; Type: INDEX; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE INDEX fki_user_1 ON "user" USING btree (user_kind_id);
+
+
+--
+-- TOC entry 2166 (class 1259 OID 125319)
+-- Name: fki_var_id_contextvariable; Type: INDEX; Schema: public; Owner: Core; Tablespace: 
+--
+
+CREATE INDEX fki_var_id_contextvariable ON context_variable_provided USING btree (cp_id);
+
+
+--
+-- TOC entry 2263 (class 2606 OID 125320)
+-- Name: fk-version_1; Type: FK CONSTRAINT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY version
+    ADD CONSTRAINT "fk-version_1" FOREIGN KEY (owner_id) REFERENCES "user"(user_id);
+
+
+--
+-- TOC entry 2264 (class 2606 OID 125325)
+-- Name: fk-version_2; Type: FK CONSTRAINT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY version
+    ADD CONSTRAINT "fk-version_2" FOREIGN KEY (file_id) REFERENCES files(file_id);
+
+
+--
+-- TOC entry 2225 (class 2606 OID 125330)
+-- Name: fk_ac; Type: FK CONSTRAINT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY abstract_unit
+    ADD CONSTRAINT fk_ac FOREIGN KEY (ac_id) REFERENCES abstract_component(ac_id);
+
+
+--
+-- TOC entry 2242 (class 2606 OID 125335)
+-- Name: fk_acv_cp; Type: FK CONSTRAINT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY context_variable_required
+    ADD CONSTRAINT fk_acv_cp FOREIGN KEY (refers_to_var) REFERENCES context_parameter(cp_id);
+
+
+--
+-- TOC entry 2255 (class 2606 OID 125340)
+-- Name: fk_aft_cp; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY quality_function_terms
+    ADD CONSTRAINT fk_aft_cp FOREIGN KEY (cp_id) REFERENCES context_parameter(cp_id);
+
+
+--
+-- TOC entry 2257 (class 2606 OID 125345)
+-- Name: fk_art; Type: FK CONSTRAINT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY ranking_function_terms
+    ADD CONSTRAINT fk_art FOREIGN KEY (cp_id) REFERENCES context_parameter(cp_id);
+
+
+--
+-- TOC entry 2231 (class 2606 OID 125350)
+-- Name: fk_au_id_au; Type: FK CONSTRAINT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY concrete_unit
+    ADD CONSTRAINT fk_au_id_au FOREIGN KEY (au_id) REFERENCES abstract_unit(abstract_unit_id);
+
+
+--
+-- TOC entry 2226 (class 2606 OID 125355)
+-- Name: fk_bound_cp; Type: FK CONSTRAINT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY bound_value
+    ADD CONSTRAINT fk_bound_cp FOREIGN KEY (cp_id) REFERENCES context_parameter(cp_id);
+
+
+--
+-- TOC entry 2233 (class 2606 OID 125360)
+-- Name: fk_ca_cc; Type: FK CONSTRAINT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY context_argument
+    ADD CONSTRAINT fk_ca_cc FOREIGN KEY (cc_id) REFERENCES context_contract(cc_id);
+
+
+--
+-- TOC entry 2234 (class 2606 OID 125365)
+-- Name: fk_ca_cp; Type: FK CONSTRAINT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY context_argument
+    ADD CONSTRAINT fk_ca_cp FOREIGN KEY (variable_cp_id) REFERENCES context_parameter(cp_id);
+
+
+--
+-- TOC entry 2228 (class 2606 OID 125370)
+-- Name: fk_cac_ca_id; Type: FK CONSTRAINT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY closed_arguments_context_contract
+    ADD CONSTRAINT fk_cac_ca_id FOREIGN KEY (ca_id) REFERENCES context_argument(ca_id);
+
+
+--
+-- TOC entry 2227 (class 2606 OID 125375)
+-- Name: fk_cav_ca_id; Type: FK CONSTRAINT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY closed_argument_values
+    ADD CONSTRAINT fk_cav_ca_id FOREIGN KEY (ca_id) REFERENCES context_argument(ca_id);
+
+
+--
+-- TOC entry 2235 (class 2606 OID 125380)
+-- Name: fk_cc_owner; Type: FK CONSTRAINT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY context_contract
+    ADD CONSTRAINT fk_cc_owner FOREIGN KEY (owner_id) REFERENCES "user"(user_id);
+
+
+--
+-- TOC entry 2244 (class 2606 OID 125385)
+-- Name: fk_cft_cf; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY cost_function_terms
+    ADD CONSTRAINT fk_cft_cf FOREIGN KEY (cof_id) REFERENCES cost_function(cof_id);
+
+
+--
+-- TOC entry 2245 (class 2606 OID 125390)
+-- Name: fk_cft_cp; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY cost_function_terms
+    ADD CONSTRAINT fk_cft_cp FOREIGN KEY (cp_id) REFERENCES context_parameter(cp_id);
+
+
+--
+-- TOC entry 2237 (class 2606 OID 125395)
+-- Name: fk_cp_1; Type: FK CONSTRAINT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY context_parameter
+    ADD CONSTRAINT fk_cp_1 FOREIGN KEY (ac_id) REFERENCES abstract_component(ac_id);
+
+
+--
+-- TOC entry 2238 (class 2606 OID 125400)
+-- Name: fk_cp_bound; Type: FK CONSTRAINT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY context_parameter
+    ADD CONSTRAINT fk_cp_bound FOREIGN KEY (bound_id) REFERENCES context_contract(cc_id);
+
+
+--
+-- TOC entry 2239 (class 2606 OID 125405)
+-- Name: fk_cp_kind; Type: FK CONSTRAINT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY context_parameter
+    ADD CONSTRAINT fk_cp_kind FOREIGN KEY (kind_id) REFERENCES component_kind(kind_id);
+
+
+--
+-- TOC entry 2240 (class 2606 OID 125410)
+-- Name: fk_cp_type; Type: FK CONSTRAINT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY context_parameter
+    ADD CONSTRAINT fk_cp_type FOREIGN KEY (parameter_type) REFERENCES parameter_type(p_id);
+
+
+--
+-- TOC entry 2241 (class 2606 OID 125415)
+-- Name: fk_cv_cp; Type: FK CONSTRAINT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY context_variable_provided
+    ADD CONSTRAINT fk_cv_cp FOREIGN KEY (cp_id) REFERENCES context_parameter(cp_id);
+
+
+--
+-- TOC entry 2246 (class 2606 OID 125420)
+-- Name: fk_file_1; Type: FK CONSTRAINT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY dependencies
+    ADD CONSTRAINT fk_file_1 FOREIGN KEY (parent_id) REFERENCES files(file_id);
+
+
+--
+-- TOC entry 2247 (class 2606 OID 125425)
+-- Name: fk_file_2; Type: FK CONSTRAINT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY dependencies
+    ADD CONSTRAINT fk_file_2 FOREIGN KEY (file_id) REFERENCES files(file_id);
+
+
+--
+-- TOC entry 2248 (class 2606 OID 125430)
+-- Name: fk_files_1; Type: FK CONSTRAINT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY files
+    ADD CONSTRAINT fk_files_1 FOREIGN KEY (u_id) REFERENCES concrete_unit(unit_id);
+
+
+--
+-- TOC entry 2259 (class 2606 OID 125435)
+-- Name: fk_inner; Type: FK CONSTRAINT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY slice
+    ADD CONSTRAINT fk_inner FOREIGN KEY (inner_component_id) REFERENCES inner_components(ic_id);
+
+
+--
+-- TOC entry 2249 (class 2606 OID 125440)
+-- Name: fk_inner_ac; Type: FK CONSTRAINT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY inner_components
+    ADD CONSTRAINT fk_inner_ac FOREIGN KEY (ac_id) REFERENCES abstract_component(ac_id);
+
+
+--
+-- TOC entry 2250 (class 2606 OID 125445)
+-- Name: fk_inner_parent_ac; Type: FK CONSTRAINT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY inner_components
+    ADD CONSTRAINT fk_inner_parent_ac FOREIGN KEY (parent_id) REFERENCES abstract_component(ac_id);
+
+
+--
+-- TOC entry 2260 (class 2606 OID 125450)
+-- Name: fk_inner_unity_id; Type: FK CONSTRAINT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY slice
+    ADD CONSTRAINT fk_inner_unity_id FOREIGN KEY (inner_unit_id) REFERENCES abstract_unit(abstract_unit_id);
+
+
+--
+-- TOC entry 2236 (class 2606 OID 125455)
+-- Name: fk_it_ac; Type: FK CONSTRAINT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY context_contract
+    ADD CONSTRAINT fk_it_ac FOREIGN KEY (ac_id) REFERENCES abstract_component(ac_id);
+
+
+--
+-- TOC entry 2251 (class 2606 OID 125460)
+-- Name: fk_owner_cc; Type: FK CONSTRAINT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY platform_owner
+    ADD CONSTRAINT fk_owner_cc FOREIGN KEY (platform_cc_id) REFERENCES context_contract(cc_id);
+
+
+--
+-- TOC entry 2252 (class 2606 OID 125465)
+-- Name: fk_owner_mantainer; Type: FK CONSTRAINT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY platform_owner
+    ADD CONSTRAINT fk_owner_mantainer FOREIGN KEY (maintainer_id) REFERENCES maintainer(maintainer_id);
+
+
+--
+-- TOC entry 2229 (class 2606 OID 125470)
+-- Name: fk_pla_cc; Type: FK CONSTRAINT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY component_platform
+    ADD CONSTRAINT fk_pla_cc FOREIGN KEY (cc_id) REFERENCES context_contract(cc_id);
+
+
+--
+-- TOC entry 2230 (class 2606 OID 125475)
+-- Name: fk_pla_cc_plat; Type: FK CONSTRAINT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY component_platform
+    ADD CONSTRAINT fk_pla_cc_plat FOREIGN KEY (platform_cc_id) REFERENCES context_contract(cc_id);
+
+
+--
+-- TOC entry 2253 (class 2606 OID 125480)
+-- Name: fk_qf_cc; Type: FK CONSTRAINT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY quality_function
+    ADD CONSTRAINT fk_qf_cc FOREIGN KEY (cc_id) REFERENCES context_contract(cc_id);
+
+
+--
+-- TOC entry 2254 (class 2606 OID 125485)
+-- Name: fk_qf_cp; Type: FK CONSTRAINT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY quality_function
+    ADD CONSTRAINT fk_qf_cp FOREIGN KEY (cp_id) REFERENCES context_parameter(cp_id);
+
+
+--
+-- TOC entry 2256 (class 2606 OID 125490)
+-- Name: fk_qft_qf; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY quality_function_terms
+    ADD CONSTRAINT fk_qft_qf FOREIGN KEY (qf_id) REFERENCES quality_function(qf_id);
+
+
+--
+-- TOC entry 2258 (class 2606 OID 125495)
+-- Name: fk_rft_qf; Type: FK CONSTRAINT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY ranking_function_terms
+    ADD CONSTRAINT fk_rft_qf FOREIGN KEY (rf_id) REFERENCES ranking_function(rf_id);
+
+
+--
+-- TOC entry 2243 (class 2606 OID 125500)
+-- Name: fk_scv_cp_id; Type: FK CONSTRAINT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY context_variable_required
+    ADD CONSTRAINT fk_scv_cp_id FOREIGN KEY (cp_id) REFERENCES context_parameter(cp_id);
+
+
+--
+-- TOC entry 2261 (class 2606 OID 125505)
+-- Name: fk_slice_ac; Type: FK CONSTRAINT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY slice
+    ADD CONSTRAINT fk_slice_ac FOREIGN KEY (ac_id) REFERENCES abstract_component(ac_id);
+
+
+--
+-- TOC entry 2224 (class 2606 OID 125510)
+-- Name: fk_subtype_ac; Type: FK CONSTRAINT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY abstract_component
+    ADD CONSTRAINT fk_subtype_ac FOREIGN KEY (supertype_id) REFERENCES abstract_component(ac_id);
+
+
+--
+-- TOC entry 2232 (class 2606 OID 125515)
+-- Name: fk_unit2; Type: FK CONSTRAINT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY concrete_unit
+    ADD CONSTRAINT fk_unit2 FOREIGN KEY (cc_id) REFERENCES context_contract(cc_id);
+
+
+--
+-- TOC entry 2262 (class 2606 OID 125520)
+-- Name: fk_user_1; Type: FK CONSTRAINT; Schema: public; Owner: Core
+--
+
+ALTER TABLE ONLY "user"
+    ADD CONSTRAINT fk_user_1 FOREIGN KEY (user_kind_id) REFERENCES user_kind(user_kind_id);
+
+
+--
+-- TOC entry 2434 (class 0 OID 0)
+-- Dependencies: 6
+-- Name: public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM postgres;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+-- Completed on 2016-05-08 23:28:43 BRT
+
+--
+-- PostgreSQL database dump complete
+--
+
