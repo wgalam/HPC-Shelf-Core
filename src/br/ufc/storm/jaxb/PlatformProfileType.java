@@ -2,7 +2,7 @@
 // Este arquivo foi gerado pela Arquitetura JavaTM para Implementação de Referência (JAXB) de Bind XML, v2.2.8-b130911.1802 
 // Consulte <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Todas as modificações neste arquivo serão perdidas após a recompilação do esquema de origem. 
-// Gerado em: 2016.02.18 às 02:55:50 PM BRT 
+// Gerado em: 2016.05.09 às 10:50:20 AM BRT 
 //
 
 
@@ -28,6 +28,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="platform_contract" type="{http://storm.lia.ufc.br}context_contract"/>
  *       &lt;/sequence>
  *       &lt;attribute name="network_ip_address" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="port" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -45,6 +46,8 @@ public class PlatformProfileType {
     protected ContextContract platformContract;
     @XmlAttribute(name = "network_ip_address")
     protected String networkIpAddress;
+    @XmlAttribute(name = "port")
+    protected String port;
 
     /**
      * Obtém o valor da propriedade platformContract.
@@ -92,6 +95,30 @@ public class PlatformProfileType {
      */
     public void setNetworkIpAddress(String value) {
         this.networkIpAddress = value;
+    }
+
+    /**
+     * Obtém o valor da propriedade port.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getPort() {
+        return port;
+    }
+
+    /**
+     * Define o valor da propriedade port.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setPort(String value) {
+        this.port = value;
     }
 
 }

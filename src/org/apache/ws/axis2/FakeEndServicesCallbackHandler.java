@@ -77,22 +77,6 @@
             }
                 
            /**
-            * auto generated Axis2 call back method for runCommand method
-            * override this method for handling normal response from runCommand operation
-            */
-           public void receiveResultrunCommand(
-                    org.apache.ws.axis2.FakeEndServicesStub.RunCommandResponse result
-                        ) {
-           }
-
-          /**
-           * auto generated Axis2 Error handler
-           * override this method for handling error response from runCommand operation
-           */
-            public void receiveErrorrunCommand(java.lang.Exception e) {
-            }
-                
-           /**
             * auto generated Axis2 call back method for renameFile method
             * override this method for handling normal response from renameFile operation
             */
@@ -106,6 +90,22 @@
            * override this method for handling error response from renameFile operation
            */
             public void receiveErrorrenameFile(java.lang.Exception e) {
+            }
+                
+           /**
+            * auto generated Axis2 call back method for blablabla method
+            * override this method for handling normal response from blablabla operation
+            */
+           public void receiveResultblablabla(
+                    org.apache.ws.axis2.FakeEndServicesStub.BlablablaResponse result
+                        ) {
+           }
+
+          /**
+           * auto generated Axis2 Error handler
+           * override this method for handling error response from blablabla operation
+           */
+            public void receiveErrorblablabla(java.lang.Exception e) {
             }
                 
            /**
@@ -125,19 +125,19 @@
             }
                 
            /**
-            * auto generated Axis2 call back method for instantiate method
-            * override this method for handling normal response from instantiate operation
+            * auto generated Axis2 call back method for setRunnable method
+            * override this method for handling normal response from setRunnable operation
             */
-           public void receiveResultinstantiate(
-                    org.apache.ws.axis2.FakeEndServicesStub.InstantiateResponse result
+           public void receiveResultsetRunnable(
+                    org.apache.ws.axis2.FakeEndServicesStub.SetRunnableResponse result
                         ) {
            }
 
           /**
            * auto generated Axis2 Error handler
-           * override this method for handling error response from instantiate operation
+           * override this method for handling error response from setRunnable operation
            */
-            public void receiveErrorinstantiate(java.lang.Exception e) {
+            public void receiveErrorsetRunnable(java.lang.Exception e) {
             }
                 
            /**

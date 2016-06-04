@@ -11,6 +11,7 @@ import br.ufc.storm.jaxb.CandidateListType;
 import br.ufc.storm.jaxb.ComputationalSystemType;
 import br.ufc.storm.jaxb.ContextContract;
 import br.ufc.storm.jaxb.PlatformProfileType;
+import br.ufc.storm.jaxb.UnitFileType;
 import br.ufc.storm.sql.AbstractComponentHandler;
 import br.ufc.storm.sql.SessionHandler;
 import br.ufc.storm.xml.XMLHandler;
@@ -183,7 +184,7 @@ public class CoreServices {
 	 * @return XML file with a context contract
 	 */
 
-	public String getContextContract(int id){
+	public static String getContextContract(int id){
 		LogHandler.getLogger().info("Starting to get a context contract...");
 		try {
 			String s = XMLHandler.getContextContract(id);
@@ -218,16 +219,16 @@ public class CoreServices {
 	 * @param cmp XML file as string
 	 * @return True if no exception occurs
 	 */
-	public boolean addConcreteUnit(String cmp){
+	public Integer addConcreteUnit(String cmp){
 		LogHandler.getLogger().info("Starting to add a concrete unit...");
 		try {
-			XMLHandler.addConcreteUnit(cmp);
+			int cuid = XMLHandler.addConcreteUnit(cmp);
 			LogHandler.close();
-			return true;
+			return cuid;
 		} catch (XMLException e) {
 			LogHandler.close();
-			return false;
 		}
+		return null;
 	}
 
 	/**
@@ -303,7 +304,7 @@ public class CoreServices {
 			LogHandler.close();
 			return null;
 		}
-		
+
 	}
 
 	/**
@@ -312,11 +313,19 @@ public class CoreServices {
 	 * @return True if no exception occurs
 	 */
 
-	public boolean releasePlatform(String uri){
+	public boolean releasePlatform(String cst){
 		LogHandler.getLogger().info("Starting to reease a platform...");
-		boolean b = BackendHandler.releasePlatform(uri);
-		LogHandler.close();
-		return b;
+		ComputationalSystemType clt = null;
+		try {
+			clt = XMLHandler.getComputationalSystemType(cst);
+			boolean b = BackendHandler.releasePlatform(clt);
+			LogHandler.close();
+			return b;
+		} catch (XMLException e) {
+			cancelSession(clt.getSession());
+			LogHandler.close();
+			return false;
+		}
 	}
 
 	/**
@@ -324,7 +333,7 @@ public class CoreServices {
 	 * @param candidateList - component in xml as string
 	 * @return session URI 
 	 */
-	public String deploy(String candidateList){
+	public static String deploy(String candidateList){
 		CandidateListType clt;
 		try {
 			clt = XMLHandler.getCandidateList(candidateList);
@@ -335,23 +344,34 @@ public class CoreServices {
 		} catch (XMLException | ShelfRuntimeException e) {
 			return "An error occurred while deploying application";
 		}
-		
-		
 	}
 
-	/**
-	 * Returns a component address
-	 * @param uri
-	 * @return
-	 */
-//	public String instantiate(String uri){
-//		LogHandler.getLogger().info("Starting to instantiate an application...");
-//		String s = BackendHandler.instantiate(uri);
-//		LogHandler.close();
-//		return s;
-//	}
+	public static String instantiate(String cst){
+		ComputationalSystemType clt = null;
+		try {
+			clt = XMLHandler.getComputationalSystemType(cst);
+			LogHandler.getLogger().info("Starting to instantiate application...");
+			String str = BackendHandler.instantiateComponent(clt);
+			LogHandler.close();
+			return str;
+		} catch (XMLException | ShelfRuntimeException e) {
+			cancelSession(clt.getSession());
+			return null;
+		}
+	}
 
-	public boolean cancelSession(int sessionID){
+	//TODO: Fazer
+	public static String getStatus(String cst){
+		ComputationalSystemType clt = null;
+		try {
+			clt = XMLHandler.getComputationalSystemType(cst);
+			return BackendHandler.getStatus(clt.getNetworkAddress());
+		} catch (XMLException e) {
+			return null;
+		}
+	}
+
+	public static boolean cancelSession(int sessionID){
 		LogHandler.getLogger().info("Starting to cancel a session...");
 		try {
 			SessionHandler.destroySession(sessionID);

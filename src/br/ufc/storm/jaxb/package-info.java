@@ -2,7 +2,7 @@
 // Este arquivo foi gerado pela Arquitetura JavaTM para Implementação de Referência (JAXB) de Bind XML, v2.2.8-b130911.1802 
 // Consulte <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Todas as modificações neste arquivo serão perdidas após a recompilação do esquema de origem. 
-// Gerado em: 2016.02.18 às 02:55:50 PM BRT 
+// Gerado em: 2016.05.09 às 10:50:20 AM BRT 
 //
 
 @javax.xml.bind.annotation.XmlSchema(namespace = "http://storm.lia.ufc.br", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)

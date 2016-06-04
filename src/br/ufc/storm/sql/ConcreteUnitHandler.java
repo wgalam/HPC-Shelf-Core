@@ -14,36 +14,42 @@ import br.ufc.storm.jaxb.UnitFileType;
 import br.ufc.storm.properties.PropertiesHandler;
 
 public class ConcreteUnitHandler extends DBHandler {
-	private static final String INSERT_CONCRETE_UNIT = "INSERT INTO concrete_unit ( cc_id, au_id) VALUES (?, ?);";
+	private static final String INSERT_CONCRETE_UNIT = "INSERT INTO concrete_unit ( cc_id, au_id) VALUES (?, ?) RETURNING unit_id; ";
 	private static final String SELECT_CONCRETE_UNIT = "SELECT * FROM concrete_unit  WHERE unit_id = ?;";
+	private static final String SELECT_CONCRETE_UNIT_BY_CCID = "SELECT * FROM concrete_unit  WHERE cc_id = ?;";
 	private static final String SELECT_CONCRETE_UNIT_ID = "select unit_id from concrete_unit where au_id = (SELECT abstract_unit_id from abstract_unit where au_name = ?);";
 	private static final String INSERT_UNIT_FILE = "INSERT INTO files (file_name, u_id, file_extension, current_version, build_cfg, file_type, path) VALUES (?, ?, ?, ?, ?,?,?);";
 	private static final String SELECT_UNIT_PATH = "SELECT * FROM concrete_unit A, context_contract B WHERE A.unit_id = ? AND B.cc_id = A.cc_id;";
-	private static final String SELECT_UNIT_FILE = "SELECT * FROM files  WHERE file_id = ?;";
+	private static final String SELECT_UNIT_FILE = "SELECT * FROM files A, file_type B  WHERE A.file_id = ?;";
 	private static final String SELECT_UNIT_FILES = "SELECT * FROM files  WHERE u_id = ?;";
 
+	
 	/**
 	 * This method creates a new concrete unit from an abstract unit
 	 * @param contextContract_id Context contract id
 	 * @param au_id Abstract unit id
 	 * @return 
+	 * @return 
 	 * @throws SQLException 
 	 */
 
-	public static void addConcreteUnit(Integer contextContract_id, Integer au_id) throws DBHandlerException {
-
+	public static int addConcreteUnit(Integer contextContract_id, Integer au_id) throws DBHandlerException {
+		int unit_id = -1;
 		try {
 			Connection con = getConnection(); 
 			PreparedStatement prepared = con.prepareStatement(INSERT_CONCRETE_UNIT); 
 			prepared.setInt(1, contextContract_id);
 			prepared.setInt(2, au_id); 
-			prepared.executeUpdate(); 
+			ResultSet result = prepared.executeQuery();
+			if(result.next()){
+				unit_id = result.getInt("unit_id");
+			}
 		} catch (NumberFormatException e) {
 			throw new DBHandlerException("A error occurred while parsing int: ", e);
 		} catch (SQLException e) {
 			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
-
+		return unit_id;
 	}
 
 	/**
@@ -208,5 +214,25 @@ public class ConcreteUnitHandler extends DBHandler {
 			throw new DBHandlerException("A sql error occurred: ", e);
 		}
 
+	}
+
+	
+	public static List<ConcreteUnitType> getConcreteUnits(Integer ccId) throws DBHandlerException {
+		try {
+			Connection con = null; 
+			ArrayList<ConcreteUnitType> list = new ArrayList<>();
+			con = getConnection(); 
+			PreparedStatement prepared = con.prepareStatement(SELECT_CONCRETE_UNIT_BY_CCID); 
+			prepared.setInt(1, ccId);
+			ResultSet resultSet = prepared.executeQuery(); 
+			while(resultSet.next()) { 
+				ConcreteUnitType cut = new ConcreteUnitType();
+				cut.setUId(resultSet.getInt("unit_id"));
+				list.add(cut); 
+			}
+			return list;
+		} catch (SQLException e) {
+			throw new DBHandlerException("A sql error occurred: ", e);
+		} 
 	}
 }

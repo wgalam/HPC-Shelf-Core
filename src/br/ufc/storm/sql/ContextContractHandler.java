@@ -9,6 +9,7 @@ import java.util.List;
 
 import br.ufc.storm.exception.DBHandlerException;
 import br.ufc.storm.jaxb.AbstractComponentType;
+import br.ufc.storm.jaxb.AbstractUnitType;
 import br.ufc.storm.jaxb.ContextArgumentType;
 import br.ufc.storm.jaxb.ContextContract;
 import br.ufc.storm.jaxb.ContextParameterType;
@@ -21,7 +22,7 @@ public class ContextContractHandler extends DBHandler{
 	private final static String INSERT_CONTEXT_CONTRACT = "INSERT INTO context_contract (ac_id, cc_name) VALUES ((select ac_id from abstract_component where ac_name = ?), ?) RETURNING cc_id;";
 	private final static String SELECT_CONTEXT_CONTRACT_ID = "select cc_id from context_contract where cc_name = ?;";
 	private static final String SELECT_CONTEXT_CONTRACT_NAME = "select cc_name from context_contract where cc_id = ?;";
-	private static final String SELECT_CONTEXT_CONTRACT = "select cc_id, ac_id, cc_name from context_contract where cc_id = ?;";
+	private static final String SELECT_CONTEXT_CONTRACT = "select * from context_contract where cc_id = ?;";
 	private static final String SELECT_CONTEXT_CONTRACT_BY_AC_ID = "select cc_id from context_contract where ac_id = ?;";
 	private final static String INSERT_INNER_COMPONENT = "INSERT INTO inner_components (parent_id, inner_component_name, component_id) VALUES ((select ac_id from abstract_component where ac_name = ?), ?, ?);";
 	private final static String SELECT_INNER_COMPONENTS_IDs = "select A.ac_id from inner_components A, abstract_component B where A.parent_id = ? AND A.parent_id = B.ac_id;";
@@ -97,6 +98,7 @@ public class ContextContractHandler extends DBHandler{
 		try {
 			Connection con = getConnection();
 			int ac_id = 0;
+			String owner = null;
 			String name = null;
 			ContextContract cc = null;
 			PreparedStatement prepared = con.prepareStatement(SELECT_CONTEXT_CONTRACT); 
@@ -105,9 +107,11 @@ public class ContextContractHandler extends DBHandler{
 			if (resultSet.next()){
 				ac_id = resultSet.getInt("ac_id");
 				name=resultSet.getString("cc_name");
+				owner = resultSet.getString("owner_id");
 				cc = new ContextContract();
 				cc.setCcId(cc_id);
 				cc.setCcName(name);
+				cc.setOwnerId(Integer.parseInt(owner));
 				cc.setAbstractComponent(AbstractComponentHandler.getAbstractComponent(ac_id));
 				cc.getContextArguments().addAll(ContextArgumentHandler.getContextArguments(cc_id));
 				//Inicio mudança
@@ -122,6 +126,9 @@ public class ContextContractHandler extends DBHandler{
 					if(cat.getContextContract()!=null){
 						completeContextContract(cat.getContextContract());
 					}
+				}
+				if(cc.getCcId()!=null){
+					cc.getConcreteUnits().addAll(ConcreteUnitHandler.getConcreteUnits(cc.getCcId()));
 				}
 				return cc;
 			}else{
@@ -264,9 +271,12 @@ public class ContextContractHandler extends DBHandler{
 				AbstractComponentType ac = AbstractComponentHandler.getAbstractComponentFromContextContractID(cat.getContextContract().getCcId());
 				cat.getContextContract().setAbstractComponent(ac);
 				completeContextContract(cat.getContextContract());
+				application.getAbstractComponent().getAbstractUnit().addAll(AbstractUnitHandler.getAbstractUnits(application.getAbstractComponent().getIdAc()));
 				//TODO: Adicionar argumentos de qualidade, custo e ranking, bem como os componenetes aninhados
 			}
 		}
+		
+		
 	}
 
 

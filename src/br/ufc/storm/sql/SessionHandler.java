@@ -24,7 +24,6 @@ public class SessionHandler extends DBHandler {
 			con = getConnection(); 
 			PreparedStatement prepared = con.prepareStatement(CREATE_SESSION); 
 			prepared.setInt(1, userID); 
-			System.out.println(prepared);
 			ResultSet resultSet = prepared.executeQuery(); 
 			if(resultSet.next()) { 
 				sessionID = resultSet.getInt("session_id"); 
@@ -37,7 +36,7 @@ public class SessionHandler extends DBHandler {
 		} 
 	}
 
-	public static void destroySession(int sessionID) throws DBHandlerException {
+	public static boolean destroySession(int sessionID) throws DBHandlerException {
 		int rows = -1;
 		try { 
 			Connection con = getConnection(); 
@@ -46,9 +45,10 @@ public class SessionHandler extends DBHandler {
 			prepared.setInt(2, sessionID);
 			prepared.setInt(3, sessionID);
 			prepared.executeUpdate(); 
+			return true;
 		} catch (SQLException e) { 
 			throw new DBHandlerException("A sql error occurred: ", e);
-		} 
+		}
 	}
 
 	@SuppressWarnings("deprecation")

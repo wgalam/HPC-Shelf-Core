@@ -4,6 +4,7 @@ import java.util.List;
 
 import br.ufc.storm.jaxb.AbstractComponentType;
 import br.ufc.storm.jaxb.CandidateListType;
+import br.ufc.storm.jaxb.ComputationalSystemType;
 import br.ufc.storm.jaxb.ContextArgumentType;
 import br.ufc.storm.jaxb.ContextContract;
 import br.ufc.storm.jaxb.ContextParameterType;
@@ -14,12 +15,16 @@ import br.ufc.storm.jaxb.QualityArgumentType;
 import br.ufc.storm.jaxb.QualityParameterType;
 import br.ufc.storm.model.ResolutionNode;
 import br.ufc.storm.sql.ContextContractHandler;
+import br.ufc.storm.sql.PlatformHandler;
 import br.ufc.storm.sql.ResolutionHandler;
 import br.ufc.storm.sql.SessionHandler;
+import br.ufc.storm.webservices.CoreServices;
 import br.ufc.storm.xml.XMLHandler;
+import br.ufc.storm.backend.BackendHandler;
 import br.ufc.storm.exception.DBHandlerException;
 import br.ufc.storm.exception.FunctionException;
 import br.ufc.storm.exception.ResolveException;
+import br.ufc.storm.exception.ShelfRuntimeException;
 import br.ufc.storm.io.LogHandler;
 
 public class Resolution{
@@ -32,6 +37,77 @@ public class Resolution{
 	public static void main(String args[]) throws DBHandlerException{
 
 		ContextContract cc = new ContextContract();
+		AbstractComponentType ac = new AbstractComponentType();
+		ac.setIdAc(109);
+		cc.setAbstractComponent(ac);
+		ContextContract plat = new ContextContract();
+		plat.setCcName("Plataforma do Wagner");
+		plat.setAbstractComponent(new AbstractComponentType());
+		plat.getAbstractComponent().setIdAc(19);
+		cc.setPlatform(new PlatformProfileType());
+		cc.getPlatform().setPlatformContract(plat);
+		cc.setOwnerId(1);
+		
+		
+		
+		
+		
+		//------------------------------------------------------- Inners
+//		ContextContract inner1 = new ContextContract();
+//		inner1.setCcName("Aninhado do contrato da plataforma");
+//		AbstractComponentType innerAbstractComponent1 = new AbstractComponentType();
+//		innerAbstractComponent1.setIdAc(123);
+//		inner1.setAbstractComponent(innerAbstractComponent1);
+//		cc.getInnerComponents().add(inner1);
+
+
+		System.out.println("Aguarde buscando componentes...");
+		CandidateListType resolve = null;
+		try {
+			resolve = resolve(cc, null, null);
+			int cont = 0;
+			for(ContextContract a:resolve.getCandidate()){
+//				try {
+//					System.out.println(BackendHandler.instantiatePlatftorm(a.getPlatform()));
+//				} catch (ShelfRuntimeException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+				System.out.println("Candidato compatível ("+cont+++"): "+XMLHandler.getContextContract(a));
+			}
+		} catch (ResolveException e) {
+			System.out.println("Erro enquanto estava resolvendo um contrato");
+			e.printStackTrace();
+		}
+		
+		System.out.println("################### Start Deploy #####################");
+		LogHandler.getLogger().info("Starting to deploy an application...");
+		ComputationalSystemType ppt = null;
+		try {
+			ppt = BackendHandler.deployComponent(resolve);
+				System.out.println("Deploy success");
+		} catch (ShelfRuntimeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("################### Start Instantiate #####################");
+		try {
+			String str = BackendHandler.instantiateComponent(ppt);
+			System.out.println("Instantiate success\n"+str);
+		} catch (ShelfRuntimeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		LogHandler.close();
+//		System.out.println(XMLHandler.getComputationalSystem(ppt));
+		BackendHandler.releasePlatform(ppt);
+		
+		
+		
+		
+		
+		/*ContextContract cc = new ContextContract();
 		AbstractComponentType ac = new AbstractComponentType();
 		ac.setIdAc(109);
 		cc.setAbstractComponent(ac);
@@ -61,7 +137,7 @@ public class Resolution{
 		} catch (ResolveException e) {
 			System.out.println("Erro enquanto estava resolvendo um contrato");
 			e.printStackTrace();
-		}
+		}*/
 	}
 
 	/**
@@ -116,22 +192,22 @@ public class Resolution{
 						LogHandler.getLogger().info(componentCandidatePlatformlist.size()+" platforms were found for software component "+index);
 						if(componentCandidatePlatformlist.size() > 0){
 							for(int i = 0; i < componentCandidatePlatformlist.size(); i++){
-								
-								PlatformProfileType platform = componentCandidatePlatformlist.get(i).getPlatform();
+//								System.out.println(componentCandidatePlatformlist.size());
+								ContextContract platform = componentCandidatePlatformlist.get(i);
 								if(applicationPlatform!=null){
 									candidate.getPlatform().setPlatformContract(applicationPlatform);
 									application.getPlatform().setPlatformContract(applicationPlatform);
 								}
-								if(isPlatformSubTypeTest(candidate.getPlatform().getPlatformContract(), platform.getPlatformContract(), null,resolutionTree, applicationPlatform)){
-									if(isPlatformSubTypeTest(application.getPlatform().getPlatformContract(), platform.getPlatformContract(), null, resolutionTree, applicationPlatform)){
+								if(isPlatformSubTypeTest(candidate.getPlatform().getPlatformContract(), platform, null,resolutionTree, applicationPlatform)){
+									if(isPlatformSubTypeTest(application.getPlatform().getPlatformContract(), platform, null, resolutionTree, applicationPlatform)){
 										ContextContract cct = XMLHandler.cloneContextContract(candidate);//Cloning component
-										cct.getPlatform().setPlatformContract(XMLHandler.cloneContextContract(platform.getPlatformContract()));
+										cct.getPlatform().setPlatformContract(XMLHandler.cloneContextContract(platform));
 										if(application.getInnerComponents().size() > 0){
 											boolean fit = true;
 											for(int x = 0; x < application.getInnerComponents().size(); x++ ){
 												ContextContract applicationInner = XMLHandler.cloneContextContract(application.getInnerComponents().get(x));
-												applicationInner.getPlatform().setPlatformContract(XMLHandler.cloneContextContract(platform.getPlatformContract()));
-												CandidateListType inners = Resolution.resolve(applicationInner.getPlatform().getPlatformContract(), resolutionTree, XMLHandler.cloneContextContract(platform.getPlatformContract()));
+												applicationInner.getPlatform().setPlatformContract(XMLHandler.cloneContextContract(platform));
+												CandidateListType inners = Resolution.resolve(applicationInner.getPlatform().getPlatformContract(), resolutionTree, XMLHandler.cloneContextContract(platform));
 												if(inners.getCandidate().size()>0 ){
 													cct.getInnerComponentsResolved().add(inners);
 												}else{
@@ -182,6 +258,7 @@ public class Resolution{
 				index++;
 			}
 		}
+		newCandidateList.setUserId(application.getOwnerId());
 		return newCandidateList;
 	}
 

@@ -258,6 +258,7 @@ public class XMLHandler {
 	public static String getContextContract(int cc_id) throws DBHandlerException{
 		ContextContract cc = null;
 		cc = ContextContractHandler.getContextContract(cc_id);
+		ContextContractHandler.completeContextContract(cc);
 		JAXBContext context;
 		java.io.StringWriter sw = new StringWriter();
 		try {
@@ -640,7 +641,7 @@ public class XMLHandler {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static void addConcreteUnit(String cmp) throws XMLException {
+	public static int addConcreteUnit(String cmp) throws XMLException {
 		ConcreteUnitType cut = new ConcreteUnitType();
 		JAXBContext context;
 		try {
@@ -653,7 +654,7 @@ public class XMLHandler {
 			throw new XMLException("An error occurred while converting XML", e);
 		}
 		try {
-			ConcreteUnitHandler.addConcreteUnit(cut.getCcId(), cut.getAuId());
+			return ConcreteUnitHandler.addConcreteUnit(cut.getCcId(), cut.getAuId());
 		} catch (DBHandlerException e) {
 			throw new XMLException("An error occurred while registering concrete unit", e);
 		}
@@ -670,6 +671,22 @@ public class XMLHandler {
 			JAXBElement<CandidateListType> element = (JAXBElement<CandidateListType>) unmarshaller.unmarshal(new InputSource(new java.io.StringReader(file)));
 			list = element.getValue();
 			return list;
+		} catch (JAXBException e) {
+			throw new XMLException("An error occurred while converting XML", e);
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static ComputationalSystemType getComputationalSystemType(String cst) throws XMLException {
+		ComputationalSystemType comp = null;
+		JAXBContext context;
+		try {
+			context = JAXBContext.newInstance(br.ufc.storm.jaxb.ObjectFactory.class.getPackage().getName(),
+					br.ufc.storm.jaxb.ObjectFactory.class.getClassLoader());
+			Unmarshaller unmarshaller = context.createUnmarshaller();
+			JAXBElement<ComputationalSystemType> element = (JAXBElement<ComputationalSystemType>) unmarshaller.unmarshal(new InputSource(new java.io.StringReader(cst)));
+			comp = element.getValue();
+			return comp;
 		} catch (JAXBException e) {
 			throw new XMLException("An error occurred while converting XML", e);
 		}
