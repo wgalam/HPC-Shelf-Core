@@ -27,8 +27,13 @@ public class Main {
 //			e.printStackTrace();
 //		}
 		
-		
-//		System.out.println(CoreServices.getContextContract(50));
+		try {
+			System.out.println(XMLHandler.getContextContract(136));
+		} catch (DBHandlerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+//		System.out.println(CoreServices.getContextContract(136));
 		
 		
 		
@@ -44,12 +49,12 @@ public class Main {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
-		try {
-			System.out.println(ContextContractHandler.listContract(1));
-		} catch (DBHandlerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			System.out.println(ContextContractHandler.listContract(1));
+//		} catch (DBHandlerException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		
 	}
 }

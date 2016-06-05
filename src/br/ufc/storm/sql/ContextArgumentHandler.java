@@ -15,10 +15,12 @@ public class ContextArgumentHandler extends DBHandler {
 
 	private static final String INSERT_CONTEXT_ARGUMENT = "INSERT INTO context_argument (cc_id, cp_id) VALUES ((select cc_id from context_contract where cc_name=?),(select cp_id from context_parameter where cp_name=?));";
 	private final static String SELECT_CONTEXT_ARGUMENT_BY_ID = "select * from context_argument A, context_parameter B where cc_id = ? and A.variable_cp_id = B.cp_id;";
-	private static final String SELECT_VARIABLE_HAS_VALUE = "select * from context_argument WHERE variable_cp_id = ? AND cc_id = ?;";
-	private static final String SELECT_VARIABLE_VALUE = "SELECT * from closed_argument_values WHERE ca_id = ?;";
+//	private static final String SELECT_VARIABLE_HAS_VALUE = "select * from context_argument WHERE variable_cp_id = ? AND cc_id = ?;";
+	private static final String SELECT_VARIABLE_VALUE = "select * from context_argument A, closed_argument_values B WHERE A.variable_cp_id = ? AND A.cc_id = ? AND A.ca_id = B.ca_id;";
+//	private static final String SELECT_VARIABLE_VALUE = "SELECT * from closed_argument_values WHERE ca_id = ?;";
 	private static final String SELECT_SHARED_VARIABLE_CP = "select refers_to_var from context_parameter A, shared_context_variables B  WHERE A.cp_id = B.cp_id AND A.cp_id = ?;";
-	private static final String SELECT_CLOSED_ARGUMENT_CC = "select cc_id from closed_arguments_context_contract WHERE ca_id = ?;";
+//	private static final String SELECT_CLOSED_ARGUMENT_CC = "select cc_id from closed_arguments_context_contract WHERE ca_id = ?;";
+	private static final String SELECT_CLOSED_ARGUMENT_CC = "select B.cc_id from context_argument A, closed_arguments_context_contract B WHERE A.variable_cp_id = ? AND A.cc_id = ? AND A.ca_id = B.ca_id;";
 	private static final String SELECT_VARIABLE_SHARED = "select * from context_parameter WHERE cp_id =?;";
 	private static final String INSERT_CONTEXT_ARGUMENT_VALUE = "INSERT INTO closed_argument_values (ca_id, data_type, value) VALUES (?,?,?);";
 	private static final String INSERT_CONTEXT_ARGUMENT_REFERENCE = "INSERT INTO shared_context_variables (refers_to_var, cp_id)VALUES (?,?);";
@@ -32,22 +34,22 @@ public class ContextArgumentHandler extends DBHandler {
 	 * @throws SQLException 
 	 * @throws DBHandlerException 
 	 */
-	public static boolean hasContextArgumentAValue(int cp_id, int cc_id) throws DBHandlerException{
-		try {
-			Connection con = getConnection(); 
-			PreparedStatement prepared = con.prepareStatement(SELECT_VARIABLE_HAS_VALUE);
-			prepared.setInt(1, cp_id);
-			prepared.setInt(2, cc_id);
-			ResultSet resultSet = prepared.executeQuery();
-			if(resultSet.next()) {
-				return resultSet.getBoolean("hasValue"); 
-			}else{
-				throw new DBHandlerException("There no exists the context argument with Context Parameter id equals to "+cp_id+" and context contract equals to "+cc_id);
-			}
-		} catch (SQLException e) {
-			throw new DBHandlerException("A sql error occurred: ", e);
-		}
-	}
+//	public static boolean hasContextArgumentAValue(int cp_id, int cc_id) throws DBHandlerException{
+//		try {
+//			Connection con = getConnection(); 
+//			PreparedStatement prepared = con.prepareStatement(SELECT_VARIABLE_HAS_VALUE);
+//			prepared.setInt(1, cp_id);
+//			prepared.setInt(2, cc_id);
+//			ResultSet resultSet = prepared.executeQuery();
+//			if(resultSet.next()) {
+//				return resultSet.getBoolean("hasValue"); 
+//			}else{
+//				throw new DBHandlerException("There no exists the context argument with Context Parameter id equals to "+cp_id+" and context contract equals to "+cc_id);
+//			}
+//		} catch (SQLException e) {
+//			throw new DBHandlerException("A sql error occurred: ", e);
+//		}
+//	}
 
 	/**
 	 * This method adds a context argument
@@ -226,7 +228,8 @@ public class ContextArgumentHandler extends DBHandler {
 	public static Object getContextArgumentValue(int cp_id, int cc_id) throws DBHandlerException{
 
 		try {
-			boolean hasValue = false, shared = false;
+//			boolean hasValue = false;
+			boolean shared = false;
 			int ca_id = 0;
 			Connection con = getConnection();
 			PreparedStatement prepared = con.prepareStatement(SELECT_VARIABLE_SHARED); 
@@ -247,21 +250,21 @@ public class ContextArgumentHandler extends DBHandler {
 					throw new DBHandlerException("Shared variable not found with cpId equals to "+cp_id+"and context contract id equals to "+cc_id);
 				}
 			}else{
-				prepared = con.prepareStatement(SELECT_VARIABLE_HAS_VALUE);
+				prepared = con.prepareStatement(SELECT_VARIABLE_VALUE);
 				prepared.setInt(1, cp_id);
 				prepared.setInt(2, cc_id);
 				resultSet = prepared.executeQuery();
 				if(resultSet.next()){
-					hasValue = resultSet.getBoolean("hasValue");
+//					hasValue = resultSet.getBoolean("hasValue");
 					ca_id = resultSet.getInt("ca_id");
-				}else{
-					throw new DBHandlerException("Error getting variable flag with cpId equals to "+cp_id+"and context contract id equals to "+cc_id);
-				}
-				if(hasValue){
-					prepared = con.prepareStatement(SELECT_VARIABLE_VALUE); 
-					prepared.setInt(1, ca_id);
-					resultSet = prepared.executeQuery();
-					if(resultSet.next()){
+//				}else{
+//					throw new DBHandlerException("Error getting variable flag with cpId equals to "+cp_id+"and context contract id equals to "+cc_id);
+//				}
+//				if(hasValue){
+//					prepared = con.prepareStatement(SELECT_VARIABLE_VALUE); 
+//					prepared.setInt(1, ca_id);
+//					resultSet = prepared.executeQuery();
+//					if(resultSet.next()){
 						Object o;
 						String type = resultSet.getString("data_type");
 						String s = resultSet.getString("value");
@@ -282,10 +285,13 @@ public class ContextArgumentHandler extends DBHandler {
 							throw new DBHandlerException("Context argument value not recognized");
 						}
 						return s;
-					}
+//					}
 				}else{
 					prepared = con.prepareStatement(SELECT_CLOSED_ARGUMENT_CC); 
-					prepared.setInt(1, ca_id);
+//					prepared.setInt(1, ca_id);
+					prepared.setInt(1, cp_id);
+					prepared.setInt(2, cc_id);
+//					System.out.println(prepared);
 					resultSet = prepared.executeQuery();
 					if(resultSet.next()){
 						return ContextContractHandler.getContextContract(resultSet.getInt("cc_id"));
@@ -294,12 +300,93 @@ public class ContextArgumentHandler extends DBHandler {
 					}
 				}
 			}
-			return null;
+//			return null;
 		} catch (SQLException e) {
 			throw new DBHandlerException("A sql error occurred: ", e);
 		}
 
 	}
 
+	
+	//TODO: Grade chance de estar errado o último teste, revisar e testar
+//		@SuppressWarnings("resource")
+//		public static Object getContextArgumentValueOld(int cp_id, int cc_id) throws DBHandlerException{
+//
+//			try {
+//				boolean hasValue = false;
+//				boolean shared = false;
+//				int ca_id = 0;
+//				Connection con = getConnection();
+//				PreparedStatement prepared = con.prepareStatement(SELECT_VARIABLE_SHARED); 
+//				prepared.setInt(1, cp_id);
+//				ResultSet resultSet = prepared.executeQuery(); 
+//				if(resultSet.next()) { 
+//					shared = resultSet.getBoolean("isShared");
+//				}else{
+//					throw new DBHandlerException("Value of isShared not defined with cpId equals to "+cp_id+"and context contract id equals to "+cc_id);
+//				}
+//				if(shared){
+//					prepared = con.prepareStatement(SELECT_SHARED_VARIABLE_CP); 
+//					prepared.setInt(1, cp_id);
+//					resultSet = prepared.executeQuery();
+//					if(resultSet.next()){
+//						return getContextArgumentValue(resultSet.getInt("refers_to_var"),cc_id);
+//					}else{
+//						throw new DBHandlerException("Shared variable not found with cpId equals to "+cp_id+"and context contract id equals to "+cc_id);
+//					}
+//				}else{
+//					prepared = con.prepareStatement(SELECT_VARIABLE_VALUE);
+//					prepared.setInt(1, cp_id);
+//					prepared.setInt(2, cc_id);
+//					resultSet = prepared.executeQuery();
+//					if(resultSet.next()){
+//						hasValue = resultSet.getBoolean("hasValue");
+//						ca_id = resultSet.getInt("ca_id");
+//					}else{
+//						throw new DBHandlerException("Error getting variable flag with cpId equals to "+cp_id+"and context contract id equals to "+cc_id);
+//					}
+//					if(hasValue){
+//						prepared = con.prepareStatement(SELECT_VARIABLE_VALUE); 
+//						prepared.setInt(1, ca_id);
+//						resultSet = prepared.executeQuery();
+//						if(resultSet.next()){
+//							Object o;
+//							String type = resultSet.getString("data_type");
+//							String s = resultSet.getString("value");
+//							switch (type) {
+//							case "Integer":
+//								o = Integer.parseInt(s);
+//								break;
+//							case "String":
+//								o = s;
+//								break;
+//							case "Float":
+//								o = Float.parseFloat(s);
+//								break;
+//							case "Double":
+//								o = Double.parseDouble(s);
+//								break;
+//							default:
+//								throw new DBHandlerException("Context argument value not recognized");
+//							}
+//							return s;
+//						}
+//					}else{
+//						prepared = con.prepareStatement(SELECT_CLOSED_ARGUMENT_CC); 
+//						prepared.setInt(1, ca_id);
+//						resultSet = prepared.executeQuery();
+//						if(resultSet.next()){
+//							return ContextContractHandler.getContextContract(resultSet.getInt("cc_id"));
+//						}else{
+//							throw new DBHandlerException("Can not get closed argument with cpId equals to "+cp_id+"and context contract id equals to "+cc_id);
+//						}
+//					}
+//				}
+//				return null;
+//			} catch (SQLException e) {
+//				throw new DBHandlerException("A sql error occurred: ", e);
+//			}
+//
+//		}
 
 }
