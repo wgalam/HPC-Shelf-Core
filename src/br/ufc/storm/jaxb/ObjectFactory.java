@@ -2,7 +2,7 @@
 // Este arquivo foi gerado pela Arquitetura JavaTM para Implementação de Referência (JAXB) de Bind XML, v2.2.8-b130911.1802 
 // Consulte <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Todas as modificações neste arquivo serão perdidas após a recompilação do esquema de origem. 
-// Gerado em: 2016.05.09 às 10:50:20 AM BRT 
+// Gerado em: 2016.06.07 às 12:39:11 PM BRT 
 //
 
 
@@ -111,6 +111,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link CalculatedFunctionTermType }
+     * 
+     */
+    public CalculatedFunctionTermType createCalculatedFunctionTermType() {
+        return new CalculatedFunctionTermType();
+    }
+
+    /**
      * Create an instance of {@link QualityFunctionType }
      * 
      */
@@ -124,6 +132,30 @@ public class ObjectFactory {
      */
     public CostParameterType createCostParameterType() {
         return new CostParameterType();
+    }
+
+    /**
+     * Create an instance of {@link CalculatedArgumentType }
+     * 
+     */
+    public CalculatedArgumentType createCalculatedArgumentType() {
+        return new CalculatedArgumentType();
+    }
+
+    /**
+     * Create an instance of {@link CalculatedFunctionType }
+     * 
+     */
+    public CalculatedFunctionType createCalculatedFunctionType() {
+        return new CalculatedFunctionType();
+    }
+
+    /**
+     * Create an instance of {@link CalculatedParameterType }
+     * 
+     */
+    public CalculatedParameterType createCalculatedParameterType() {
+        return new CalculatedParameterType();
     }
 
     /**

@@ -3,6 +3,7 @@ package br.ufc.storm.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.ufc.storm.jaxb.CalculatedParameterType;
 import br.ufc.storm.jaxb.ContextParameterType;
 import br.ufc.storm.jaxb.CostParameterType;
 import br.ufc.storm.jaxb.QualityParameterType;
@@ -17,6 +18,7 @@ public class ResolutionNode {
 	private List<ContextParameterType> cps;
 	private List<QualityParameterType> qps;
 	private List<RankingParameterType> Rps;
+	private List<CalculatedParameterType> calcPs;
 	private List<CostParameterType> cops;	
 	private List<ResolutionNode> subtype;
 
@@ -25,6 +27,7 @@ public class ResolutionNode {
 		setCps(new ArrayList<ContextParameterType>());
 		setQps(new ArrayList<QualityParameterType>());
 		setRps(new ArrayList<RankingParameterType>());
+		setCalculatedParameters(new ArrayList<CalculatedParameterType>());
 	}		
 	public int getAc_id() {
 		return ac_id;
@@ -145,6 +148,14 @@ public class ResolutionNode {
 	public void setQps(List<QualityParameterType> qps) {
 		this.qps = qps;
 	}
+	
+	public List<CalculatedParameterType> getCalculatedParameters() {
+		return calcPs;
+	}
+	public void setCalculatedParameters(List<CalculatedParameterType> calcps) {
+		this.calcPs = calcps;
+	}
+	
 	public List<CostParameterType> getCops() {
 		return cops;
 	}

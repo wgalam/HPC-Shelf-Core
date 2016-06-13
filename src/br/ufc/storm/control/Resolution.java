@@ -32,7 +32,7 @@ public class Resolution{
 	/**
 	 * Only for tests purpose
 	 * @param args
-	 * @throws DBHandlerException 
+	 * @throws DBHandlerException
 	 */
 	public static void main(String args[]) throws DBHandlerException{
 
@@ -65,6 +65,7 @@ public class Resolution{
 		CandidateListType resolve = null;
 		try {
 			resolve = resolve(cc, null, null);
+			System.out.println("Size of resolve: "+resolve.getCandidate().size());
 			int cont = 0;
 			for(ContextContract a:resolve.getCandidate()){
 //				try {
@@ -80,29 +81,29 @@ public class Resolution{
 			e.printStackTrace();
 		}
 		
-		System.out.println("################### Start Deploy #####################");
-		LogHandler.getLogger().info("Starting to deploy an application...");
-		ComputationalSystemType ppt = null;
-		try {
-			ppt = BackendHandler.deployComponent(resolve);
-				System.out.println("Deploy success");
-		} catch (ShelfRuntimeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		System.out.println("################### Start Instantiate #####################");
-		try {
-			String str = BackendHandler.instantiateComponent(ppt);
-			System.out.println("Instantiate success\n"+str);
-		} catch (ShelfRuntimeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		LogHandler.close();
-//		System.out.println(XMLHandler.getComputationalSystem(ppt));
-		BackendHandler.releasePlatform(ppt);
-		
+//		System.out.println("################### Start Deploy #####################");
+//		LogHandler.getLogger().info("Starting to deploy an application...");
+//		ComputationalSystemType ppt = null;
+//		try {
+//			ppt = BackendHandler.deployComponent(resolve);
+//				System.out.println("Deploy success");
+//		} catch (ShelfRuntimeException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		System.out.println("################### Start Instantiate #####################");
+//		try {
+//			String str = BackendHandler.instantiateComponent(ppt);
+//			System.out.println("Instantiate success\n"+str);
+//		} catch (ShelfRuntimeException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		
+//		LogHandler.close();
+////		System.out.println(XMLHandler.getComputationalSystem(ppt));
+//		BackendHandler.releasePlatform(ppt);
+//		
 		
 		
 		
@@ -258,10 +259,133 @@ public class Resolution{
 				index++;
 			}
 		}
+		//Excluir somente teste
+//		newCandidateList.getCandidate().addAll(candidateList.getCandidate());
+		//
 		newCandidateList.setUserId(application.getOwnerId());
 		return newCandidateList;
 	}
 
+	/*
+	 * 
+	 * 
+	 public static CandidateListType resolve(ContextContract application, ResolutionNode resolutionTree, ContextContract applicationPlatform) throws ResolveException{
+		LogHandler.getLogger().info("Resolution Class: Starting to resolve a component!");
+		if(resolutionTree==null){
+			try {
+				resolutionTree = ResolutionHandler.generateResolutionTree();
+			} catch (DBHandlerException e) {
+				throw new ResolveException("Can not create resolution tree: ",e);
+			}
+		}
+		try {
+			ContextContractHandler.completeContextContract(application);
+		} catch (DBHandlerException e1) {
+			throw new ResolveException("Can not complete context contract data: ",e1);
+		}
+		CandidateListType candidateList = new CandidateListType();
+		CandidateListType newCandidateList = new CandidateListType();
+		List<ContextContract> concreteComponentCandidatesList;
+		LogHandler.getLogger().info("Generating Software Component Candidate List...");
+		try {
+			concreteComponentCandidatesList = ResolutionHandler.generateCandidates(application.getAbstractComponent().getSupertype().getIdAc(), application.getAbstractComponent().getIdAc(), resolutionTree);
+		} catch (DBHandlerException e1) {
+			return new CandidateListType();
+		}
+		LogHandler.getLogger().info(concreteComponentCandidatesList.size()+" components were found, now it will be filtered");
+		int index = 0;
+		if(concreteComponentCandidatesList.size() > 0){
+			for(ContextContract candidate:concreteComponentCandidatesList){
+				try {
+					if(componentSubTypeRecursiveTest(application, candidate, null, application.getAbstractComponent(),resolutionTree)){
+						if(candidate.getPlatform() == null){
+							//Will test the next software contract
+							continue;
+						}
+						List<ContextContract> componentCandidatePlatformlist = null;
+						LogHandler.getLogger().info("Generating Hardware Candidate List for candidate: "+index);
+						try {
+							componentCandidatePlatformlist = ResolutionHandler.generateCompliantPlatformCandidates(candidate.getPlatform().getPlatformContract().getAbstractComponent().getIdAc(), resolutionTree);
+						} catch (DBHandlerException e3) {
+							//Will test the next software contract
+							continue;
+						}
+						LogHandler.getLogger().info(componentCandidatePlatformlist.size()+" platforms were found for software component "+index);
+						if(componentCandidatePlatformlist.size() > 0){
+							for(int i = 0; i < componentCandidatePlatformlist.size(); i++){
+//								System.out.println(componentCandidatePlatformlist.size());
+								ContextContract platform = componentCandidatePlatformlist.get(i);
+								if(applicationPlatform!=null){
+									candidate.getPlatform().setPlatformContract(applicationPlatform);
+									application.getPlatform().setPlatformContract(applicationPlatform);
+								}
+								if(isPlatformSubTypeTest(candidate.getPlatform().getPlatformContract(), platform, null,resolutionTree, applicationPlatform)){
+									if(isPlatformSubTypeTest(application.getPlatform().getPlatformContract(), platform, null, resolutionTree, applicationPlatform)){
+										ContextContract cct = XMLHandler.cloneContextContract(candidate);//Cloning component
+										cct.getPlatform().setPlatformContract(XMLHandler.cloneContextContract(platform));
+										if(application.getInnerComponents().size() > 0){
+											boolean fit = true;
+											for(int x = 0; x < application.getInnerComponents().size(); x++ ){
+												ContextContract applicationInner = XMLHandler.cloneContextContract(application.getInnerComponents().get(x));
+												applicationInner.getPlatform().setPlatformContract(XMLHandler.cloneContextContract(platform));
+												CandidateListType inners = Resolution.resolve(applicationInner.getPlatform().getPlatformContract(), resolutionTree, XMLHandler.cloneContextContract(platform));
+												if(inners.getCandidate().size()>0 ){
+													cct.getInnerComponentsResolved().add(inners);
+												}else{
+													fit=false;
+												}
+											}
+											if(fit){
+												candidateList.getCandidate().add(cct);
+											}
+										}else{
+											candidateList.getCandidate().add(cct);
+										}
+									}
+								}
+							}
+							//partialComponentList has a list with all candidate components passed in first filter
+							//----------------------------------------------------------------------------------------------------------------------------------------------
+							LogHandler.getLogger().info("Calculating arguments...");
+							for(ContextContract cc:candidateList.getCandidate()){
+								try {
+									FunctionHandler.calulateContextContractQualityArguments(cc.getPlatform().getPlatformContract(), resolutionTree);
+								} catch (FunctionException e2) {
+									//do nothing
+								} //calcula parametros de qualidade
+								if(Resolution.isSubTypeByQuality(application.getPlatform().getPlatformContract(), cc.getPlatform().getPlatformContract(), null, resolutionTree)){
+									try {
+										FunctionHandler.calulateContextContractCostArguments(cc.getPlatform().getPlatformContract(), resolutionTree);
+									} catch (FunctionException e1) {
+										//do nothing
+									} //calcula parametros de custo
+									if(Resolution.isSubTypeByCost(application.getPlatform().getPlatformContract(), cc.getPlatform().getPlatformContract(), null, resolutionTree)){
+										try {
+											FunctionHandler.calulateContextContractRankingArguments(cc.getPlatform().getPlatformContract(), resolutionTree);
+										} catch (FunctionException e) {
+											//do nothing
+										} //calcula parametros de custo
+										newCandidateList.getCandidate().add(cc);
+										LogHandler.getLogger().info("Candidate "+cc.getCcName()+" added");
+									}
+								}
+							}
+						}
+					}
+				} catch (DBHandlerException e) {
+					//Will test the next software contract
+					continue;
+				}
+				index++;
+			}
+		}
+		//Excluir somente teste
+//		newCandidateList.getCandidate().addAll(candidateList.getCandidate());
+		//
+		newCandidateList.setUserId(application.getOwnerId());
+		return newCandidateList;
+	}
+	 */
 	/**
 	 * 
 	 * @param cc

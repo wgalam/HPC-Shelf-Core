@@ -13,8 +13,10 @@ import br.ufc.storm.jaxb.ContextContract;
 import br.ufc.storm.jaxb.PlatformProfileType;
 import br.ufc.storm.jaxb.UnitFileType;
 import br.ufc.storm.sql.AbstractComponentHandler;
+import br.ufc.storm.sql.ContextContractHandler;
 import br.ufc.storm.sql.SessionHandler;
 import br.ufc.storm.xml.XMLHandler;
+import export.FormalFormat;
 import br.ufc.storm.backend.BackendHandler;
 import br.ufc.storm.exception.DBHandlerException;
 import br.ufc.storm.exception.ResolveException;
@@ -289,6 +291,33 @@ public class CoreServices {
 		return s;
 	}
 
+	/**
+	 * This method return an abstract component in usual Shelf notation
+	 * @param cc_id
+	 * @return
+	 */
+	public static String exportContextContract(int cc_id){
+		try {
+			ContextContract cc = ContextContractHandler.getContextContract(cc_id);
+			return FormalFormat.exportContextContract(cc, null);
+		} catch (DBHandlerException e) {
+			return null;
+		}
+	}
+	
+	/**
+	 * This method return a context contract in usual Shelf notation
+	 * @param ac_id
+	 * @return
+	 */
+	public static String exportComponentSignature(int ac_id){
+		try {
+			AbstractComponentType ac = AbstractComponentHandler.getAbstractComponent(ac_id);
+			return FormalFormat.exportComponentSignature(ac);
+		} catch (DBHandlerException e) {
+			return null;
+		}
+	}
 	/**
 	 * This method resolve a context contract
 	 * @param cmp Context contract

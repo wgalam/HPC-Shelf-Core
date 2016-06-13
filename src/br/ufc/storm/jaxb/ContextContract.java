@@ -2,7 +2,7 @@
 // Este arquivo foi gerado pela Arquitetura JavaTM para Implementação de Referência (JAXB) de Bind XML, v2.2.8-b130911.1802 
 // Consulte <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Todas as modificações neste arquivo serão perdidas após a recompilação do esquema de origem. 
-// Gerado em: 2016.05.09 às 10:50:20 AM BRT 
+// Gerado em: 2016.06.07 às 12:39:11 PM BRT 
 //
 
 
@@ -38,6 +38,7 @@ import javax.xml.bind.annotation.XmlType;
  *           &lt;element name="inner_components" type="{http://storm.lia.ufc.br}context_contract" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;/choice>
  *         &lt;element name="concrete_units" type="{http://storm.lia.ufc.br}concrete_unit_type" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="calculated_arguments" type="{http://storm.lia.ufc.br}calculated_argument_type" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attribute name="cc_name" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="cc_id" type="{http://www.w3.org/2001/XMLSchema}int" />
@@ -59,7 +60,8 @@ import javax.xml.bind.annotation.XmlType;
     "costArguments",
     "innerComponentsResolved",
     "innerComponents",
-    "concreteUnits"
+    "concreteUnits",
+    "calculatedArguments"
 })
 public class ContextContract {
 
@@ -80,6 +82,8 @@ public class ContextContract {
     protected List<ContextContract> innerComponents;
     @XmlElement(name = "concrete_units")
     protected List<ConcreteUnitType> concreteUnits;
+    @XmlElement(name = "calculated_arguments")
+    protected List<CalculatedArgumentType> calculatedArguments;
     @XmlAttribute(name = "cc_name")
     protected String ccName;
     @XmlAttribute(name = "cc_id")
@@ -336,6 +340,35 @@ public class ContextContract {
             concreteUnits = new ArrayList<ConcreteUnitType>();
         }
         return this.concreteUnits;
+    }
+
+    /**
+     * Gets the value of the calculatedArguments property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the calculatedArguments property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getCalculatedArguments().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link CalculatedArgumentType }
+     * 
+     * 
+     */
+    public List<CalculatedArgumentType> getCalculatedArguments() {
+        if (calculatedArguments == null) {
+            calculatedArguments = new ArrayList<CalculatedArgumentType>();
+        }
+        return this.calculatedArguments;
     }
 
     /**

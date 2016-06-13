@@ -2,7 +2,7 @@
 // Este arquivo foi gerado pela Arquitetura JavaTM para Implementação de Referência (JAXB) de Bind XML, v2.2.8-b130911.1802 
 // Consulte <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Todas as modificações neste arquivo serão perdidas após a recompilação do esquema de origem. 
-// Gerado em: 2016.05.09 às 10:50:20 AM BRT 
+// Gerado em: 2016.06.07 às 12:39:11 PM BRT 
 //
 
 
@@ -34,6 +34,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;attribute name="function_name" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="function_value" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="cc_id" type="{http://www.w3.org/2001/XMLSchema}int" />
+ *       &lt;attribute name="cp_id" type="{http://www.w3.org/2001/XMLSchema}int" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -60,6 +61,8 @@ public class QualityFunctionType {
     protected String functionValue;
     @XmlAttribute(name = "cc_id")
     protected Integer ccId;
+    @XmlAttribute(name = "cp_id")
+    protected Integer cpId;
 
     /**
      * Gets the value of the functionParameters property.
@@ -213,6 +216,30 @@ public class QualityFunctionType {
      */
     public void setCcId(Integer value) {
         this.ccId = value;
+    }
+
+    /**
+     * Obtém o valor da propriedade cpId.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Integer }
+     *     
+     */
+    public Integer getCpId() {
+        return cpId;
+    }
+
+    /**
+     * Define o valor da propriedade cpId.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Integer }
+     *     
+     */
+    public void setCpId(Integer value) {
+        this.cpId = value;
     }
 
 }

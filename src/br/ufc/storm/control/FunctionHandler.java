@@ -6,6 +6,11 @@ import java.util.List;
 
 import br.ufc.storm.exception.DBHandlerException;
 import br.ufc.storm.exception.FunctionException;
+import br.ufc.storm.io.LogHandler;
+import br.ufc.storm.jaxb.CalculatedArgumentType;
+import br.ufc.storm.jaxb.CalculatedFunctionTermType;
+import br.ufc.storm.jaxb.CalculatedFunctionType;
+import br.ufc.storm.jaxb.CalculatedParameterType;
 import br.ufc.storm.jaxb.ContextArgumentType;
 import br.ufc.storm.jaxb.ContextContract;
 import br.ufc.storm.jaxb.CostArgumentType;
@@ -21,18 +26,64 @@ import br.ufc.storm.jaxb.RankingFunctionTermType;
 import br.ufc.storm.jaxb.RankingFunctionType;
 import br.ufc.storm.jaxb.RankingParameterType;
 import br.ufc.storm.model.ResolutionNode;
+import br.ufc.storm.sql.CalculatedArgumentHandler;
 import br.ufc.storm.sql.CostHandler;
 import br.ufc.storm.sql.DBHandler;
 import br.ufc.storm.sql.QualityHandler;
 import br.ufc.storm.sql.RankingHandler;
 
+import com.sun.corba.se.impl.presentation.rmi.ExceptionHandler;
 import com.udojava.evalex.Expression;
 
 public class FunctionHandler {
 
 	public FunctionHandler() {
 		// TODO Auto-generated constructor stub
-	}	
+	}
+	
+	public static void calulateContextContractArguments(ContextContract cc, ResolutionNode tree, int type) throws FunctionException{
+		//Types: 1 - Quality | 2 - Cost | 3 - Ranking
+		
+		//Calculates arguments contracts parameters before it own quality arguments
+		for(ContextArgumentType cat : cc.getContextArguments()){
+			if(cat.getKind()== 1){
+				FunctionHandler.calulateContextContractArguments(cat.getContextContract(), tree, type);
+			}
+		}
+		//Begin of calculus
+		List<CalculatedParameterType> calcps= tree.findNode(cc.getAbstractComponent().getIdAc()).getCalculatedParameters();
+		for(CalculatedParameterType calcpt:calcps){//calcula cada parametro de qualidade
+			CalculatedFunctionType function;
+			try {
+				function = CalculatedArgumentHandler.getCalculatedFunction(calcpt.getCalcId(), cc.getCcId(), type);
+			} catch (DBHandlerException e) {
+//				System.out.println("Error while trying calculate function with id "+qpt.getQpId());
+				throw new FunctionException("Can not get quality function: ",e);
+			}
+			if(function != null){
+				ArrayList<CalculatedFunctionTermType> terms;
+				try {
+					terms = CalculatedArgumentHandler.getCalculatedFunctionParameter(function.getFunctionId());
+				} catch (DBHandlerException e) {
+//					System.out.println("Error while trying calculate function with id "+qpt.getQpId());
+					throw new FunctionException("Can not get calculated function: ",e);
+				}
+				for(CalculatedFunctionTermType qftt: terms){//busca cada argumento de cada termo da função
+					ContextArgumentType cat = Resolution.getArgumentRecursive(cc, qftt.getCpId());
+					if(cat!=null){
+						function.getFunctionArguments().add(cat);
+					}
+				}
+				CalculatedArgumentType qat = new CalculatedArgumentType();
+				qat.setValue(FunctionHandler.calculate(function));
+				calcpt.setCalculatedArgument(qat);
+				cc.getCalculatedArguments().add(qat);
+			}
+		}
+	}
+	
+	
+	
 	public static void calulateContextContractQualityArguments(ContextContract cc, ResolutionNode tree) throws FunctionException{
 		//Calculates arguments contracts parameters before it own quality arguments
 		for(ContextArgumentType cat : cc.getContextArguments()){
@@ -47,6 +98,7 @@ public class FunctionHandler {
 			try {
 				function = QualityHandler.getQualityFunction(qpt.getQpId(), cc.getCcId());
 			} catch (DBHandlerException e) {
+//				System.out.println("Error while trying calculate function with id "+qpt.getQpId());
 				throw new FunctionException("Can not get quality function: ",e);
 			}
 			if(function != null){
@@ -54,6 +106,7 @@ public class FunctionHandler {
 				try {
 					terms = QualityHandler.getQualityFunctionParameter(function.getFunctionId());
 				} catch (DBHandlerException e) {
+//					System.out.println("Error while trying calculate function with id "+qpt.getQpId());
 					throw new FunctionException("Can not get quality function: ",e);
 				}
 				for(QualityFunctionTermType qftt: terms){//busca cada argumento de cada termo da função
@@ -70,6 +123,24 @@ public class FunctionHandler {
 		}
 	}
 
+	/**
+	 * Given a calculated function, this method evaluate the function
+	 * @param qft
+	 * @return result
+	 */
+	public static double calculate(CalculatedFunctionType qft){
+		BigDecimal result = null;
+		int numOfarguments = qft.getFunctionArguments().size();
+		//				System.out.println(qft.getFunctionValue()+" ... "+qft.getFunctionArguments().get(0).getValue()+" ... "+qft.getFunctionArguments().get(1).getValue());
+		Expression expression = new Expression(qft.getFunctionValue());
+		for(int i = 0; i < numOfarguments; i++){
+			expression.with("v"+i, qft.getFunctionArguments().get(i).getValue().getValue());
+		}
+		expression.setPrecision(2);
+		result = expression.eval();
+		return result.doubleValue();
+	}	
+	
 	/**
 	 * Given a quality function, this method evaluate the function
 	 * @param qft

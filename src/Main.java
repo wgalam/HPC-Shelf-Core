@@ -5,6 +5,7 @@ import java.util.List;
 
 import br.ufc.storm.backend.BackendHandler;
 import br.ufc.storm.exception.DBHandlerException;
+import br.ufc.storm.exception.XMLException;
 import br.ufc.storm.io.FileHandler;
 import br.ufc.storm.io.LogHandler;
 import br.ufc.storm.jaxb.ConcreteUnitType;
@@ -15,6 +16,7 @@ import br.ufc.storm.sql.ContextContractHandler;
 import br.ufc.storm.sql.DBHandler;
 import br.ufc.storm.webservices.CoreServices;
 import br.ufc.storm.xml.XMLHandler;
+import export.FormalFormat;
 
 public class Main {
 	public static void main(String[] args) throws IOException {
@@ -28,12 +30,16 @@ public class Main {
 //		}
 		
 		try {
-			System.out.println(XMLHandler.getContextContract(136));
-		} catch (DBHandlerException e) {
+//			System.out.println(XMLHandler.getContextContract(126));
+//			System.out.println(FormalFormat.exportContextContract(ContextContractHandler.getContextContract(126)));
+//			System.out.println(FormalFormat.exportComponentSignature(AbstractComponentHandler.getAbstractComponent(19)));
+//			System.out.println(XMLHandler.getAbstractComponent("MatrixMultiplication"));
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 //		System.out.println(CoreServices.getContextContract(136));
+		
 		
 		
 		

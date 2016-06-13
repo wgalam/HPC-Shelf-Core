@@ -125,7 +125,10 @@
     				minOccurs="0">
     			</element>
     		</choice>
-    		<element name="concrete_units" type="tns:concrete_unit_type" maxOccurs="unbounded" minOccurs="0"></element>
+    		<element name="concrete_units" type="tns:concrete_unit_type"
+    			maxOccurs="unbounded" minOccurs="0">
+    		</element>
+    		<element name="calculated_arguments" type="tns:calculated_argument_type" maxOccurs="unbounded" minOccurs="0"></element>
     	</sequence>
     	<attribute name="cc_name" type="string"></attribute>
     	<attribute name="cc_id" type="int"></attribute>
@@ -182,12 +185,16 @@
     			type="tns:quality_function_term_type" maxOccurs="unbounded"
     			minOccurs="0">
     		</element>
-    		<element name="function_arguments" type="tns:context_argument_type" maxOccurs="unbounded" minOccurs="0"></element>
+    		<element name="function_arguments"
+    			type="tns:context_argument_type" maxOccurs="unbounded"
+    			minOccurs="0">
+    		</element>
     	</sequence>
     	<attribute name="function_id" type="int"></attribute>
     	<attribute name="function_name" type="string"></attribute>
     	<attribute name="function_value" type="string"></attribute>
     	<attribute name="cc_id" type="int"></attribute>
+    	<attribute name="cp_id" type="int"></attribute>
     </complexType>
 
 
@@ -199,7 +206,48 @@
     	<attribute name="value" type="double"></attribute>
     </complexType>
 
+ <complexType name="calculated_function_term_type">
+    	<attribute name="order" type="int"></attribute>
+    	<attribute name="cp_id" type="int"></attribute>
+    </complexType>
 
+<complexType name="calculated_function_type">
+    	<sequence>
+    		<element name="function_parameters"
+    			type="tns:calculated_function_term_type" maxOccurs="unbounded"
+    			minOccurs="0">
+    		</element>
+    		<element name="function_arguments"
+    			type="tns:context_argument_type" maxOccurs="unbounded"
+    			minOccurs="0">
+    		</element>
+    	</sequence>
+    	<attribute name="function_id" type="int"></attribute>
+    	<attribute name="function_name" type="string"></attribute>
+    	<attribute name="function_value" type="string"></attribute>
+    	<attribute name="cc_id" type="int"></attribute>
+    	<attribute name="cp_id" type="int"></attribute>
+    </complexType>
+
+	<complexType name="calculated_parameter_type">
+    	<sequence>
+    		<element name="calculated_argument"
+    			type="tns:calculated_argument_type" maxOccurs="1"
+    			minOccurs="0">
+    		</element>
+    	</sequence>
+    	<attribute name="name" type="string"></attribute>
+    	<attribute name="calc_id" type="int"></attribute>
+    	<attribute name="kind_id" type="int"></attribute>
+    </complexType>
+    
+    <complexType name="calculated_argument_type">
+    	<sequence>
+    		<element name="function" type="tns:quality_function_type" maxOccurs="1" minOccurs="0"></element>
+    	</sequence>
+    	<attribute name="calc_id" type="int"></attribute>
+    	<attribute name="value" type="double"></attribute>
+    </complexType>
 
     <complexType name="ranking_function_term_type">
     	<attribute name="order" type="int"></attribute>
