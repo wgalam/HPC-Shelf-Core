@@ -2,7 +2,7 @@
 // Este arquivo foi gerado pela Arquitetura JavaTM para Implementação de Referência (JAXB) de Bind XML, v2.2.8-b130911.1802 
 // Consulte <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Todas as modificações neste arquivo serão perdidas após a recompilação do esquema de origem. 
-// Gerado em: 2016.06.07 às 12:39:11 PM BRT 
+// Gerado em: 2016.07.26 às 02:48:28 PM BRT 
 //
 
 
@@ -26,13 +26,13 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;choice>
- *           &lt;element name="cp_id" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
+ *           &lt;element name="shared_variable_cp_id" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
  *           &lt;element name="context_contract" type="{http://storm.lia.ufc.br}context_contract"/>
  *           &lt;element name="value" type="{http://storm.lia.ufc.br}context_argument_value_type"/>
  *         &lt;/choice>
  *       &lt;/sequence>
  *       &lt;attribute name="cc_id" type="{http://www.w3.org/2001/XMLSchema}int" />
- *       &lt;attribute name="variable_cp_id" type="{http://www.w3.org/2001/XMLSchema}int" />
+ *       &lt;attribute name="cp_id" type="{http://www.w3.org/2001/XMLSchema}int" />
  *       &lt;attribute name="bound_cc_id" type="{http://www.w3.org/2001/XMLSchema}int" />
  *       &lt;attribute name="ca_id" type="{http://www.w3.org/2001/XMLSchema}int" />
  *       &lt;attribute name="kind" type="{http://www.w3.org/2001/XMLSchema}int" />
@@ -45,21 +45,21 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "context_argument_type", propOrder = {
-    "cpId",
+    "sharedVariableCpId",
     "contextContract",
     "value"
 })
 public class ContextArgumentType {
 
-    @XmlElement(name = "cp_id")
-    protected Integer cpId;
+    @XmlElement(name = "shared_variable_cp_id")
+    protected Integer sharedVariableCpId;
     @XmlElement(name = "context_contract")
     protected ContextContract contextContract;
     protected ContextArgumentValueType value;
     @XmlAttribute(name = "cc_id")
     protected Integer ccId;
-    @XmlAttribute(name = "variable_cp_id")
-    protected Integer variableCpId;
+    @XmlAttribute(name = "cp_id")
+    protected Integer cpId;
     @XmlAttribute(name = "bound_cc_id")
     protected Integer boundCcId;
     @XmlAttribute(name = "ca_id")
@@ -68,27 +68,27 @@ public class ContextArgumentType {
     protected Integer kind;
 
     /**
-     * Obtém o valor da propriedade cpId.
+     * Obtém o valor da propriedade sharedVariableCpId.
      * 
      * @return
      *     possible object is
      *     {@link Integer }
      *     
      */
-    public Integer getCpId() {
-        return cpId;
+    public Integer getSharedVariableCpId() {
+        return sharedVariableCpId;
     }
 
     /**
-     * Define o valor da propriedade cpId.
+     * Define o valor da propriedade sharedVariableCpId.
      * 
      * @param value
      *     allowed object is
      *     {@link Integer }
      *     
      */
-    public void setCpId(Integer value) {
-        this.cpId = value;
+    public void setSharedVariableCpId(Integer value) {
+        this.sharedVariableCpId = value;
     }
 
     /**
@@ -164,27 +164,27 @@ public class ContextArgumentType {
     }
 
     /**
-     * Obtém o valor da propriedade variableCpId.
+     * Obtém o valor da propriedade cpId.
      * 
      * @return
      *     possible object is
      *     {@link Integer }
      *     
      */
-    public Integer getVariableCpId() {
-        return variableCpId;
+    public Integer getCpId() {
+        return cpId;
     }
 
     /**
-     * Define o valor da propriedade variableCpId.
+     * Define o valor da propriedade cpId.
      * 
      * @param value
      *     allowed object is
      *     {@link Integer }
      *     
      */
-    public void setVariableCpId(Integer value) {
-        this.variableCpId = value;
+    public void setCpId(Integer value) {
+        this.cpId = value;
     }
 
     /**

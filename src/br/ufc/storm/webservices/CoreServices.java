@@ -16,12 +16,12 @@ import br.ufc.storm.sql.AbstractComponentHandler;
 import br.ufc.storm.sql.ContextContractHandler;
 import br.ufc.storm.sql.SessionHandler;
 import br.ufc.storm.xml.XMLHandler;
-import export.FormalFormat;
 import br.ufc.storm.backend.BackendHandler;
 import br.ufc.storm.exception.DBHandlerException;
 import br.ufc.storm.exception.ResolveException;
 import br.ufc.storm.exception.ShelfRuntimeException;
 import br.ufc.storm.exception.XMLException;
+import br.ufc.storm.export.FormalFormat;
 import br.ufc.storm.io.LogHandler;
 
 public class CoreServices {
@@ -313,7 +313,7 @@ public class CoreServices {
 	public static String exportComponentSignature(int ac_id){
 		try {
 			AbstractComponentType ac = AbstractComponentHandler.getAbstractComponent(ac_id);
-			return FormalFormat.exportComponentSignature(ac);
+			return FormalFormat.exportComponentSignature(ac, null);
 		} catch (DBHandlerException e) {
 			return null;
 		}

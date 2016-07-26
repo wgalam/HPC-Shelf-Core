@@ -1,0 +1,6 @@
+03:45:18 - [INFO] - CREATING NEW LOG (br.ufc.storm.io.LogHandler.getLogger())
+03:45:18 - [INFO] - Resolution Class: Starting to resolve a component! (br.ufc.storm.control.Resolution.resolve())
+03:45:19 - [INFO] - Generating Software Component Candidate List... (br.ufc.storm.control.Resolution.resolve())
+03:45:19 - [INFO] - 1 components were found, now it will be filtered (br.ufc.storm.control.Resolution.resolve())
+03:45:19 - [INFO] - Generating Hardware Candidate List for candidate: 0 (br.ufc.storm.control.Resolution.resolve())
+03:45:19 - [SEVERE] - ShelfException: DBHandlerException: Context contract with id 130 was not found (br.ufc.storm.exception.ShelfException.<init>())

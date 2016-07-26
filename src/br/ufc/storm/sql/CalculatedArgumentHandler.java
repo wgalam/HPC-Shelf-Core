@@ -23,7 +23,7 @@ public class CalculatedArgumentHandler extends DBHandler{
 	private static final String INSERT_CALCULATED_PARAMETER = "INSERT INTO calculated_function_terms(cf_id,term_order,cp_id) VALUES (?,?,?);";
 	private static final String SELECT_CALCULATED_FUNCTION = "select * FROM calculated_function A, context_parameter B WHERE B.cp_id = ? AND A.cc_id = ? AND A.cf_type = ?;";
 	private static final String SELECT_CALCULATED_FUNCTION_TERMS = "SELECT cp_id, term_order FROM calculated_function_terms WHERE cf_id = ?;";
-	private static final String SELECT_CALCULATED_PARAMETER = "select * FROM context_parameter WHERE ac_id = ? AND parameter_type = 2;"; 
+	private static final String SELECT_CALCULATED_PARAMETER = "select * FROM context_parameter WHERE ac_id = ? AND parameter_type = ?;"; 
 
 	public static void main(String[] args) {
 		try {
@@ -44,7 +44,7 @@ public class CalculatedArgumentHandler extends DBHandler{
 			qft2.setCpId(27);
 			qft2.setOrder(2);
 			q.getFunctionParameters().add(qft2);
-			System.out.println(addCalculatedFunction(q, 1));
+			addCalculatedFunction(q, 1);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -67,7 +67,7 @@ public class CalculatedArgumentHandler extends DBHandler{
 			prepared.setString(3, qf.getFunctionValue()); 
 			prepared.setInt(4, qf.getCpId());
 			prepared.setInt(5, type);
-			System.out.println(prepared);
+//			System.out.println(prepared);
 			ResultSet resultSet = prepared.executeQuery();
 			if(resultSet.next()){
 				function_id = resultSet.getInt("cf_id");
@@ -76,7 +76,7 @@ public class CalculatedArgumentHandler extends DBHandler{
 					prepared.setInt(1, function_id); 
 					prepared.setInt(2, cp.getOrder()); 
 					prepared.setInt(3, cp.getCpId());
-					System.out.println(prepared);
+//					System.out.println(prepared);
 					prepared.execute();
 				}
 				con.commit();
@@ -99,12 +99,14 @@ public class CalculatedArgumentHandler extends DBHandler{
 	 * @throws DBHandlerException
 	 */
 
-	public static ArrayList<CalculatedParameterType> getCalculatedParameters(int ac_id) throws DBHandlerException{
+	public static ArrayList<CalculatedParameterType> getCalculatedParameters(int ac_id, int type) throws DBHandlerException{
+		
 		try{	
 			ArrayList<CalculatedParameterType> cps= new ArrayList<CalculatedParameterType>();
 			Connection con = getConnection();
-			PreparedStatement prepared = con.prepareStatement(SELECT_CALCULATED_PARAMETER); 
+			PreparedStatement prepared = con.prepareStatement(SELECT_CALCULATED_PARAMETER);
 			prepared.setInt(1, ac_id);
+			prepared.setInt(2, type+1);//Type is incremented for db compatibility
 			ResultSet resultSet = prepared.executeQuery(); 
 			while(resultSet.next()){ 
 				CalculatedParameterType calcp = new CalculatedParameterType();
@@ -142,6 +144,7 @@ public class CalculatedArgumentHandler extends DBHandler{
 				return null;
 			}
 		} catch (SQLException e) { 
+			e.printStackTrace();
 			throw new DBHandlerException("A sql error occurred: ", e);
 		}		
 
@@ -175,7 +178,7 @@ public class CalculatedArgumentHandler extends DBHandler{
 
 	public static Object getContractArgument(int cp_id, ContextContract cc){
 		for(ContextArgumentType cat : cc.getContextArguments()){
-			if(cat.getVariableCpId()==cp_id){
+			if(cat.getCpId()==cp_id){
 				return cat.getValue();
 			}else{
 				if(cat.getContextContract()!=null){

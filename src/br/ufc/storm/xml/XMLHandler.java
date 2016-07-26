@@ -131,7 +131,7 @@ public class XMLHandler {
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 			JAXBElement<CandidateListType> element1;
 			try {
-				element1 = new ObjectFactory().createCandidateList(Resolution.resolve(cc, null,null));
+				element1 = new ObjectFactory().createCandidateList(Resolution.resolve(cc,null));
 			} catch (ResolveException e) {
 				throw new XMLException(e);
 			}

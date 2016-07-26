@@ -3,11 +3,15 @@ package br.ufc.storm.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sun.org.apache.xerces.internal.util.SynchronizedSymbolTable;
+
+import br.ufc.storm.exception.DBHandlerException;
 import br.ufc.storm.jaxb.CalculatedParameterType;
 import br.ufc.storm.jaxb.ContextParameterType;
 import br.ufc.storm.jaxb.CostParameterType;
 import br.ufc.storm.jaxb.QualityParameterType;
 import br.ufc.storm.jaxb.RankingParameterType;
+import br.ufc.storm.sql.ResolutionHandler;
 
 
 public class ResolutionNode {
@@ -16,18 +20,30 @@ public class ResolutionNode {
 	private String name;
 	private String acPath=null;
 	private List<ContextParameterType> cps;
-	private List<QualityParameterType> qps;
-	private List<RankingParameterType> Rps;
-	private List<CalculatedParameterType> calcPs;
-	private List<CostParameterType> cops;	
+	private List<CalculatedParameterType> qps;
+	private List<CalculatedParameterType> Rps;
+	//private List<CalculatedParameterType> calcPs;
+	private List<CalculatedParameterType> cops;	
 	private List<ResolutionNode> subtype;
 
+	public static void main(String [] a){
+		ResolutionNode r = null;
+		try {
+			r = ResolutionHandler.generateResolutionTree();
+		} catch (DBHandlerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println(r.toString());
+	}
+	
 	public ResolutionNode(){
 		subtype = new ArrayList<ResolutionNode>();
 		setCps(new ArrayList<ContextParameterType>());
-		setQps(new ArrayList<QualityParameterType>());
-		setRps(new ArrayList<RankingParameterType>());
-		setCalculatedParameters(new ArrayList<CalculatedParameterType>());
+		setQps(new ArrayList<CalculatedParameterType>());
+		setCops(new ArrayList<CalculatedParameterType>());
+		setRps(new ArrayList<CalculatedParameterType>());
+		//setCalculatedParameters(new ArrayList<CalculatedParameterType>());
 	}		
 	public int getAc_id() {
 		return ac_id;
@@ -142,30 +158,31 @@ public class ResolutionNode {
 	public void addParameter(ContextParameterType cp){
 		this.cps.add(cp);
 	}
-	public List<QualityParameterType> getQps() {
+	
+	public List<CalculatedParameterType> getQps() {
 		return qps;
 	}
-	public void setQps(List<QualityParameterType> qps) {
+	public void setQps(List<CalculatedParameterType> qps) {
 		this.qps = qps;
 	}
-	
+	/*
 	public List<CalculatedParameterType> getCalculatedParameters() {
 		return calcPs;
 	}
 	public void setCalculatedParameters(List<CalculatedParameterType> calcps) {
 		this.calcPs = calcps;
 	}
-	
-	public List<CostParameterType> getCops() {
+	*/
+	public List<CalculatedParameterType> getCops() {
 		return cops;
 	}
-	public void setCops(List<CostParameterType> cops) {
+	public void setCops(List<CalculatedParameterType> cops) {
 		this.cops = cops;
 	}
-	public List<RankingParameterType> getRps() {
+	public List<CalculatedParameterType> getRps() {
 		return Rps;
 	}
-	public void setRps(List<RankingParameterType> rkps) {
+	public void setRps(List<CalculatedParameterType> rkps) {
 		Rps = rkps;
 	}
 	public String getPath() {

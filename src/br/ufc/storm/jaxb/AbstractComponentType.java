@@ -2,7 +2,7 @@
 // Este arquivo foi gerado pela Arquitetura JavaTM para Implementação de Referência (JAXB) de Bind XML, v2.2.8-b130911.1802 
 // Consulte <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Todas as modificações neste arquivo serão perdidas após a recompilação do esquema de origem. 
-// Gerado em: 2016.06.07 às 12:39:11 PM BRT 
+// Gerado em: 2016.07.26 às 02:48:28 PM BRT 
 //
 
 
@@ -31,8 +31,9 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="context_parameter" type="{http://storm.lia.ufc.br}context_parameter_type" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="inner_components" type="{http://storm.lia.ufc.br}abstract_component_type" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="abstract_unit" type="{http://storm.lia.ufc.br}abstract_unit_type" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="quality_parameters" type="{http://storm.lia.ufc.br}quality_parameter_type" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="cost_parameters" type="{http://storm.lia.ufc.br}cost_parameter_type" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="quality_parameters" type="{http://storm.lia.ufc.br}calculated_parameter_type" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="cost_parameters" type="{http://storm.lia.ufc.br}calculated_parameter_type" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="ranking_parameters" type="{http://storm.lia.ufc.br}calculated_parameter_type" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="slices" type="{http://storm.lia.ufc.br}slice_type" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
@@ -54,6 +55,7 @@ import javax.xml.bind.annotation.XmlType;
     "abstractUnit",
     "qualityParameters",
     "costParameters",
+    "rankingParameters",
     "slices"
 })
 public class AbstractComponentType {
@@ -66,9 +68,11 @@ public class AbstractComponentType {
     @XmlElement(name = "abstract_unit")
     protected List<AbstractUnitType> abstractUnit;
     @XmlElement(name = "quality_parameters")
-    protected List<QualityParameterType> qualityParameters;
+    protected List<CalculatedParameterType> qualityParameters;
     @XmlElement(name = "cost_parameters")
-    protected List<CostParameterType> costParameters;
+    protected List<CalculatedParameterType> costParameters;
+    @XmlElement(name = "ranking_parameters")
+    protected List<CalculatedParameterType> rankingParameters;
     protected List<SliceType> slices;
     @XmlAttribute(name = "name")
     protected String name;
@@ -208,13 +212,13 @@ public class AbstractComponentType {
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link QualityParameterType }
+     * {@link CalculatedParameterType }
      * 
      * 
      */
-    public List<QualityParameterType> getQualityParameters() {
+    public List<CalculatedParameterType> getQualityParameters() {
         if (qualityParameters == null) {
-            qualityParameters = new ArrayList<QualityParameterType>();
+            qualityParameters = new ArrayList<CalculatedParameterType>();
         }
         return this.qualityParameters;
     }
@@ -237,15 +241,44 @@ public class AbstractComponentType {
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link CostParameterType }
+     * {@link CalculatedParameterType }
      * 
      * 
      */
-    public List<CostParameterType> getCostParameters() {
+    public List<CalculatedParameterType> getCostParameters() {
         if (costParameters == null) {
-            costParameters = new ArrayList<CostParameterType>();
+            costParameters = new ArrayList<CalculatedParameterType>();
         }
         return this.costParameters;
+    }
+
+    /**
+     * Gets the value of the rankingParameters property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the rankingParameters property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getRankingParameters().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link CalculatedParameterType }
+     * 
+     * 
+     */
+    public List<CalculatedParameterType> getRankingParameters() {
+        if (rankingParameters == null) {
+            rankingParameters = new ArrayList<CalculatedParameterType>();
+        }
+        return this.rankingParameters;
     }
 
     /**

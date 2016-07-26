@@ -301,7 +301,7 @@ public class ContextParameterHandler extends DBHandler {
 				try{
 					if(bound_id != ac_id){
 						cp.setBound(ContextContractHandler.getContextContractIncomplete(bound_id));
-						//						System.out.println(cp.getBound().getAbstractComponent().getIdAc()+"5555555555555");
+						
 						//TODO: O Limite não precisa estar completo, basta ter o componente abstrato com id
 						//						cp.setBound(DBHandler.getContextContract(bound_id));
 

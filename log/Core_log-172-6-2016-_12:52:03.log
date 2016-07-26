@@ -1,0 +1,2 @@
+12:52:03 - [INFO] - CREATING NEW LOG (br.ufc.storm.io.LogHandler.getLogger())
+12:52:03 - [SEVERE] - ShelfException: DBHandlerException: Context contract with id 126 was not found (br.ufc.storm.exception.ShelfException.<init>())

@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.ufc.storm.exception.DBHandlerException;
+import br.ufc.storm.jaxb.CalculatedArgumentType;
+import br.ufc.storm.jaxb.CalculatedParameterType;
 import br.ufc.storm.jaxb.ContextContract;
 import br.ufc.storm.jaxb.ContextParameterType;
 import br.ufc.storm.jaxb.CostParameterType;
@@ -94,7 +96,7 @@ public class ResolutionHandler extends DBHandler {
 				try {
 					list.add(ContextContractHandler.getContextContract(cc_id));
 				} catch (DBHandlerException e) {
-					throw new RuntimeException("Platform can not be catched with ac_id "+requiredID);
+					throw new RuntimeException("Platform can not be catched with ac_id "+requiredID,e);
 				} 
 			} 
 			subtype = resolutionTree.findNode(requiredID).getSubtype();
@@ -114,13 +116,13 @@ public class ResolutionHandler extends DBHandler {
 	 * @return
 	 * @throws DBHandlerException 
 	 */
-	public static ResolutionNode generateResolutionTree(Integer i, ResolutionNode tree, List<ContextParameterType> cps, List<QualityParameterType> qps, List<CostParameterType> cops, List<RankingParameterType> rps, String parentPath) throws DBHandlerException{
+	public static ResolutionNode generateResolutionTree(Integer i, ResolutionNode tree, List<ContextParameterType> cps, List<CalculatedParameterType> qps, List<CalculatedParameterType> cops, List<CalculatedParameterType> rps, String parentPath) throws DBHandlerException{
 		try {
 			Connection con = DBHandler.getConnection();
 			PreparedStatement prepared = con.prepareStatement(SELECT_ABSTRACT_COMPONENT_BY_SUPERTYPE_ID); 
 			prepared.setInt(1, i);
 			ResultSet resultSet = prepared.executeQuery(); 
-			while (resultSet.next()) { 
+			while (resultSet.next()) {
 				if(resultSet.getBoolean("enabled") == false){
 					return null;
 				}
@@ -130,18 +132,30 @@ public class ResolutionHandler extends DBHandler {
 				node.setAc_id(resultSet.getInt("ac_id"));
 				node.setCps(ContextParameterHandler.getAllContextParameterFromAbstractComponent(node.getAc_id()));
 				node.getCps().addAll(cps);
-				node.setQps(QualityHandler.getQualityParameters(node.getAc_id()));
-				if(node.getQps().size()>0){
+				
+				node.setQps(CalculatedArgumentHandler.getCalculatedParameters(node.getAc_id(), 1));
+				if(qps.size() > 0){
 					node.getQps().addAll(qps);
 				}
-				node.setRps(RankingHandler.getRankingParameters(node.getAc_id(), con));
-				if(node.getRps().size()>0){
-					node.getRps().addAll(rps);
-				}
-				node.setCops(CostHandler.getCostParameters(node.getAc_id()));
-				if(node.getCops().size()>0){
+				
+				node.setCops(CalculatedArgumentHandler.getCalculatedParameters(node.getAc_id(), 2));
+				if(node.getCops().size() > 0){
 					node.getCops().addAll(cops);
 				}
+				
+				node.setRps(CalculatedArgumentHandler.getCalculatedParameters(node.getAc_id(), 3));
+				if(rps.size() > 0){
+					node.getRps().addAll(rps);
+				}
+				
+				/*
+				node.getCalculatedParameters().addAll(CalculatedArgumentHandler.getCalculatedParameters(node.getAc_id(), 1));
+				//node.setCalculatedParameters(CalculatedArgumentHandler.getCalculatedParameters(node.getAc_id()));
+				if(cas.size() > 0){
+					node.getCalculatedParameters().addAll(cas);
+					
+				}
+				*/
 				node.setSupertype(tree);
 				tree.addSubtype(node);
 				generateResolutionTree(node.getAc_id(), node, node.getCps(), node.getQps(), node.getCops(), node.getRps(), node.getPath()+"."+node.getName());
@@ -165,7 +179,7 @@ public class ResolutionHandler extends DBHandler {
 		tree.setName("root");
 		tree.setPath("");
 		tree.setSupertype(tree);
-		ResolutionNode r = generateResolutionTree(0, tree, new ArrayList<ContextParameterType>(), new ArrayList<QualityParameterType>(), new ArrayList<CostParameterType>(), new ArrayList<RankingParameterType>(), "root");
+		ResolutionNode r = generateResolutionTree(0, tree, new ArrayList<ContextParameterType>(), new ArrayList<CalculatedParameterType>(), new ArrayList<CalculatedParameterType>(), new ArrayList<CalculatedParameterType>(), "root");
 		return r;
 	}
 

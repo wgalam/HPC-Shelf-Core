@@ -2,7 +2,7 @@
 // Este arquivo foi gerado pela Arquitetura JavaTM para Implementação de Referência (JAXB) de Bind XML, v2.2.8-b130911.1802 
 // Consulte <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Todas as modificações neste arquivo serão perdidas após a recompilação do esquema de origem. 
-// Gerado em: 2016.06.07 às 12:39:11 PM BRT 
+// Gerado em: 2016.07.26 às 02:48:28 PM BRT 
 //
 
 
@@ -30,15 +30,14 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="context_arguments" type="{http://storm.lia.ufc.br}context_argument_type" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="abstract_component" type="{http://storm.lia.ufc.br}abstract_component_type"/>
  *         &lt;element name="platform" type="{http://storm.lia.ufc.br}platform_profile_type" minOccurs="0"/>
- *         &lt;element name="quality_arguments" type="{http://storm.lia.ufc.br}quality_argument_type" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="ranking_arguments" type="{http://storm.lia.ufc.br}ranking_argument_type" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="cost_arguments" type="{http://storm.lia.ufc.br}cost_argument_type" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="quality_arguments" type="{http://storm.lia.ufc.br}calculated_argument_type" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="ranking_arguments" type="{http://storm.lia.ufc.br}calculated_argument_type" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="cost_arguments" type="{http://storm.lia.ufc.br}calculated_argument_type" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;choice>
  *           &lt;element name="inner_components_resolved" type="{http://storm.lia.ufc.br}candidate_list_type" maxOccurs="unbounded" minOccurs="0"/>
  *           &lt;element name="inner_components" type="{http://storm.lia.ufc.br}context_contract" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;/choice>
  *         &lt;element name="concrete_units" type="{http://storm.lia.ufc.br}concrete_unit_type" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="calculated_arguments" type="{http://storm.lia.ufc.br}calculated_argument_type" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attribute name="cc_name" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="cc_id" type="{http://www.w3.org/2001/XMLSchema}int" />
@@ -60,8 +59,7 @@ import javax.xml.bind.annotation.XmlType;
     "costArguments",
     "innerComponentsResolved",
     "innerComponents",
-    "concreteUnits",
-    "calculatedArguments"
+    "concreteUnits"
 })
 public class ContextContract {
 
@@ -71,19 +69,17 @@ public class ContextContract {
     protected AbstractComponentType abstractComponent;
     protected PlatformProfileType platform;
     @XmlElement(name = "quality_arguments")
-    protected List<QualityArgumentType> qualityArguments;
+    protected List<CalculatedArgumentType> qualityArguments;
     @XmlElement(name = "ranking_arguments")
-    protected List<RankingArgumentType> rankingArguments;
+    protected List<CalculatedArgumentType> rankingArguments;
     @XmlElement(name = "cost_arguments")
-    protected List<CostArgumentType> costArguments;
+    protected List<CalculatedArgumentType> costArguments;
     @XmlElement(name = "inner_components_resolved")
     protected List<CandidateListType> innerComponentsResolved;
     @XmlElement(name = "inner_components")
     protected List<ContextContract> innerComponents;
     @XmlElement(name = "concrete_units")
     protected List<ConcreteUnitType> concreteUnits;
-    @XmlElement(name = "calculated_arguments")
-    protected List<CalculatedArgumentType> calculatedArguments;
     @XmlAttribute(name = "cc_name")
     protected String ccName;
     @XmlAttribute(name = "cc_id")
@@ -186,13 +182,13 @@ public class ContextContract {
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link QualityArgumentType }
+     * {@link CalculatedArgumentType }
      * 
      * 
      */
-    public List<QualityArgumentType> getQualityArguments() {
+    public List<CalculatedArgumentType> getQualityArguments() {
         if (qualityArguments == null) {
-            qualityArguments = new ArrayList<QualityArgumentType>();
+            qualityArguments = new ArrayList<CalculatedArgumentType>();
         }
         return this.qualityArguments;
     }
@@ -215,13 +211,13 @@ public class ContextContract {
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link RankingArgumentType }
+     * {@link CalculatedArgumentType }
      * 
      * 
      */
-    public List<RankingArgumentType> getRankingArguments() {
+    public List<CalculatedArgumentType> getRankingArguments() {
         if (rankingArguments == null) {
-            rankingArguments = new ArrayList<RankingArgumentType>();
+            rankingArguments = new ArrayList<CalculatedArgumentType>();
         }
         return this.rankingArguments;
     }
@@ -244,13 +240,13 @@ public class ContextContract {
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link CostArgumentType }
+     * {@link CalculatedArgumentType }
      * 
      * 
      */
-    public List<CostArgumentType> getCostArguments() {
+    public List<CalculatedArgumentType> getCostArguments() {
         if (costArguments == null) {
-            costArguments = new ArrayList<CostArgumentType>();
+            costArguments = new ArrayList<CalculatedArgumentType>();
         }
         return this.costArguments;
     }
@@ -340,35 +336,6 @@ public class ContextContract {
             concreteUnits = new ArrayList<ConcreteUnitType>();
         }
         return this.concreteUnits;
-    }
-
-    /**
-     * Gets the value of the calculatedArguments property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the calculatedArguments property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getCalculatedArguments().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link CalculatedArgumentType }
-     * 
-     * 
-     */
-    public List<CalculatedArgumentType> getCalculatedArguments() {
-        if (calculatedArguments == null) {
-            calculatedArguments = new ArrayList<CalculatedArgumentType>();
-        }
-        return this.calculatedArguments;
     }
 
     /**

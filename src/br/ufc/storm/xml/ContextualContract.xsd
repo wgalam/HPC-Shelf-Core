@@ -22,14 +22,17 @@
     			maxOccurs="unbounded" minOccurs="0">
     		</element>
     		<element name="quality_parameters"
-    			type="tns:quality_parameter_type" maxOccurs="unbounded"
+    			type="tns:calculated_parameter_type" maxOccurs="unbounded"
     			minOccurs="0">
     		</element>
     		<element name="cost_parameters"
-    			type="tns:cost_parameter_type" maxOccurs="unbounded"
+    			type="tns:calculated_parameter_type" maxOccurs="unbounded"
     			minOccurs="0">
     		</element>
-    		<element name="slices" type="tns:slice_type" maxOccurs="unbounded" minOccurs="0"></element>
+            <element name="ranking_parameters" type="tns:calculated_parameter_type" maxOccurs="unbounded" minOccurs="0"></element>
+            <element name="slices" type="tns:slice_type"
+    			maxOccurs="unbounded" minOccurs="0">
+    		</element>
     	</sequence>
     	<attribute name="name" type="string"></attribute>
     	<attribute name="kind" type="tns:kind_type"></attribute>
@@ -67,7 +70,7 @@
     <complexType name="context_argument_type">
     	<sequence>
     		<choice>
-    			<element name="cp_id" type="int" maxOccurs="1"
+    			<element name="shared_variable_cp_id" type="int" maxOccurs="1"
     				minOccurs="0">
     			</element>
     			<element name="context_contract"
@@ -77,7 +80,7 @@
     		</choice>
     	</sequence>
     	<attribute name="cc_id" type="int"></attribute>
-    	<attribute name="variable_cp_id" type="int"></attribute>
+    	<attribute name="cp_id" type="int"></attribute>
     	<attribute name="bound_cc_id" type="int"></attribute>
     	<attribute name="ca_id" type="int"></attribute>
     	<attribute name="kind" type="int"></attribute>
@@ -105,14 +108,14 @@
     			maxOccurs="1" minOccurs="0">
     		</element>
     		<element name="quality_arguments"
-    			type="tns:quality_argument_type" maxOccurs="unbounded"
+    			type="tns:calculated_argument_type" maxOccurs="unbounded"
     			minOccurs="0">
     		</element>
     		<element name="ranking_arguments"
-    			type="tns:ranking_argument_type" maxOccurs="unbounded"
+    			type="tns:calculated_argument_type" maxOccurs="unbounded"
     			minOccurs="0">
     		</element>
-    		<element name="cost_arguments" type="tns:cost_argument_type"
+    		<element name="cost_arguments" type="tns:calculated_argument_type"
     			maxOccurs="unbounded" minOccurs="0">
     		</element>
     		<choice>
@@ -128,7 +131,6 @@
     		<element name="concrete_units" type="tns:concrete_unit_type"
     			maxOccurs="unbounded" minOccurs="0">
     		</element>
-    		<element name="calculated_arguments" type="tns:calculated_argument_type" maxOccurs="unbounded" minOccurs="0"></element>
     	</sequence>
     	<attribute name="cc_name" type="string"></attribute>
     	<attribute name="cc_id" type="int"></attribute>
@@ -243,7 +245,7 @@
     
     <complexType name="calculated_argument_type">
     	<sequence>
-    		<element name="function" type="tns:quality_function_type" maxOccurs="1" minOccurs="0"></element>
+    		<element name="function" type="tns:calculated_function_type" maxOccurs="1" minOccurs="0"></element>
     	</sequence>
     	<attribute name="calc_id" type="int"></attribute>
     	<attribute name="value" type="double"></attribute>

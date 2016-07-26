@@ -10,6 +10,7 @@ import java.util.List;
 import br.ufc.storm.exception.DBHandlerException;
 import br.ufc.storm.jaxb.AbstractComponentType;
 import br.ufc.storm.jaxb.AbstractUnitType;
+import br.ufc.storm.jaxb.CalculatedArgumentType;
 import br.ufc.storm.jaxb.ContextArgumentType;
 import br.ufc.storm.jaxb.ContextContract;
 import br.ufc.storm.jaxb.ContextParameterType;
@@ -50,12 +51,13 @@ public class ContextContractHandler extends DBHandler{
 					addContextContract(inner);
 				}
 				//add quality functions
-				for(QualityArgumentType qa : cc.getQualityArguments()){
-					QualityHandler.addQualityFunction(qa.getFunction());
+				for(CalculatedArgumentType qa : cc.getQualityArguments()){
+					CalculatedArgumentHandler.addCalculatedFunction(qa.getFunction(), 1);
 				}
 				//add cost functions
-				for(CostArgumentType ca : cc.getCostArguments()){
-					CostHandler.addCostFunction(ca.getFunction());
+				for(CalculatedArgumentType ca : cc.getCostArguments()){
+					CalculatedArgumentHandler.addCalculatedFunction(ca.getFunction(), 2);
+					//CostHandler.addCostFunction(ca.getFunction());
 				}
 			}
 		} catch (SQLException e) {
@@ -118,7 +120,7 @@ public class ContextContractHandler extends DBHandler{
 				for(ContextArgumentType cat:cc.getContextArguments()){
 					//Creating a pointer into context parameter to context argument
 					for(ContextParameterType cpt : cc.getAbstractComponent().getContextParameter()){
-						if(cpt.getCpId()==cat.getVariableCpId()){
+						if(cpt.getCpId()==cat.getCpId()){
 							cpt.setContextArgument(cat);
 						}
 					}

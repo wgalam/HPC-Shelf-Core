@@ -1,0 +1,2 @@
+05:55:45 - [INFO] - CREATING NEW LOG (br.ufc.storm.io.LogHandler.getLogger())
+05:55:45 - [SEVERE] - ShelfException: DBHandlerException: Can not get closed argument with cpId equals to 40and context contract id equals to 136 (br.ufc.storm.exception.ShelfException.<init>())

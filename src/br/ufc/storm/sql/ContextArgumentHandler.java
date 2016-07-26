@@ -38,7 +38,7 @@ public class ContextArgumentHandler extends DBHandler {
 			Connection con = getConnection();
 			PreparedStatement prepared = con.prepareStatement(INSERT_CONTEXT_ARGUMENT); 
 			prepared.setInt(1, cat.getCcId());
-			prepared.setInt(2, cat.getVariableCpId()); 
+			prepared.setInt(2, cat.getCpId()); 
 			if(cat.getValue()!=null){
 				prepared.setBoolean(3, true);
 			}else{
@@ -55,7 +55,7 @@ public class ContextArgumentHandler extends DBHandler {
 					//					Adicionar contrato na respectiva tabela
 				}else{
 					//					TODO: Falta testar
-					addContextArgumentVariableReference(cat.getVariableCpId(),cat.getCpId());
+					addContextArgumentVariableReference(cat.getCpId(),cat.getSharedVariableCpId());
 					//					Adicionar referência à variável
 				}
 			}
@@ -148,12 +148,12 @@ public class ContextArgumentHandler extends DBHandler {
 			while (resultSet.next()) {
 				ContextArgumentType ca = new ContextArgumentType();
 				ca.setCcId(cc_id);
-				ca.setVariableCpId(resultSet.getInt("variable_cp_id"));
+				ca.setCpId(resultSet.getInt("variable_cp_id"));
 				ca.setBoundCcId(resultSet.getInt("bound_id"));
 				ca.setCaId(resultSet.getInt("ca_id"));
 				ca.setKind(resultSet.getInt("kind_id"));
 				Object o;
-				o = getContextArgumentValue(ca.getVariableCpId(), ca.getCcId());
+				o = getContextArgumentValue(ca.getCpId(), ca.getCcId());
 				if(o instanceof ContextContract){
 					ca.setContextContract((ContextContract) o);
 				}else if(o instanceof String){

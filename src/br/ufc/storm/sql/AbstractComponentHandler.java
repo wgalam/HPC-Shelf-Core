@@ -146,8 +146,9 @@ public class AbstractComponentHandler extends DBHandler{
 		ac = getAbstractComponentPartial(ac_id);
 		ac.getInnerComponents().addAll(ContextContractHandler.getInnerComponents(ac_id));
 		ac.getContextParameter().addAll(ResolutionHandler.generateResolutionTree().findNode(ac_id).getCps());
-		ac.getQualityParameters().addAll(QualityHandler.getQualityParameters(ac_id));
-		ac.getCostParameters().addAll(CostHandler.getCostParameters(ac_id));
+		ac.getQualityParameters().addAll(CalculatedArgumentHandler.getCalculatedParameters(ac_id, 1));
+		ac.getCostParameters().addAll(CalculatedArgumentHandler.getCalculatedParameters(ac_id, 2));
+		ac.getRankingParameters().addAll(CalculatedArgumentHandler.getCalculatedParameters(ac_id, 3));
 		ac.getAbstractUnit().addAll(AbstractUnitHandler.getAbstractUnits(ac_id));
 		ac.getSlices().addAll(getSlices(ac_id));
 		return ac;
