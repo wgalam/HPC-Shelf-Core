@@ -2,7 +2,7 @@
 // Este arquivo foi gerado pela Arquitetura JavaTM para Implementação de Referência (JAXB) de Bind XML, v2.2.8-b130911.1802 
 // Consulte <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Todas as modificações neste arquivo serão perdidas após a recompilação do esquema de origem. 
-// Gerado em: 2016.07.26 às 02:48:28 PM BRT 
+// Gerado em: 2016.08.01 às 03:00:29 PM BRT 
 //
 
 
@@ -103,11 +103,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link QualityArgumentType }
+     * Create an instance of {@link AbstractUnitType }
      * 
      */
-    public QualityArgumentType createQualityArgumentType() {
-        return new QualityArgumentType();
+    public AbstractUnitType createAbstractUnitType() {
+        return new AbstractUnitType();
     }
 
     /**
@@ -119,19 +119,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link QualityFunctionType }
+     * Create an instance of {@link PlatformProfileType }
      * 
      */
-    public QualityFunctionType createQualityFunctionType() {
-        return new QualityFunctionType();
-    }
-
-    /**
-     * Create an instance of {@link CostParameterType }
-     * 
-     */
-    public CostParameterType createCostParameterType() {
-        return new CostParameterType();
+    public PlatformProfileType createPlatformProfileType() {
+        return new PlatformProfileType();
     }
 
     /**
@@ -151,86 +143,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link CalculatedParameterType }
-     * 
-     */
-    public CalculatedParameterType createCalculatedParameterType() {
-        return new CalculatedParameterType();
-    }
-
-    /**
-     * Create an instance of {@link QualityFunctionTermType }
-     * 
-     */
-    public QualityFunctionTermType createQualityFunctionTermType() {
-        return new QualityFunctionTermType();
-    }
-
-    /**
-     * Create an instance of {@link SliceType }
-     * 
-     */
-    public SliceType createSliceType() {
-        return new SliceType();
-    }
-
-    /**
-     * Create an instance of {@link QualityParameterType }
-     * 
-     */
-    public QualityParameterType createQualityParameterType() {
-        return new QualityParameterType();
-    }
-
-    /**
-     * Create an instance of {@link ContextArgumentType }
-     * 
-     */
-    public ContextArgumentType createContextArgumentType() {
-        return new ContextArgumentType();
-    }
-
-    /**
-     * Create an instance of {@link RankingFunctionType }
-     * 
-     */
-    public RankingFunctionType createRankingFunctionType() {
-        return new RankingFunctionType();
-    }
-
-    /**
-     * Create an instance of {@link RankingArgumentType }
-     * 
-     */
-    public RankingArgumentType createRankingArgumentType() {
-        return new RankingArgumentType();
-    }
-
-    /**
-     * Create an instance of {@link AbstractUnitType }
-     * 
-     */
-    public AbstractUnitType createAbstractUnitType() {
-        return new AbstractUnitType();
-    }
-
-    /**
-     * Create an instance of {@link PlatformProfileType }
-     * 
-     */
-    public PlatformProfileType createPlatformProfileType() {
-        return new PlatformProfileType();
-    }
-
-    /**
-     * Create an instance of {@link RankingFunctionTermType }
-     * 
-     */
-    public RankingFunctionTermType createRankingFunctionTermType() {
-        return new RankingFunctionTermType();
-    }
-
-    /**
      * Create an instance of {@link ContextParameterType }
      * 
      */
@@ -247,11 +159,27 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link CostFunctionTermType }
+     * Create an instance of {@link CalculatedParameterType }
      * 
      */
-    public CostFunctionTermType createCostFunctionTermType() {
-        return new CostFunctionTermType();
+    public CalculatedParameterType createCalculatedParameterType() {
+        return new CalculatedParameterType();
+    }
+
+    /**
+     * Create an instance of {@link SliceType }
+     * 
+     */
+    public SliceType createSliceType() {
+        return new SliceType();
+    }
+
+    /**
+     * Create an instance of {@link ContextArgumentType }
+     * 
+     */
+    public ContextArgumentType createContextArgumentType() {
+        return new ContextArgumentType();
     }
 
     /**
@@ -260,30 +188,6 @@ public class ObjectFactory {
      */
     public ConcreteComponentType createConcreteComponentType() {
         return new ConcreteComponentType();
-    }
-
-    /**
-     * Create an instance of {@link CostFunctionType }
-     * 
-     */
-    public CostFunctionType createCostFunctionType() {
-        return new CostFunctionType();
-    }
-
-    /**
-     * Create an instance of {@link CostArgumentType }
-     * 
-     */
-    public CostArgumentType createCostArgumentType() {
-        return new CostArgumentType();
-    }
-
-    /**
-     * Create an instance of {@link RankingParameterType }
-     * 
-     */
-    public RankingParameterType createRankingParameterType() {
-        return new RankingParameterType();
     }
 
     /**
