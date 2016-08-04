@@ -1,6 +1,5 @@
 package br.ufc.storm.model;
 
-import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
@@ -9,8 +8,6 @@ import br.ufc.storm.exception.DBHandlerException;
 import br.ufc.storm.jaxb.ContextArgumentType;
 import br.ufc.storm.jaxb.ContextArgumentValueType;
 import br.ufc.storm.jaxb.ContextContract;
-
-import java.lang.reflect.*;
 
 public class ArgumentTable {
 
@@ -40,6 +37,9 @@ public class ArgumentTable {
 					fill(cat.getContextContract());
 				}
 			}
+		}
+		if(cc.getPlatform()!=null){
+			fill(cc.getPlatform().getPlatformContract());
 		}
 	}
 

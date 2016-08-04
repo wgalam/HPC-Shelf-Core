@@ -1,6 +1,8 @@
 
+br.ufc.storm.backend
 br.ufc.storm.control
 br.ufc.storm.exception
+br.ufc.storm.export
 br.ufc.storm.io
 br.ufc.storm.jaxb
 br.ufc.storm.model
@@ -9,3 +11,4 @@ br.ufc.storm.sql
 br.ufc.storm.webservices
 br.ufc.storm.xml
 com.udojava.evalex
+org.apache.ws.axis2

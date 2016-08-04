@@ -17,7 +17,7 @@ import br.ufc.storm.exception.ResolveException;
 public class ContextParameterHandler extends DBHandler {
 
 	private final static String INSERT_CONTEXT_PARAMETER ="INSERT INTO context_parameter (bound_id, cp_name, ac_id) VALUES ((select cc_id from context_contract where cc_name=?), ? ,(select ac_id from abstract_component where ac_name=?)) RETURNING cp_id;";
-	private final static String SELECT_COMPONENT_PARAMETER = "select * from context_parameter where ac_id = ?;";
+	private final static String SELECT_COMPONENT_PARAMETER = "select * from context_parameter where ac_id = ? AND parameter_type = ?;";
 	private static final String SELECT_BOUND = "SELECT bound_id FROM context_parameter WHERE cp_id = ?;";
 	private static final String INSERT_BOUND_VALUE = "INSERT INTO bound_value (cp_id, bound_value) VALUES (?,?);";
 	private static final String SELECT_BOUND_VALUE = "SELECT bound_value FROM bound_value WHERE cp_id=?;";
@@ -28,6 +28,13 @@ public class ContextParameterHandler extends DBHandler {
 	private final static String INSERT_CONTEXT_VARIABLE_PROVIDED ="INSERT INTO context_variable_provided (cp_id, variable_name) VALUES (?,?);";
 	private final static String SELECT_CONTEXT_VARIABLE_REQUIRED ="SELECT * FROM context_variable_required WHERE cp_id = ?;";
 	private final static String SELECT_CONTEXT_VARIABLE_PROVIDED ="SELECT * FROM context_variable_provided WHERE cp_id = ?;";
+	
+	public final static int CONTEXT = 1;
+	public final static int QUALITY = 2;
+	public final static int COST = 3;
+	public final static int RANKING = 4;
+	
+	
 	/**
 	 * This method should test if a component do not generate infinite loops in composition walk
 	 * 
@@ -292,7 +299,8 @@ public class ContextParameterHandler extends DBHandler {
 		try {  
 			PreparedStatement prepared = getConnection().prepareStatement(SELECT_COMPONENT_PARAMETER); 
 			prepared.setInt(1, ac_id);
-			ResultSet resultSet = prepared.executeQuery(); 
+			prepared.setInt(2, ContextParameterHandler.CONTEXT);
+			ResultSet resultSet = prepared.executeQuery();
 			while (resultSet.next()) {
 				ContextParameterType cp = new ContextParameterType();
 				cp.setCpId(resultSet.getInt("cp_id"));
@@ -417,7 +425,7 @@ public class ContextParameterHandler extends DBHandler {
 		try { 
 			PreparedStatement prepared = DBHandler.getConnection().prepareStatement(SELECT_CONTEXT_VARIABLE_PROVIDED); 
 			prepared.setInt(1, cp_id); 
-			ResultSet resultSet = prepared.executeQuery(); 
+			ResultSet resultSet = prepared.executeQuery();
 			if(resultSet.next()) { 
 				return resultSet.getString("variable_name");
 			}else{

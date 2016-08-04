@@ -246,10 +246,8 @@ public class ContextArgumentHandler extends DBHandler {
 //					}
 				}else{
 					prepared = con.prepareStatement(SELECT_CLOSED_ARGUMENT_CC); 
-//					prepared.setInt(1, ca_id);
 					prepared.setInt(1, cp_id);
 					prepared.setInt(2, cc_id);
-//					System.out.println(prepared);
 					resultSet = prepared.executeQuery();
 					if(resultSet.next()){
 						return ContextContractHandler.getContextContract(resultSet.getInt("cc_id"));
@@ -258,93 +256,9 @@ public class ContextArgumentHandler extends DBHandler {
 					}
 				}
 			}
-//			return null;
 		} catch (SQLException e) {
 			throw new DBHandlerException("A sql error occurred: ", e);
 		}
 
 	}
-
-	
-	//TODO: Grade chance de estar errado o último teste, revisar e testar
-//		@SuppressWarnings("resource")
-//		public static Object getContextArgumentValueOld(int cp_id, int cc_id) throws DBHandlerException{
-//
-//			try {
-//				boolean hasValue = false;
-//				boolean shared = false;
-//				int ca_id = 0;
-//				Connection con = getConnection();
-//				PreparedStatement prepared = con.prepareStatement(SELECT_VARIABLE_SHARED); 
-//				prepared.setInt(1, cp_id);
-//				ResultSet resultSet = prepared.executeQuery(); 
-//				if(resultSet.next()) { 
-//					shared = resultSet.getBoolean("isShared");
-//				}else{
-//					throw new DBHandlerException("Value of isShared not defined with cpId equals to "+cp_id+"and context contract id equals to "+cc_id);
-//				}
-//				if(shared){
-//					prepared = con.prepareStatement(SELECT_SHARED_VARIABLE_CP); 
-//					prepared.setInt(1, cp_id);
-//					resultSet = prepared.executeQuery();
-//					if(resultSet.next()){
-//						return getContextArgumentValue(resultSet.getInt("refers_to_var"),cc_id);
-//					}else{
-//						throw new DBHandlerException("Shared variable not found with cpId equals to "+cp_id+"and context contract id equals to "+cc_id);
-//					}
-//				}else{
-//					prepared = con.prepareStatement(SELECT_VARIABLE_VALUE);
-//					prepared.setInt(1, cp_id);
-//					prepared.setInt(2, cc_id);
-//					resultSet = prepared.executeQuery();
-//					if(resultSet.next()){
-//						hasValue = resultSet.getBoolean("hasValue");
-//						ca_id = resultSet.getInt("ca_id");
-//					}else{
-//						throw new DBHandlerException("Error getting variable flag with cpId equals to "+cp_id+"and context contract id equals to "+cc_id);
-//					}
-//					if(hasValue){
-//						prepared = con.prepareStatement(SELECT_VARIABLE_VALUE); 
-//						prepared.setInt(1, ca_id);
-//						resultSet = prepared.executeQuery();
-//						if(resultSet.next()){
-//							Object o;
-//							String type = resultSet.getString("data_type");
-//							String s = resultSet.getString("value");
-//							switch (type) {
-//							case "Integer":
-//								o = Integer.parseInt(s);
-//								break;
-//							case "String":
-//								o = s;
-//								break;
-//							case "Float":
-//								o = Float.parseFloat(s);
-//								break;
-//							case "Double":
-//								o = Double.parseDouble(s);
-//								break;
-//							default:
-//								throw new DBHandlerException("Context argument value not recognized");
-//							}
-//							return s;
-//						}
-//					}else{
-//						prepared = con.prepareStatement(SELECT_CLOSED_ARGUMENT_CC); 
-//						prepared.setInt(1, ca_id);
-//						resultSet = prepared.executeQuery();
-//						if(resultSet.next()){
-//							return ContextContractHandler.getContextContract(resultSet.getInt("cc_id"));
-//						}else{
-//							throw new DBHandlerException("Can not get closed argument with cpId equals to "+cp_id+"and context contract id equals to "+cc_id);
-//						}
-//					}
-//				}
-//				return null;
-//			} catch (SQLException e) {
-//				throw new DBHandlerException("A sql error occurred: ", e);
-//			}
-//
-//		}
-
 }

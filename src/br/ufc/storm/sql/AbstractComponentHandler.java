@@ -36,21 +36,20 @@ public class AbstractComponentHandler extends DBHandler{
 	 * This method gets the list of all abstract components in the library
 	 * @return List of components
 	 * @throws SQLException 
-	 * @throws DBHandlerException 
+	 * @throws DBHandlerException
 	 */
 
-	//TODO: Refactor this method
 	public static List<AbstractComponentType> listAbstractComponents() throws DBHandlerException{
 		try {
 			Connection con = getConnection();
 			int ac_id, supertype_id;
 			String name;
-			ArrayList<AbstractComponentType> list = new ArrayList<AbstractComponentType>(); 
-			PreparedStatement prepared = con.prepareStatement(SELECT_ALL_ABSTRACTCOMPONENT); 
-			ResultSet resultSet = prepared.executeQuery(); 
-			while (resultSet.next()) { 
+			ArrayList<AbstractComponentType> list = new ArrayList<AbstractComponentType>();
+			PreparedStatement prepared = con.prepareStatement(SELECT_ALL_ABSTRACTCOMPONENT);
+			ResultSet resultSet = prepared.executeQuery();
+			while (resultSet.next()) {
 				name = resultSet.getString("ac_name");
-				ac_id = resultSet.getInt("ac_id"); 
+				ac_id = resultSet.getInt("ac_id");
 				supertype_id = resultSet.getInt("supertype_id"); 
 				AbstractComponentType ac = new AbstractComponentType();
 				ac.setIdAc(ac_id);
@@ -62,9 +61,6 @@ public class AbstractComponentHandler extends DBHandler{
 				} catch (DBHandlerException e) {
 					throw new DBHandlerException("Supertype not found", e);
 				}
-				//ac.setParent(new AbstractComponentType());
-				//ac.getParent().setIdAc(parent);
-				//ac.setKind(kind);
 				list.add(ac);
 			}
 			return list;
@@ -82,6 +78,8 @@ public class AbstractComponentHandler extends DBHandler{
 	 * @throws SQLException 
 	 * @throws XMLException 
 	 */
+	
+	//TODO: Concluir o cadastro de variáveis
 	public static void addAbstractComponent(AbstractComponentType ac, Map<String, Integer> sharedVariables) throws DBHandlerException, ResolveException{
 
 		try {
@@ -146,9 +144,9 @@ public class AbstractComponentHandler extends DBHandler{
 		ac = getAbstractComponentPartial(ac_id);
 		ac.getInnerComponents().addAll(ContextContractHandler.getInnerComponents(ac_id));
 		ac.getContextParameter().addAll(ResolutionHandler.generateResolutionTree().findNode(ac_id).getCps());
-		ac.getQualityParameters().addAll(CalculatedArgumentHandler.getCalculatedParameters(ac_id, 1));
-		ac.getCostParameters().addAll(CalculatedArgumentHandler.getCalculatedParameters(ac_id, 2));
-		ac.getRankingParameters().addAll(CalculatedArgumentHandler.getCalculatedParameters(ac_id, 3));
+		ac.getQualityParameters().addAll(CalculatedArgumentHandler.getCalculatedParameters(ac_id, ContextParameterHandler.QUALITY));
+		ac.getCostParameters().addAll(CalculatedArgumentHandler.getCalculatedParameters(ac_id, ContextParameterHandler.COST));
+		ac.getRankingParameters().addAll(CalculatedArgumentHandler.getCalculatedParameters(ac_id, ContextParameterHandler.RANKING));
 		ac.getAbstractUnit().addAll(AbstractUnitHandler.getAbstractUnits(ac_id));
 		ac.getSlices().addAll(getSlices(ac_id));
 		return ac;
@@ -282,10 +280,10 @@ public class AbstractComponentHandler extends DBHandler{
 	}
 
 	/**
-	 * 
+	 * This method caches all abstract slices from a component 
 	 * @param ac_id
-	 * @return
-	 * @throws SQLException 
+	 * @return List of abstract slices
+	 * @throws DBHandlerException
 	 */
 
 	private static List<SliceType> getSlices(int ac_id) throws DBHandlerException {

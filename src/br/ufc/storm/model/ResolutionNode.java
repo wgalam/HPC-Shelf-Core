@@ -3,14 +3,9 @@ package br.ufc.storm.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sun.org.apache.xerces.internal.util.SynchronizedSymbolTable;
-
 import br.ufc.storm.exception.DBHandlerException;
 import br.ufc.storm.jaxb.CalculatedParameterType;
 import br.ufc.storm.jaxb.ContextParameterType;
-import br.ufc.storm.jaxb.CostParameterType;
-import br.ufc.storm.jaxb.QualityParameterType;
-import br.ufc.storm.jaxb.RankingParameterType;
 import br.ufc.storm.sql.ResolutionHandler;
 
 
@@ -22,7 +17,6 @@ public class ResolutionNode {
 	private List<ContextParameterType> cps;
 	private List<CalculatedParameterType> qps;
 	private List<CalculatedParameterType> Rps;
-	//private List<CalculatedParameterType> calcPs;
 	private List<CalculatedParameterType> cops;	
 	private List<ResolutionNode> subtype;
 
@@ -43,7 +37,6 @@ public class ResolutionNode {
 		setQps(new ArrayList<CalculatedParameterType>());
 		setCops(new ArrayList<CalculatedParameterType>());
 		setRps(new ArrayList<CalculatedParameterType>());
-		//setCalculatedParameters(new ArrayList<CalculatedParameterType>());
 	}		
 	public int getAc_id() {
 		return ac_id;
@@ -165,14 +158,6 @@ public class ResolutionNode {
 	public void setQps(List<CalculatedParameterType> qps) {
 		this.qps = qps;
 	}
-	/*
-	public List<CalculatedParameterType> getCalculatedParameters() {
-		return calcPs;
-	}
-	public void setCalculatedParameters(List<CalculatedParameterType> calcps) {
-		this.calcPs = calcps;
-	}
-	*/
 	public List<CalculatedParameterType> getCops() {
 		return cops;
 	}

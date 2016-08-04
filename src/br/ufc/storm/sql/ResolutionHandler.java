@@ -12,10 +12,7 @@ import br.ufc.storm.jaxb.CalculatedArgumentType;
 import br.ufc.storm.jaxb.CalculatedParameterType;
 import br.ufc.storm.jaxb.ContextContract;
 import br.ufc.storm.jaxb.ContextParameterType;
-import br.ufc.storm.jaxb.CostParameterType;
 import br.ufc.storm.jaxb.PlatformProfileType;
-import br.ufc.storm.jaxb.QualityParameterType;
-import br.ufc.storm.jaxb.RankingParameterType;
 import br.ufc.storm.model.ResolutionNode;
 
 public class ResolutionHandler extends DBHandler {
@@ -60,8 +57,15 @@ public class ResolutionHandler extends DBHandler {
 
 
 					//					--------------------------------------------------------------
+					
+					
+					
+//					Falta completar o componente abstrato com os parametros de qualidade herdados, pois a exportação busca os parametros de qualidade pelo id do pai 
+//					cc.getAbstractComponent().getQualityParameters().addAll(resolutionTree.findNode(aux).getQps());
+//					System.out.println("<Params> "+resolutionTree.findNode(aux).getQps().size());
 					cc.setPlatform(new PlatformProfileType());
 					cc.getPlatform().setPlatformContract(PlatformHandler.getPlatform(cc_id));
+					
 					list.add(cc); 
 				}
 				supertype = resolutionTree.findNode(list.get(list.size()-1).getAbstractComponent().getIdAc()).getSupertype().getAc_id();
@@ -133,29 +137,21 @@ public class ResolutionHandler extends DBHandler {
 				node.setCps(ContextParameterHandler.getAllContextParameterFromAbstractComponent(node.getAc_id()));
 				node.getCps().addAll(cps);
 				
-				node.setQps(CalculatedArgumentHandler.getCalculatedParameters(node.getAc_id(), 1));
+				node.setQps(CalculatedArgumentHandler.getCalculatedParameters(node.getAc_id(), ContextParameterHandler.QUALITY));
 				if(qps.size() > 0){
 					node.getQps().addAll(qps);
 				}
 				
-				node.setCops(CalculatedArgumentHandler.getCalculatedParameters(node.getAc_id(), 2));
-				if(node.getCops().size() > 0){
+				node.setCops(CalculatedArgumentHandler.getCalculatedParameters(node.getAc_id(), ContextParameterHandler.COST));
+				if(cops.size() > 0){
 					node.getCops().addAll(cops);
 				}
 				
-				node.setRps(CalculatedArgumentHandler.getCalculatedParameters(node.getAc_id(), 3));
+				
+				node.setRps(CalculatedArgumentHandler.getCalculatedParameters(node.getAc_id(), ContextParameterHandler.RANKING));
 				if(rps.size() > 0){
 					node.getRps().addAll(rps);
 				}
-				
-				/*
-				node.getCalculatedParameters().addAll(CalculatedArgumentHandler.getCalculatedParameters(node.getAc_id(), 1));
-				//node.setCalculatedParameters(CalculatedArgumentHandler.getCalculatedParameters(node.getAc_id()));
-				if(cas.size() > 0){
-					node.getCalculatedParameters().addAll(cas);
-					
-				}
-				*/
 				node.setSupertype(tree);
 				tree.addSubtype(node);
 				generateResolutionTree(node.getAc_id(), node, node.getCps(), node.getQps(), node.getCops(), node.getRps(), node.getPath()+"."+node.getName());

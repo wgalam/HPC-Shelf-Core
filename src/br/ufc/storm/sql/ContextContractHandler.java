@@ -15,11 +15,8 @@ import br.ufc.storm.jaxb.ContextArgumentType;
 import br.ufc.storm.jaxb.ContextContract;
 import br.ufc.storm.jaxb.ContextParameterType;
 import br.ufc.storm.jaxb.ContractList;
-import br.ufc.storm.jaxb.CostArgumentType;
-import br.ufc.storm.jaxb.QualityArgumentType;
 
 public class ContextContractHandler extends DBHandler{
-
 	private final static String INSERT_CONTEXT_CONTRACT = "INSERT INTO context_contract (ac_id, cc_name) VALUES ((select ac_id from abstract_component where ac_name = ?), ?) RETURNING cc_id;";
 	private final static String SELECT_CONTEXT_CONTRACT_ID = "select cc_id from context_contract where cc_name = ?;";
 	private static final String SELECT_CONTEXT_CONTRACT_NAME = "select cc_name from context_contract where cc_id = ?;";

@@ -2,7 +2,7 @@
 // Este arquivo foi gerado pela Arquitetura JavaTM para Implementação de Referência (JAXB) de Bind XML, v2.2.8-b130911.1802 
 // Consulte <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Todas as modificações neste arquivo serão perdidas após a recompilação do esquema de origem. 
-// Gerado em: 2016.08.01 às 03:00:29 PM BRT 
+// Gerado em: 2016.08.03 às 03:17:14 AM BRT 
 //
 
 
@@ -31,7 +31,6 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="function_arguments" type="{http://storm.lia.ufc.br}context_argument_type" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attribute name="function_id" type="{http://www.w3.org/2001/XMLSchema}int" />
- *       &lt;attribute name="function_name" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="function_value" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="cc_id" type="{http://www.w3.org/2001/XMLSchema}int" />
  *       &lt;attribute name="cp_id" type="{http://www.w3.org/2001/XMLSchema}int" />
@@ -55,8 +54,6 @@ public class CalculatedFunctionType {
     protected List<ContextArgumentType> functionArguments;
     @XmlAttribute(name = "function_id")
     protected Integer functionId;
-    @XmlAttribute(name = "function_name")
-    protected String functionName;
     @XmlAttribute(name = "function_value")
     protected String functionValue;
     @XmlAttribute(name = "cc_id")
@@ -144,30 +141,6 @@ public class CalculatedFunctionType {
      */
     public void setFunctionId(Integer value) {
         this.functionId = value;
-    }
-
-    /**
-     * Obtém o valor da propriedade functionName.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getFunctionName() {
-        return functionName;
-    }
-
-    /**
-     * Define o valor da propriedade functionName.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setFunctionName(String value) {
-        this.functionName = value;
     }
 
     /**

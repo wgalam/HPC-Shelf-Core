@@ -1,0 +1,7 @@
+12:36:10 - [INFO] - CREATING NEW LOG (br.ufc.storm.io.LogHandler.getLogger())
+12:36:10 - [INFO] - Resolution Class: Starting to resolve a component! (br.ufc.storm.control.Resolution.resolve())
+12:36:10 - [INFO] - Generating Software Component Candidate List... (br.ufc.storm.control.Resolution.resolve())
+12:36:10 - [INFO] - 1 components were found, now it will be filtered (br.ufc.storm.control.Resolution.resolve())
+12:36:10 - [INFO] - Generating Hardware Candidate List for candidate: 0 (br.ufc.storm.control.Resolution.resolve())
+12:36:18 - [INFO] - 5 platforms were found for software component 0 (br.ufc.storm.control.Resolution.resolve())
+12:36:18 - [INFO] - Calculating arguments... (br.ufc.storm.control.Resolution.resolve())

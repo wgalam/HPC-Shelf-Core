@@ -35,6 +35,7 @@ import br.ufc.storm.exception.XMLException;
 import br.ufc.storm.io.FileHandler;
 import br.ufc.storm.jaxb.AbstractComponentType;
 import br.ufc.storm.jaxb.AbstractUnitType;
+import br.ufc.storm.jaxb.CalculatedFunctionType;
 import br.ufc.storm.jaxb.CandidateListType;
 import br.ufc.storm.jaxb.ComputationalSystemType;
 import br.ufc.storm.jaxb.ConcreteUnitType;
@@ -42,16 +43,15 @@ import br.ufc.storm.jaxb.ContextContract;
 import br.ufc.storm.jaxb.ContextParameterType;
 import br.ufc.storm.jaxb.ContractList;
 import br.ufc.storm.jaxb.ObjectFactory;
-import br.ufc.storm.jaxb.QualityFunctionType;
 import br.ufc.storm.jaxb.UnitFileType;
 import br.ufc.storm.model.ResolutionNode;
 import br.ufc.storm.sql.AbstractComponentHandler;
 import br.ufc.storm.sql.AbstractUnitHandler;
+import br.ufc.storm.sql.CalculatedArgumentHandler;
 import br.ufc.storm.sql.ConcreteUnitHandler;
 import br.ufc.storm.sql.ContextContractHandler;
 import br.ufc.storm.sql.ContextParameterHandler;
 import br.ufc.storm.sql.DBHandler;
-import br.ufc.storm.sql.QualityHandler;
 import br.ufc.storm.sql.ResolutionHandler;
 
 
@@ -88,6 +88,7 @@ public class XMLHandler {
 			file = out.toString();
 			in.close();
 		} catch (MalformedURLException e) {
+			//Not an error
 			//This exception is purposely left in blank, because always when enter in this method, 
 			//the file name can be a url or a file content as string
 		} catch (IOException e) {
@@ -105,6 +106,12 @@ public class XMLHandler {
 	}
 
 
+	/**
+	 * This method resolves a XML Context Contract
+	 * @param file in XML
+	 * @return Candidate list XML
+	 * @throws XMLException
+	 */
 	public static String resolve(String file) throws XMLException{
 		ContextContract cc = new ContextContract();
 		JAXBContext context;
@@ -118,9 +125,7 @@ public class XMLHandler {
 		} catch (JAXBException e) {
 			e.printStackTrace();
 		}
-		//		CandidateListType list = new CandidateListType();
-		//		list.getCandidate().addAll(Resolution.resolve(cc, null));
-
+		
 		java.io.StringWriter sw = new StringWriter();
 		context = null;
 		try {
@@ -182,8 +187,8 @@ public class XMLHandler {
 		}
 		return null;		
 	}
-
-	@SuppressWarnings("unchecked")
+	
+	/*@SuppressWarnings("unchecked")
 	public static AbstractComponentType generateContextParameter(File file){
 		AbstractComponentType ac = null;
 		JAXBContext context;
@@ -198,7 +203,7 @@ public class XMLHandler {
 		}
 		return ac;
 	}
-
+*/
 
 	/**
 	 * This method adds an abstract component from a xml file
@@ -453,12 +458,6 @@ public class XMLHandler {
 		return sw.toString();
 	}
 
-	/**
-	 * This method adds a context argument to an abstract components 
-	 * @param file XML file content 
-	 * @return True if the addiction was well successfully
-	 */
-
 
 	/**
 	 * This method adds an inner component
@@ -554,43 +553,35 @@ public class XMLHandler {
 
 	}
 
-
-
-	public static AbstractComponentType generateAbstractComponentType(int ac_id, String name, int supertype, int parent, int kind){
-		AbstractComponentType ac = new AbstractComponentType();
-		ac.setIdAc(ac_id);
-		ac.setName(name);
-		ac.setSupertype(new AbstractComponentType());
-		ac.getSupertype().setIdAc(supertype);
-		ac.setKind(kind);
-		return ac;		
-	}
-
-	public static AbstractComponentType generateAbstractComponentType(String name, int supertype, int parent, int kind){
-		AbstractComponentType ac = new AbstractComponentType();
-		ac.setName(name);
-		ac.setSupertype(new AbstractComponentType());
-		ac.getSupertype().setIdAc(supertype);
-		ac.setKind(kind);
-		return ac;
-	}
-
-	@SuppressWarnings("unchecked")
 	public static int addQualityFunction(String file) throws XMLException{
-		QualityFunctionType qf = new QualityFunctionType();
+		return XMLHandler.addCalculatedFunction(file, 1);
+	}
+	
+	public static int addCostFunction(String file) throws XMLException{
+		return XMLHandler.addCalculatedFunction(file, 2);
+	}
+	
+	public static int addRankFunction(String file) throws XMLException{
+		return XMLHandler.addCalculatedFunction(file, 3);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static int addCalculatedFunction(String file, int type) throws XMLException{
+		CalculatedFunctionType qf = new CalculatedFunctionType();
 		JAXBContext context;
 		try {
 			context = JAXBContext.newInstance(br.ufc.storm.jaxb.ObjectFactory.class.getPackage().getName(),
 					br.ufc.storm.jaxb.ObjectFactory.class.getClassLoader());
 			Unmarshaller unmarshaller = context.createUnmarshaller();
-			JAXBElement<QualityFunctionType> element = (JAXBElement<QualityFunctionType>) unmarshaller.unmarshal(new InputSource(new java.io.StringReader(file)));
+			JAXBElement<CalculatedFunctionType> element = (JAXBElement<CalculatedFunctionType>) unmarshaller.unmarshal(new InputSource(new java.io.StringReader(file)));
 			qf = element.getValue();
 		} catch (JAXBException e) {
 			e.printStackTrace();
 			return -1;
 		}
 		try {
-			return QualityHandler.addQualityFunction(qf);
+			return CalculatedArgumentHandler.addCalculatedFunction(qf, type);
+					//QualityHandler.addQualityFunction(qf);
 		} catch (DBHandlerException e) {
 			throw new XMLException(e);
 		}
@@ -771,11 +762,5 @@ public class XMLHandler {
 		}
 		return sw.toString();
 	}
-
-
-	
-
-
-
 
 }

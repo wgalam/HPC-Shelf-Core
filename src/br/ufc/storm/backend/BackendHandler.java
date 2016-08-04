@@ -7,15 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import javax.swing.plaf.synth.SynthSplitPaneUI;
-
 import org.apache.axis2.AxisFault;
 import org.apache.ws.axis2.FakeEndServicesStub;
 import org.apache.ws.axis2.FakeEndServicesStub.AddFileResponse;
 import org.apache.ws.axis2.FakeEndServicesStub.GetStatusResponse;
-import org.apache.ws.axis2.FakeEndServicesStub.RemoveFile;
 import org.apache.ws.axis2.FakeEndServicesStub.RemoveFileResponse;
-import org.apache.ws.axis2.FakeEndServicesStub.RunFile;
 import org.apache.ws.axis2.FakeEndServicesStub.RunFileResponse;
 import org.apache.ws.axis2.FakeEndServicesStub.SetRunnableResponse;
 
@@ -33,7 +29,6 @@ import br.ufc.storm.properties.PropertiesHandler;
 import br.ufc.storm.sql.ConcreteUnitHandler;
 import br.ufc.storm.sql.PlatformHandler;
 import br.ufc.storm.sql.SessionHandler;
-import br.ufc.storm.xml.XMLHandler;
 
 public class BackendHandler {
 

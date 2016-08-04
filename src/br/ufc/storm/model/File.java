@@ -1,9 +1,5 @@
 package br.ufc.storm.model;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-
 public class File {
 
 	private String name;
@@ -13,7 +9,7 @@ public class File {
 	private String version;
 	private String filetype;
 	private String url;
-	private String content;
+	//private String content;
 
 	public File(String name, String extension, String folder, String build_cfg, String version, String filetype, String url, String content) {
 		this.name = name;
@@ -23,7 +19,7 @@ public class File {
 		this.version = version;
 		this.filetype = filetype;
 		this.url = url;
-		this.content = content;
+		//this.content = content;
 	}
 
 	public String getName() {

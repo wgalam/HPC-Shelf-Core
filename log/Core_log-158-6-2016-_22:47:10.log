@@ -1,7 +1,0 @@
-10:47:10 - [INFO] - CREATING NEW LOG (br.ufc.storm.io.LogHandler.getLogger())
-10:47:10 - [SEVERE] - ShelfException: DBHandlerException: A sql error occurred: 
-	at org.postgresql.jdbc2.AbstractJdbc2ResultSet.findColumn(AbstractJdbc2ResultSet.java:2728)
-	at org.postgresql.jdbc2.AbstractJdbc2ResultSet.getInt(AbstractJdbc2ResultSet.java:2589)
-	at br.ufc.storm.sql.CalculatedArgumentHandler.addQualityFunction(CalculatedArgumentHandler.java:68)
-	at br.ufc.storm.sql.CalculatedArgumentHandler.main(CalculatedArgumentHandler.java:42)
- (br.ufc.storm.exception.ShelfException.<init>())
