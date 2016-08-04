@@ -18,6 +18,7 @@ import br.ufc.storm.jaxb.AbstractUnitType;
 import br.ufc.storm.jaxb.ContextContract;
 import br.ufc.storm.jaxb.ContextParameterType;
 import br.ufc.storm.jaxb.SliceType;
+import br.ufc.storm.model.ResolutionNode;
 import br.ufc.storm.exception.DBHandlerException;
 import br.ufc.storm.exception.ResolveException;
 import br.ufc.storm.exception.XMLException;
@@ -140,10 +141,16 @@ public class AbstractComponentHandler extends DBHandler{
 	 * @throws DBHandlerException 
 	 */
 	public static AbstractComponentType getAbstractComponent(int ac_id) throws DBHandlerException{
+		try {
+			ResolutionNode.setup();
+		} catch (ResolveException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		AbstractComponentType ac;
 		ac = getAbstractComponentPartial(ac_id);
 		ac.getInnerComponents().addAll(ContextContractHandler.getInnerComponents(ac_id));
-		ac.getContextParameter().addAll(ResolutionHandler.generateResolutionTree().findNode(ac_id).getCps());
+		ac.getContextParameter().addAll(ResolutionNode.resolutionTree.findNode(ac_id).getCps());
 		ac.getQualityParameters().addAll(CalculatedArgumentHandler.getCalculatedParameters(ac_id, ContextParameterHandler.QUALITY));
 		ac.getCostParameters().addAll(CalculatedArgumentHandler.getCalculatedParameters(ac_id, ContextParameterHandler.COST));
 		ac.getRankingParameters().addAll(CalculatedArgumentHandler.getCalculatedParameters(ac_id, ContextParameterHandler.RANKING));

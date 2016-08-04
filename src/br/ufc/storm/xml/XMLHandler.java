@@ -692,12 +692,7 @@ public class XMLHandler {
 	
 	
 	public static String listComponent() throws XMLException{
-		ResolutionNode tree;
-		try {
-			tree = ResolutionHandler.generateResolutionTree();
-		} catch (DBHandlerException e) {
-			throw new XMLException(e);
-		}
+		
 		List<AbstractComponentType> abscom = null;
 		try {
 			abscom = AbstractComponentHandler.listAbstractComponents();
@@ -710,7 +705,7 @@ public class XMLHandler {
 			org.jdom2.Element contextParameter = new org.jdom2.Element("abstract_component");
 			contextParameter.setAttribute(new Attribute("ac_id", abscom.get(i).getIdAc()+""));
 			contextParameter.setAttribute(new Attribute("name", abscom.get(i).getName()));
-			contextParameter.setAttribute(new Attribute("path", tree.findNode(abscom.get(i).getIdAc()).getPath()));
+			contextParameter.setAttribute(new Attribute("path", ResolutionNode.resolutionTree.findNode(abscom.get(i).getIdAc()).getPath()));
 			contextParameter.setAttribute(new Attribute("supertype", abscom.get(i).getSupertype().getName()));
 			//contextParameter.setAttribute(new Attribute("kind", abscom.get(i).getKind()+""));
 			doc.getRootElement().addContent(contextParameter);

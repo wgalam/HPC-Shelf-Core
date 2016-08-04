@@ -2,6 +2,7 @@ package br.ufc.storm.export;
 
 import br.ufc.storm.control.Resolution;
 import br.ufc.storm.exception.DBHandlerException;
+import br.ufc.storm.exception.ResolveException;
 import br.ufc.storm.jaxb.AbstractComponentType;
 import br.ufc.storm.jaxb.CalculatedArgumentType;
 import br.ufc.storm.jaxb.CalculatedParameterType;
@@ -30,6 +31,12 @@ public class FormalFormat {
 	}
 
 	public static String exportComponentSignature(AbstractComponentType ac, String space){
+		try {
+			ResolutionNode.setup();
+		} catch (ResolveException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		String str = "";
 		if(space == null){
 			space="    ";
@@ -86,7 +93,7 @@ public class FormalFormat {
 		String str = "";
 		AbstractComponentType ac = cc.getAbstractComponent();
 		
-		ResolutionNode r = Resolution.resolutionTree.findNode(ac.getIdAc());
+		ResolutionNode r = ResolutionNode.resolutionTree.findNode(ac.getIdAc());
 		ac.getQualityParameters().clear();
 		ac.getQualityParameters().addAll(r.getQps());
 		ac.getCostParameters().clear();
@@ -119,26 +126,26 @@ public class FormalFormat {
 			}
 		}
 		for(CalculatedParameterType cp: ac.getQualityParameters()){
-			str+="\n"+space+cp.getName()+" = ";
+//			str+="\n"+space+cp.getName()+" = ";
 			for(CalculatedArgumentType c : cc.getQualityArguments()){
 				if(c.getCalcId()==cp.getCalcId()){
-					str+=c.getValue();//terminar
+					str+="\n"+space+cp.getName()+" = "+c.getValue();//terminar
 				}
 			}
 		}
 		for(CalculatedParameterType cp: ac.getCostParameters()){
-			str+="\n"+space+cp.getName()+" = ";
+//			str+="\n"+space+cp.getName()+" = ";
 			for(CalculatedArgumentType c : cc.getCostArguments()){
 				if(c.getCalcId()==cp.getCalcId()){
-					str+=c.getValue();//terminar
+					str+="\n"+space+cp.getName()+" = "+c.getValue();//terminar
 				}
 			}
 		}
 		for(CalculatedParameterType cp: ac.getRankingParameters()){
-			str+="\n"+space+cp.getName()+" = ";
+//			str+="\n"+space+cp.getName()+" = ";
 			for(CalculatedArgumentType c : cc.getRankingArguments()){
 				if(c.getCalcId()==cp.getCalcId()){
-					str+=c.getValue();//terminar
+					str+="\n"+space+cp.getName()+" = "+c.getValue();//terminar
 				}
 			}
 		}

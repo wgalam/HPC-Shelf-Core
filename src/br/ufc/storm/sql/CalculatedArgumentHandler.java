@@ -141,9 +141,6 @@ public class CalculatedArgumentHandler extends DBHandler{
 	 */
 	public static CalculatedFunctionType getCalculatedFunction(int cp_id, int cc_id, int type) throws DBHandlerException{
 		try { 
-			if(cp_id == 112){
-			System.out.println("XXXXXXXXXXXXXX");
-		}
 			Connection con = getConnection(); 
 			PreparedStatement prepared = con.prepareStatement(SELECT_CALCULATED_FUNCTION);
 			prepared.setInt(1, cp_id);
@@ -217,25 +214,25 @@ public class CalculatedArgumentHandler extends DBHandler{
 		return null;
 	}
 	
-	public static int calulateContextContractArguments(ContextContract cc, ResolutionNode tree, ArgumentTable argTable,int type) throws FunctionException{
+	public static int calulateContextContractArguments(ContextContract cc, ArgumentTable argTable,int type) throws FunctionException{
 		//Calculates arguments contracts parameters before it own quality arguments
 		
 		int count = 0;
 		for(ContextArgumentType cat : cc.getContextArguments()){
 			if(cat.getKind()== 1 && cat.getContextContract()!=null){
-				CalculatedArgumentHandler.calulateContextContractArguments(cat.getContextContract(), tree, argTable, type);
+				CalculatedArgumentHandler.calulateContextContractArguments(cat.getContextContract(), argTable, type);
 			}
 		}
 		List<CalculatedParameterType> calcps = null;
 		switch (type) {
 		case ContextParameterHandler.QUALITY:
-			calcps= tree.findNode(cc.getAbstractComponent().getIdAc()).getQps();
+			calcps= ResolutionNode.resolutionTree.findNode(cc.getAbstractComponent().getIdAc()).getQps();
 			break;
 		case ContextParameterHandler.COST:
-			calcps= tree.findNode(cc.getAbstractComponent().getIdAc()).getCops();
+			calcps= ResolutionNode.resolutionTree.findNode(cc.getAbstractComponent().getIdAc()).getCops();
 			break;
 		case ContextParameterHandler.RANKING:
-			calcps= tree.findNode(cc.getAbstractComponent().getIdAc()).getRps();
+			calcps= ResolutionNode.resolutionTree.findNode(cc.getAbstractComponent().getIdAc()).getRps();
 			break;
 		}
 		//Begin of calculus
@@ -288,7 +285,7 @@ public class CalculatedArgumentHandler extends DBHandler{
 			}
 		}
 		if(cc.getPlatform()!=null){
-			count+=calulateContextContractArguments(cc.getPlatform().getPlatformContract(), tree, argTable, type);
+			count+=calulateContextContractArguments(cc.getPlatform().getPlatformContract(), argTable, type);
 		}
 		return count;
 	}

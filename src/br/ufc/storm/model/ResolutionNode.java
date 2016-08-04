@@ -1,15 +1,22 @@
 package br.ufc.storm.model;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
+import org.postgresql.core.SetupQueryRunner;
+
 import br.ufc.storm.exception.DBHandlerException;
+import br.ufc.storm.exception.ResolveException;
 import br.ufc.storm.jaxb.CalculatedParameterType;
+import br.ufc.storm.jaxb.ContextArgumentType;
 import br.ufc.storm.jaxb.ContextParameterType;
 import br.ufc.storm.sql.ResolutionHandler;
 
 
 public class ResolutionNode {
+	public static ResolutionNode resolutionTree = null;
+	private static Hashtable <Integer , ResolutionNode> treeTable = new Hashtable<Integer, ResolutionNode>();
 	private int ac_id;
 	private ResolutionNode supertype;
 	private String name;
@@ -23,9 +30,8 @@ public class ResolutionNode {
 	public static void main(String [] a){
 		ResolutionNode r = null;
 		try {
-			r = ResolutionHandler.generateResolutionTree();
-		} catch (DBHandlerException e) {
-			// TODO Auto-generated catch block
+			setup();
+		} catch (ResolveException e) {
 			e.printStackTrace();
 		}
 		System.out.println(r.toString());
@@ -38,6 +44,28 @@ public class ResolutionNode {
 		setCops(new ArrayList<CalculatedParameterType>());
 		setRps(new ArrayList<CalculatedParameterType>());
 	}		
+	
+	public static void setup() throws ResolveException{
+		
+		if(ResolutionNode.resolutionTree == null){
+			try {
+				ResolutionNode tree = new ResolutionNode();
+				tree.setAc_id(0);
+				tree.setName("root");
+				tree.setPath("");
+				tree.setSupertype(tree);
+				addTable(0, tree);
+				ResolutionNode.resolutionTree = ResolutionHandler.generateResolutionTree(0, tree, new ArrayList<ContextParameterType>(), new ArrayList<CalculatedParameterType>(), new ArrayList<CalculatedParameterType>(), new ArrayList<CalculatedParameterType>(), "root");
+			} catch (DBHandlerException e) {
+				throw new ResolveException("Can not create resolution tree: ",e);
+			}
+		}
+	}
+	
+	public static void addTable(int ac_id, ResolutionNode r){
+		treeTable.put(ac_id, r);
+	}
+	
 	public int getAc_id() {
 		return ac_id;
 	}
@@ -91,6 +119,7 @@ public class ResolutionNode {
 	 * @return
 	 */
 	public ResolutionNode findNode(Integer id){
+		/*
 		if(ac_id==id){
 			return this;
 		}else{
@@ -102,21 +131,23 @@ public class ResolutionNode {
 			}
 		}
 		return null;
+		*/
+		return treeTable.get(id);
 	}
 
-	public ResolutionNode findNode(String nameToResolve){
-		if(nameToResolve.equals(acPath.toString()+"."+name) ){
-			return this;
-		}else{
-			for(ResolutionNode rn: this.getSubtype()){
-				ResolutionNode x = rn.findNode(nameToResolve);
-				if(x != null){
-					return x;
-				}
-			}
-		}
-		return null;
-	}
+//	public ResolutionNode findNode(String nameToResolve){
+//		if(nameToResolve.equals(acPath.toString()+"."+name) ){
+//			return this;
+//		}else{
+//			for(ResolutionNode rn: this.getSubtype()){
+//				ResolutionNode x = rn.findNode(nameToResolve);
+//				if(x != null){
+//					return x;
+//				}
+//			}
+//		}
+//		return null;
+//	}
 
 
 

@@ -26,8 +26,6 @@ import br.ufc.storm.xml.XMLHandler;
 
 public class Resolution{
 
-	public static ResolutionNode resolutionTree = null;
-
 	/**
 	 * Only for tests purpose
 	 * @param args
@@ -72,10 +70,10 @@ public class Resolution{
 					}
 				*/
 				//			System.out.println("Candidato compatível ("+ cont++ +"): "+XMLHandler.getContextContract(a));
-//							System.out.println(FormalFormat.exportContextContract(a, null));
+							System.out.println(FormalFormat.exportContextContract(a, null));
 			}
 //						System.out.println("Último Candidato Compatível\n"+XMLHandler.getContextContract(resolve.getCandidate().get(resolve.getCandidate().size()-1)));
-						System.out.println("Último Candidato Compatível\n"+FormalFormat.exportContextContract(resolve.getCandidate().get(resolve.getCandidate().size()-1), null));
+//						System.out.println("Último Candidato Compatível\n"+FormalFormat.exportContextContract(resolve.getCandidate().get(resolve.getCandidate().size()-1), null));
 		} catch (ResolveException e) {
 			System.out.println("Erro enquanto estava resolvendo um contrato");
 			e.printStackTrace();
@@ -150,15 +148,10 @@ public class Resolution{
 	 * @throws ResolveException 
 	 */
 	public static CandidateListType resolve(ContextContract application, ContextContract applicationPlatform) throws ResolveException{
+		long start = System.currentTimeMillis();
 		LogHandler.getLogger().info("Resolution Class: Starting to resolve a component!");
+		ResolutionNode.setup();
 		int calculated;
-		if(resolutionTree == null){
-			try {
-				resolutionTree = ResolutionHandler.generateResolutionTree();
-			} catch (DBHandlerException e) {
-				throw new ResolveException("Can not create resolution tree: ",e);
-			}
-		}
 		try {
 			ContextContractHandler.completeContextContract(application);
 		} catch (DBHandlerException e1) {
@@ -169,7 +162,7 @@ public class Resolution{
 		List<ContextContract> concreteComponentCandidatesList;
 		LogHandler.getLogger().info("Generating Software Component Candidate List...");
 		try {
-			concreteComponentCandidatesList = ResolutionHandler.generateCandidates(application.getAbstractComponent().getSupertype().getIdAc(), application.getAbstractComponent().getIdAc(), resolutionTree);
+			concreteComponentCandidatesList = ResolutionHandler.generateCandidates(application.getAbstractComponent().getSupertype().getIdAc(), application.getAbstractComponent().getIdAc());
 		} catch (DBHandlerException e1) {
 			return new CandidateListType();
 		}
@@ -178,7 +171,7 @@ public class Resolution{
 		if(concreteComponentCandidatesList.size() > 0){
 			for(ContextContract candidate:concreteComponentCandidatesList){
 				try {
-					if(componentSubTypeRecursiveTest(application, candidate, null, application.getAbstractComponent(),resolutionTree)){
+					if(componentSubTypeRecursiveTest(application, candidate, null, application.getAbstractComponent())){
 						if(candidate.getPlatform() == null){
 							//Will test the next software contract
 							continue;
@@ -187,7 +180,7 @@ public class Resolution{
 						LogHandler.getLogger().info("Generating Hardware Candidate List for candidate: "+index);
 						try {
 							//							System.out.println(candidate.getPlatform().getPlatformContract().getCcName());
-							componentCandidatePlatformlist = ResolutionHandler.generateCompliantPlatformCandidates(candidate.getPlatform().getPlatformContract().getAbstractComponent().getIdAc(), resolutionTree);
+							componentCandidatePlatformlist = ResolutionHandler.generateCompliantPlatformCandidates(candidate.getPlatform().getPlatformContract().getAbstractComponent().getIdAc());
 						} catch (DBHandlerException e3) {
 							//Will test the next software contract
 							continue;
@@ -201,8 +194,8 @@ public class Resolution{
 									candidate.getPlatform().setPlatformContract(applicationPlatform);
 									application.getPlatform().setPlatformContract(applicationPlatform);
 								}
-								if(isPlatformSubTypeTest(candidate.getPlatform().getPlatformContract(), platform, null,resolutionTree, applicationPlatform)){
-									if(isPlatformSubTypeTest(application.getPlatform().getPlatformContract(), platform, null, resolutionTree, applicationPlatform)){
+								if(isPlatformSubTypeTest(candidate.getPlatform().getPlatformContract(), platform, null, applicationPlatform)){
+									if(isPlatformSubTypeTest(application.getPlatform().getPlatformContract(), platform, null, applicationPlatform)){
 										ContextContract cct = XMLHandler.cloneContextContract(candidate);//Cloning component
 										cct.getPlatform().setPlatformContract(XMLHandler.cloneContextContract(platform));
 										if(application.getInnerComponents().size() > 0){
@@ -236,25 +229,23 @@ public class Resolution{
 
 								//calcula parametros de qualidade
 								try {
-									calculated = CalculatedArgumentHandler.calulateContextContractArguments(cc, resolutionTree, argumentTable, ContextParameterHandler.QUALITY);
-									//FunctionHandler.calulateContextContractQualityArguments(cc.getPlatform().getPlatformContract(), resolutionTree);
+									calculated = CalculatedArgumentHandler.calulateContextContractArguments(cc, argumentTable, ContextParameterHandler.QUALITY);
 								} catch (FunctionException e2) {
 									//do nothing
 								}
 								try {
-									if(Resolution.isSubTypeByCalculatedArgument(application.getPlatform().getPlatformContract(), cc.getPlatform().getPlatformContract(), null, resolutionTree, ContextParameterHandler.QUALITY)){
+									if(Resolution.isSubTypeByCalculatedArgument(application.getPlatform().getPlatformContract(), cc.getPlatform().getPlatformContract(), null, ContextParameterHandler.QUALITY)){
 										//calcula parametros de custo
 										try {
-											int x = CalculatedArgumentHandler.calulateContextContractArguments(cc, resolutionTree, argumentTable, ContextParameterHandler.COST);
+											int x = CalculatedArgumentHandler.calulateContextContractArguments(cc, argumentTable, ContextParameterHandler.COST);
 										} catch (FunctionException e1) {
 											//do nothing
 											e1.printStackTrace();
 										} 
-										if(Resolution.isSubTypeByCalculatedArgument(application.getPlatform().getPlatformContract(), cc.getPlatform().getPlatformContract(), null, resolutionTree, ContextParameterHandler.COST)){
+										if(Resolution.isSubTypeByCalculatedArgument(application.getPlatform().getPlatformContract(), cc.getPlatform().getPlatformContract(), null, ContextParameterHandler.COST)){
 											//calcula parametros de ranqueamento
 											try {
-												CalculatedArgumentHandler.calulateContextContractArguments(cc, resolutionTree,argumentTable,ContextParameterHandler.RANKING);
-												//											FunctionHandler.calulateContextContractRankingArguments(cc.getPlatform().getPlatformContract(), resolutionTree);
+												CalculatedArgumentHandler.calulateContextContractArguments(cc,argumentTable,ContextParameterHandler.RANKING);
 											} catch (FunctionException e) {
 												//do nothing
 											} 
@@ -276,6 +267,8 @@ public class Resolution{
 			}
 		}
 		newCandidateList.setUserId(application.getOwnerId());
+		long elapsed = System.currentTimeMillis() - start;
+		System.out.println("Resolution Time(ms): "+elapsed);
 		return newCandidateList;
 	}
 	/**
@@ -346,14 +339,14 @@ public class Resolution{
 	 * @return
 	 * @throws DBHandlerException 
 	 */
-	public static boolean componentSubTypeRecursiveTest(ContextContract applicationContract, ContextContract candidate, Integer cp_id, AbstractComponentType parentAc, ResolutionNode resolutionTree) throws DBHandlerException{
+	public static boolean componentSubTypeRecursiveTest(ContextContract applicationContract, ContextContract candidate, Integer cp_id, AbstractComponentType parentAc) throws DBHandlerException{
 		boolean subtype = true;
 		ContextContract bound;
 
 		if(cp_id!=null){
-			bound = getBoundFromContextParameter(parentAc, cp_id, resolutionTree);
+			bound = getBoundFromContextParameter(parentAc, cp_id);
 			int candidateContractIdAc = candidate.getAbstractComponent().getIdAc(); //ID_ac candidato
-			ResolutionNode supertype = resolutionTree.findNode(applicationContract.getAbstractComponent().getIdAc());
+			ResolutionNode supertype = ResolutionNode.resolutionTree.findNode(applicationContract.getAbstractComponent().getIdAc());
 			while(supertype.getAc_id() != bound.getAbstractComponent().getIdAc() && supertype.getAc_id() != 0 && supertype.getAc_id() != candidateContractIdAc){
 				supertype = supertype.getSupertype();
 			}
@@ -365,7 +358,7 @@ public class Resolution{
 		if(subtype){
 			if(applicationContract.getContextArguments().size() > 0){
 				for(ContextArgumentType cat:applicationContract.getContextArguments()){
-					subtype = subtype && componentSubTypeRecursiveTest(cat.getContextContract(), getContextContractFromArgument(cat,candidate), cat.getCpId(), applicationContract.getAbstractComponent(), resolutionTree);
+					subtype = subtype && componentSubTypeRecursiveTest(cat.getContextContract(), getContextContractFromArgument(cat,candidate), cat.getCpId(), applicationContract.getAbstractComponent());
 				}
 			}
 		}
@@ -382,7 +375,7 @@ public class Resolution{
 	 * @return
 	 */
 
-	public static boolean isPlatformSubTypeTest(ContextContract componentPlatformType, ContextContract testedPlatformCandidate, Integer cp_id, ResolutionNode resolutionTree, ContextContract applicationPlatform){
+	public static boolean isPlatformSubTypeTest(ContextContract componentPlatformType, ContextContract testedPlatformCandidate, Integer cp_id, ContextContract applicationPlatform){
 		boolean subtype = true;
 		if(applicationPlatform!=null){
 			if(testedPlatformCandidate!=null){
@@ -397,7 +390,7 @@ public class Resolution{
 		if(componentPlatformType != null && testedPlatformCandidate!=null){
 			if(cp_id!=null){
 				int candidateContractIdAc = testedPlatformCandidate.getAbstractComponent().getIdAc(); //ID_ac candidato
-				ResolutionNode supertype = resolutionTree.findNode(componentPlatformType.getAbstractComponent().getIdAc());
+				ResolutionNode supertype = ResolutionNode.resolutionTree.findNode(componentPlatformType.getAbstractComponent().getIdAc());
 				if(supertype.findNode(candidateContractIdAc)== null){
 					subtype = false;
 				}
@@ -409,7 +402,7 @@ public class Resolution{
 			if(componentPlatformType.getContextArguments().size() > 0){
 				for(ContextArgumentType cat:componentPlatformType.getContextArguments()){
 					if(cat.getValue()==null){
-						subtype = subtype && isPlatformSubTypeTest(cat.getContextContract(), getContextContractFromArgument(cat,testedPlatformCandidate), cat.getCpId(), resolutionTree, applicationPlatform);
+						subtype = subtype && isPlatformSubTypeTest(cat.getContextContract(), getContextContractFromArgument(cat,testedPlatformCandidate), cat.getCpId(), applicationPlatform);
 					}else{
 						subtype = subtype && isPlatformSubTypeTest(cat, getValueFromCandidateArgument(cat,testedPlatformCandidate), cat.getKind());
 					}
@@ -459,7 +452,7 @@ public class Resolution{
 	 * @return
 	 * @throws ShelfException 
 	 */
-	public static boolean isSubTypeByCalculatedArgument(ContextContract applicationPlatform, ContextContract platformCandidate, Integer qp_id, ResolutionNode resolutionTree, int calculatedArgumentType) throws ShelfException{
+	public static boolean isSubTypeByCalculatedArgument(ContextContract applicationPlatform, ContextContract platformCandidate, Integer qp_id, int calculatedArgumentType) throws ShelfException{
 		boolean subtype = true;
 		if(applicationPlatform != null){
 			List<CalculatedArgumentType> list = null;
@@ -612,8 +605,8 @@ public class Resolution{
 	 * @return
 	 * @throws DBHandlerException 
 	 */
-	public static ContextContract getBoundFromContextParameter(AbstractComponentType ac, int cp_id, ResolutionNode resolutionTree) throws DBHandlerException{
-		for(ContextParameterType cp:resolutionTree.findNode(ac.getIdAc()).getCps()){
+	public static ContextContract getBoundFromContextParameter(AbstractComponentType ac, int cp_id) throws DBHandlerException{
+		for(ContextParameterType cp:ResolutionNode.resolutionTree.findNode(ac.getIdAc()).getCps()){
 			if(cp.getCpId()==cp_id){
 				return ContextContractHandler.getContextContract(cp.getBound().getCcId());
 			}

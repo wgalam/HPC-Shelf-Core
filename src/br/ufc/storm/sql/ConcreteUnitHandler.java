@@ -11,6 +11,7 @@ import java.util.List;
 import br.ufc.storm.exception.DBHandlerException;
 import br.ufc.storm.jaxb.ConcreteUnitType;
 import br.ufc.storm.jaxb.UnitFileType;
+import br.ufc.storm.model.ResolutionNode;
 import br.ufc.storm.properties.PropertiesHandler;
 
 public class ConcreteUnitHandler extends DBHandler {
@@ -194,7 +195,7 @@ public class ConcreteUnitHandler extends DBHandler {
 			System.out.println(prepared);
 			ResultSet resultSet = prepared.executeQuery(); 
 			if(resultSet.next()) { 
-				uft.setPath(ResolutionHandler.generateResolutionTree().findNode(resultSet.getInt("ac_id")).getPath()); 
+				uft.setPath(ResolutionNode.resolutionTree.findNode(resultSet.getInt("ac_id")).getPath()); 
 				String c_name = resultSet.getString("cc_name");
 				uft.setPath(uft.getPath()+"."+c_name);
 			}else{

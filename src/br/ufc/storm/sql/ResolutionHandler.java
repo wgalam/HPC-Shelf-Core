@@ -29,7 +29,7 @@ public class ResolutionHandler extends DBHandler {
 	 * @throws DBHandlerException 
 	 */
 
-	public static List<ContextContract> generateCandidates(int supertypeID, int requiredID, ResolutionNode resolutionTree) throws DBHandlerException{
+	public static List<ContextContract> generateCandidates(int supertypeID, int requiredID) throws DBHandlerException{
 		PreparedStatement prepared;
 		ResultSet resultSet;
 		List<ContextContract> list = new ArrayList<ContextContract>();
@@ -68,7 +68,7 @@ public class ResolutionHandler extends DBHandler {
 					
 					list.add(cc); 
 				}
-				supertype = resolutionTree.findNode(list.get(list.size()-1).getAbstractComponent().getIdAc()).getSupertype().getAc_id();
+				supertype = ResolutionNode.resolutionTree.findNode(list.get(list.size()-1).getAbstractComponent().getIdAc()).getSupertype().getAc_id();
 				history = aux;
 				aux = supertype;
 			}while(resultSet!= null && history != supertypeID );//supertype != supertypeID && supertype != 0
@@ -87,7 +87,7 @@ public class ResolutionHandler extends DBHandler {
 	 * @throws DBHandlerException 
 	 */
 
-	public static List<ContextContract> generateCompliantPlatformCandidates(int requiredID, ResolutionNode resolutionTree) throws DBHandlerException{
+	public static List<ContextContract> generateCompliantPlatformCandidates(int requiredID) throws DBHandlerException{
 		try {	
 			List <ResolutionNode> subtype = new ArrayList<ResolutionNode>();
 			List<ContextContract> list = new ArrayList<ContextContract>();
@@ -103,9 +103,9 @@ public class ResolutionHandler extends DBHandler {
 					throw new RuntimeException("Platform can not be catched with ac_id "+requiredID,e);
 				} 
 			} 
-			subtype = resolutionTree.findNode(requiredID).getSubtype();
+			subtype = ResolutionNode.resolutionTree.findNode(requiredID).getSubtype();
 			for(ResolutionNode rn:subtype){
-				list.addAll(generateCompliantPlatformCandidates(rn.getAc_id(), resolutionTree));
+				list.addAll(generateCompliantPlatformCandidates(rn.getAc_id()));
 			}
 			return list;
 		} catch (SQLException e) {
@@ -147,13 +147,13 @@ public class ResolutionHandler extends DBHandler {
 					node.getCops().addAll(cops);
 				}
 				
-				
 				node.setRps(CalculatedArgumentHandler.getCalculatedParameters(node.getAc_id(), ContextParameterHandler.RANKING));
 				if(rps.size() > 0){
 					node.getRps().addAll(rps);
 				}
 				node.setSupertype(tree);
 				tree.addSubtype(node);
+				ResolutionNode.addTable(node.getAc_id(), node);
 				generateResolutionTree(node.getAc_id(), node, node.getCps(), node.getQps(), node.getCops(), node.getRps(), node.getPath()+"."+node.getName());
 
 			} 
@@ -164,19 +164,6 @@ public class ResolutionHandler extends DBHandler {
 		
 	}
 
-	/**
-	 * This method generates all resolution tree of abstract components
-	 * @return
-	 * @throws DBHandlerException 
-	 */
-	public static ResolutionNode generateResolutionTree() throws DBHandlerException{
-		ResolutionNode tree = new ResolutionNode();
-		tree.setAc_id(0);
-		tree.setName("root");
-		tree.setPath("");
-		tree.setSupertype(tree);
-		ResolutionNode r = generateResolutionTree(0, tree, new ArrayList<ContextParameterType>(), new ArrayList<CalculatedParameterType>(), new ArrayList<CalculatedParameterType>(), new ArrayList<CalculatedParameterType>(), "root");
-		return r;
-	}
+	
 
 }
