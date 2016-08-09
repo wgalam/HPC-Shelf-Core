@@ -2,7 +2,7 @@
 // Este arquivo foi gerado pela Arquitetura JavaTM para Implementação de Referência (JAXB) de Bind XML, v2.2.8-b130911.1802 
 // Consulte <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Todas as modificações neste arquivo serão perdidas após a recompilação do esquema de origem. 
-// Gerado em: 2016.08.03 às 03:17:14 AM BRT 
+// Gerado em: 2016.08.09 às 11:14:23 AM BRT 
 //
 
 
@@ -36,6 +36,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;/sequence>
  *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="cp_id" type="{http://www.w3.org/2001/XMLSchema}int" />
+ *       &lt;attribute name="kind" type="{http://www.w3.org/2001/XMLSchema}int" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -69,6 +70,8 @@ public class ContextParameterType {
     protected String name;
     @XmlAttribute(name = "cp_id")
     protected Integer cpId;
+    @XmlAttribute(name = "kind")
+    protected Integer kind;
 
     /**
      * Obtém o valor da propriedade bound.
@@ -252,6 +255,30 @@ public class ContextParameterType {
      */
     public void setCpId(Integer value) {
         this.cpId = value;
+    }
+
+    /**
+     * Obtém o valor da propriedade kind.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Integer }
+     *     
+     */
+    public Integer getKind() {
+        return kind;
+    }
+
+    /**
+     * Define o valor da propriedade kind.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Integer }
+     *     
+     */
+    public void setKind(Integer value) {
+        this.kind = value;
     }
 
 }

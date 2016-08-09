@@ -109,7 +109,7 @@ public class FormalFormat {
 		
 		str+=cc.getCcName()+"[";
 		for(ContextParameterType cp: ac.getContextParameter()){
-			for(ContextArgumentType ca : cc.getContextArguments()){
+			for(ContextArgumentType ca : cc.getContextArgumentsProvided()){
 				if(cp.getCpId()==ca.getCpId()){
 					if(ca.getContextContract()!=null){
 						str+="\n"+space+cp.getName()+" = "+exportContextContract(ca.getContextContract(),"    ")+",";

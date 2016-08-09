@@ -22,6 +22,7 @@ import br.ufc.storm.jaxb.CalculatedFunctionType;
 import br.ufc.storm.jaxb.CalculatedParameterType;
 import br.ufc.storm.jaxb.ContextArgumentType;
 import br.ufc.storm.jaxb.ContextContract;
+import br.ufc.storm.jaxb.ContextParameterType;
 import br.ufc.storm.model.ArgumentTable;
 import br.ufc.storm.model.ResolutionNode;
 
@@ -35,10 +36,10 @@ public class CalculatedArgumentHandler extends DBHandler{
 
 	public static void main(String[] args) {
 		//try {
-			//			QualityFunctionType cft = getQualityFunction(1, 123);
-			//			System.out.println(cft.getFunctionValue());
-			
-			/*CalculatedFunctionType q = new CalculatedFunctionType();
+		//			QualityFunctionType cft = getQualityFunction(1, 123);
+		//			System.out.println(cft.getFunctionValue());
+
+		/*CalculatedFunctionType q = new CalculatedFunctionType();
 			q.setCpId(2);
 			q.setCcId(123);
 			q.setFunctionValue("V0-v1");
@@ -56,12 +57,12 @@ public class CalculatedArgumentHandler extends DBHandler{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}*/
-			try {
-				Resolution.main(args);
-			} catch (DBHandlerException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		try {
+			Resolution.main(args);
+		} catch (DBHandlerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -119,9 +120,9 @@ public class CalculatedArgumentHandler extends DBHandler{
 			prepared.setInt(2, type);
 			ResultSet resultSet = prepared.executeQuery(); 
 			while(resultSet.next()){ 
-//				if(resultSet.getInt("cp_id") == 112){
-//				System.out.println(resultSet.getString("cp_name"));
-//				}
+				//				if(resultSet.getInt("cp_id") == 112){
+				//				System.out.println(resultSet.getString("cp_name"));
+				//				}
 				CalculatedParameterType calcp = new CalculatedParameterType();
 				calcp.setCalcId(resultSet.getInt("cp_id"));
 				calcp.setName(resultSet.getString("cp_name"));
@@ -200,7 +201,7 @@ public class CalculatedArgumentHandler extends DBHandler{
 	}
 
 	public static Object getContractArgument(int cp_id, ContextContract cc){
-		for(ContextArgumentType cat : cc.getContextArguments()){
+		for(ContextArgumentType cat : cc.getContextArgumentsProvided()){
 			if(cat.getCpId()==cp_id){
 				return cat.getValue();
 			}else{
@@ -213,13 +214,20 @@ public class CalculatedArgumentHandler extends DBHandler{
 		}
 		return null;
 	}
-	
+
 	public static int calulateContextContractArguments(ContextContract cc, ArgumentTable argTable,int type) throws FunctionException{
 		//Calculates arguments contracts parameters before it own quality arguments
-		
+
 		int count = 0;
-		for(ContextArgumentType cat : cc.getContextArguments()){
-			if(cat.getKind()== 1 && cat.getContextContract()!=null){
+		for(ContextArgumentType cat : cc.getContextArgumentsProvided()){
+			//pegar o parametro
+			Integer kind=-1;
+			for(ContextParameterType cpt:ResolutionNode.resolutionTree.findNode(cc.getAbstractComponent().getIdAc()).getCps()){
+				if(cpt.getCpId()==cat.getCpId()){
+					kind = cpt.getKind();
+				}
+			}
+			if(kind == ContextParameterHandler.CONTEXT && cat.getContextContract()!=null){
 				CalculatedArgumentHandler.calulateContextContractArguments(cat.getContextContract(), argTable, type);
 			}
 		}
@@ -237,51 +245,44 @@ public class CalculatedArgumentHandler extends DBHandler{
 		}
 		//Begin of calculus
 		for(CalculatedParameterType calcpt:calcps){//calcula cada parametro
-			
+
+
 			CalculatedFunctionType function = null;
 			try {
 				function = CalculatedArgumentHandler.getCalculatedFunction(calcpt.getCalcId(), cc.getCcId(), type);
-			} catch (DBHandlerException e) {
-				LogHandler.getLogger().info("Error while getting function. "+e.getCause());
-			}
-
-			if(function != null){
-				ArrayList<CalculatedFunctionTermType> terms = null;
-				try {
+				if(function != null){
+					ArrayList<CalculatedFunctionTermType> terms = null;
 					terms = CalculatedArgumentHandler.getCalculatedFunctionParameter(function.getFunctionId());
-				} catch (DBHandlerException e) {
-					LogHandler.getLogger().info("Error while getting function. "+e.getCause());
-					//throw new FunctionException("Can not get calculated function: ",e);
-				}
-				for(CalculatedFunctionTermType qftt: terms){//busca cada argumento de cada termo da função
-					//ContextArgumentType cat = Resolution.getArgumentRecursive(cc, qftt.getCpId());
-					ContextArgumentType cat = argTable.getArgument(qftt.getCpId());
-					if(cat!=null){
-						function.getFunctionArguments().add(cat);
+					for(CalculatedFunctionTermType qftt: terms){//busca cada argumento de cada termo da função
+						ContextArgumentType cat = argTable.getArgument(qftt.getCpId());
+						if(cat!=null){
+							function.getFunctionArguments().add(cat);
+						}
+					}
+					CalculatedArgumentType qat = new CalculatedArgumentType();
+					qat.setCalcId(calcpt.getCalcId());
+					qat.setValue(CalculatedArgumentHandler.calculate(function));
+					argTable.addNewArgument(calcpt.getCalcId(), ""+qat.getValue());
+					calcpt.setCalculatedArgument(qat);
+
+					switch (type) {
+					case ContextParameterHandler.QUALITY:
+						cc.getQualityArguments().add(qat);
+						count++;
+						break;
+					case ContextParameterHandler.COST:
+						cc.getCostArguments().add(qat);
+						count++;
+						break;
+					case ContextParameterHandler.RANKING:
+						cc.getRankingArguments().add(qat);
+						count++;
+						break;
 					}
 				}
-				CalculatedArgumentType qat = new CalculatedArgumentType();
-				qat.setCalcId(calcpt.getCalcId());
-				qat.setValue(CalculatedArgumentHandler.calculate(function));
-				argTable.addNewArgument(calcpt.getCalcId(), ""+qat.getValue());
-				calcpt.setCalculatedArgument(qat);
-				
-				switch (type) {
-				case ContextParameterHandler.QUALITY:
-					cc.getQualityArguments().add(qat);
-					count++;
-					break;
-				case ContextParameterHandler.COST:
-					cc.getCostArguments().add(qat);
-					count++;
-					break;
-				case ContextParameterHandler.RANKING:
-					cc.getRankingArguments().add(qat);
-					count++;
-					break;
-				}
-
-
+			} catch (Exception e) {
+				LogHandler.getLogger().info("Error while getting function. "+e.getCause());
+				e.printStackTrace();
 			}
 		}
 		if(cc.getPlatform()!=null){
@@ -296,7 +297,7 @@ public class CalculatedArgumentHandler extends DBHandler{
 	 * @param qft
 	 * @return result
 	 */
-	public static double calculate(CalculatedFunctionType qft){
+	public static Double calculate(CalculatedFunctionType qft){
 		BigDecimal result = null;
 		int numOfarguments = qft.getFunctionArguments().size();
 
@@ -304,7 +305,6 @@ public class CalculatedArgumentHandler extends DBHandler{
 		for(int i = 0; i < numOfarguments; i++){
 			expression.with("v"+i, (qft.getFunctionArguments().get(i).getValue().getValue()));
 		}
-		
 		expression.setPrecision(2);
 		result = expression.eval();
 		return result.doubleValue();

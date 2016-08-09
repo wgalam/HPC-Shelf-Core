@@ -1,0 +1,529 @@
+<!-- Use this file to deploy some handlers/chains and services      -->
+<!-- Two ways to do this:                                           -->
+<!--   java org.apache.axis.client.AdminClient deploy.wsdd          -->
+<!--      after the axis server is running                          -->
+<!-- or                                                             -->
+<!--   java org.apache.axis.utils.Admin client|server deploy.wsdd   -->
+<!--      from the same directory that the Axis engine runs         -->
+
+<deployment
+    xmlns="http://xml.apache.org/axis/wsdd/"
+    xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+
+  <!-- Services from CoreServicesService WSDL service -->
+
+  <service name="CoreServices" provider="java:RPC" style="wrapped" use="literal">
+      <parameter name="wsdlTargetNamespace" value="http://webservices.storm.ufc.br"/>
+      <parameter name="wsdlServiceElement" value="CoreServicesService"/>
+      <parameter name="schemaQualified" value="http://exception.storm.ufc.br,http://webservices.storm.ufc.br,http://sax.xml.org"/>
+      <parameter name="wsdlServicePort" value="CoreServices"/>
+      <parameter name="className" value="br.ufc.storm.webservices.CoreServicesSoapBindingImpl"/>
+      <parameter name="wsdlPortType" value="CoreServices"/>
+      <parameter name="typeMappingVersion" value="1.2"/>
+      <operation name="addConcreteUnit" qname="operNS:addConcreteUnit" xmlns:operNS="http://webservices.storm.ufc.br" returnQName="retNS:addConcreteUnitReturn" xmlns:retNS="http://webservices.storm.ufc.br" returnType="rtns:int" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:cmp" xmlns:pns="http://webservices.storm.ufc.br" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="getAbstractComponentByID" qname="operNS:getAbstractComponentByID" xmlns:operNS="http://webservices.storm.ufc.br" returnQName="retNS:getAbstractComponentByIDReturn" xmlns:retNS="http://webservices.storm.ufc.br" returnType="rtns:string" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:id" xmlns:pns="http://webservices.storm.ufc.br" type="tns:int" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="exportContextContract" qname="operNS:exportContextContract" xmlns:operNS="http://webservices.storm.ufc.br" returnQName="retNS:exportContextContractReturn" xmlns:retNS="http://webservices.storm.ufc.br" returnType="rtns:string" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:cc_id" xmlns:pns="http://webservices.storm.ufc.br" type="tns:int" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="setObsolete" qname="operNS:setObsolete" xmlns:operNS="http://webservices.storm.ufc.br" returnQName="retNS:setObsoleteReturn" xmlns:retNS="http://webservices.storm.ufc.br" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:cmp" xmlns:pns="http://webservices.storm.ufc.br" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="addAbstractComponent" qname="operNS:addAbstractComponent" xmlns:operNS="http://webservices.storm.ufc.br" returnQName="retNS:addAbstractComponentReturn" xmlns:retNS="http://webservices.storm.ufc.br" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:cmp" xmlns:pns="http://webservices.storm.ufc.br" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <fault name="DBHandlerException" qname="fns:fault1" xmlns:fns="http://webservices.storm.ufc.br" class="br.ufc.storm.exception.DBHandlerException" type="tns:DBHandlerException" xmlns:tns="http://exception.storm.ufc.br"/>
+        <fault name="SAXException" qname="fns:fault" xmlns:fns="http://webservices.storm.ufc.br" class="org.xml.sax.SAXException" type="tns:SAXException" xmlns:tns="http://sax.xml.org"/>
+      </operation>
+      <operation name="listContract" qname="operNS:listContract" xmlns:operNS="http://webservices.storm.ufc.br" returnQName="retNS:listContractReturn" xmlns:retNS="http://webservices.storm.ufc.br" returnType="rtns:string" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:ac_id" xmlns:pns="http://webservices.storm.ufc.br" type="tns:int" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <fault name="DBHandlerException" qname="fns:fault1" xmlns:fns="http://webservices.storm.ufc.br" class="br.ufc.storm.exception.DBHandlerException" type="tns:DBHandlerException" xmlns:tns="http://exception.storm.ufc.br"/>
+      </operation>
+      <operation name="getContextContract" qname="operNS:getContextContract" xmlns:operNS="http://webservices.storm.ufc.br" returnQName="retNS:getContextContractReturn" xmlns:retNS="http://webservices.storm.ufc.br" returnType="rtns:string" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:id" xmlns:pns="http://webservices.storm.ufc.br" type="tns:int" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="getContextParameter" qname="operNS:getContextParameter" xmlns:operNS="http://webservices.storm.ufc.br" returnQName="retNS:getContextParameterReturn" xmlns:retNS="http://webservices.storm.ufc.br" returnType="rtns:string" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:name" xmlns:pns="http://webservices.storm.ufc.br" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="addInnerComponent" qname="operNS:addInnerComponent" xmlns:operNS="http://webservices.storm.ufc.br" returnQName="retNS:addInnerComponentReturn" xmlns:retNS="http://webservices.storm.ufc.br" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:cmp" xmlns:pns="http://webservices.storm.ufc.br" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="exportComponentSignature" qname="operNS:exportComponentSignature" xmlns:operNS="http://webservices.storm.ufc.br" returnQName="retNS:exportComponentSignatureReturn" xmlns:retNS="http://webservices.storm.ufc.br" returnType="rtns:string" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:ac_id" xmlns:pns="http://webservices.storm.ufc.br" type="tns:int" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="cancelSession" qname="operNS:cancelSession" xmlns:operNS="http://webservices.storm.ufc.br" returnQName="retNS:cancelSessionReturn" xmlns:retNS="http://webservices.storm.ufc.br" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:sessionID" xmlns:pns="http://webservices.storm.ufc.br" type="tns:int" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="getAbstractComponent" qname="operNS:getAbstractComponent" xmlns:operNS="http://webservices.storm.ufc.br" returnQName="retNS:getAbstractComponentReturn" xmlns:retNS="http://webservices.storm.ufc.br" returnType="rtns:string" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:name" xmlns:pns="http://webservices.storm.ufc.br" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="instantiateACK" qname="operNS:instantiateACK" xmlns:operNS="http://webservices.storm.ufc.br" returnQName="retNS:instantiateACKReturn" xmlns:retNS="http://webservices.storm.ufc.br" returnType="rtns:string" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:address" xmlns:pns="http://webservices.storm.ufc.br" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="addQualityFunction" qname="operNS:addQualityFunction" xmlns:operNS="http://webservices.storm.ufc.br" returnQName="retNS:addQualityFunctionReturn" xmlns:retNS="http://webservices.storm.ufc.br" returnType="rtns:int" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:func" xmlns:pns="http://webservices.storm.ufc.br" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="addContextContract" qname="operNS:addContextContract" xmlns:operNS="http://webservices.storm.ufc.br" returnQName="retNS:addContextContractReturn" xmlns:retNS="http://webservices.storm.ufc.br" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:cmp" xmlns:pns="http://webservices.storm.ufc.br" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <fault name="SAXException" qname="fns:fault" xmlns:fns="http://webservices.storm.ufc.br" class="org.xml.sax.SAXException" type="tns:SAXException" xmlns:tns="http://sax.xml.org"/>
+      </operation>
+      <operation name="addContextParameter" qname="operNS:addContextParameter" xmlns:operNS="http://webservices.storm.ufc.br" returnQName="retNS:addContextParameterReturn" xmlns:retNS="http://webservices.storm.ufc.br" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:cmp" xmlns:pns="http://webservices.storm.ufc.br" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="releasePlatform" qname="operNS:releasePlatform" xmlns:operNS="http://webservices.storm.ufc.br" returnQName="retNS:releasePlatformReturn" xmlns:retNS="http://webservices.storm.ufc.br" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:cst" xmlns:pns="http://webservices.storm.ufc.br" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="addAbstractUnit" qname="operNS:addAbstractUnit" xmlns:operNS="http://webservices.storm.ufc.br" returnQName="retNS:addAbstractUnitReturn" xmlns:retNS="http://webservices.storm.ufc.br" returnType="rtns:int" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:cmp" xmlns:pns="http://webservices.storm.ufc.br" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="addUnitFile" qname="operNS:addUnitFile" xmlns:operNS="http://webservices.storm.ufc.br" returnQName="retNS:addUnitFileReturn" xmlns:retNS="http://webservices.storm.ufc.br" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:data" xmlns:pns="http://webservices.storm.ufc.br" type="tns:base64Binary" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="pns:xml" xmlns:pns="http://webservices.storm.ufc.br" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="getStatus" qname="operNS:getStatus" xmlns:operNS="http://webservices.storm.ufc.br" returnQName="retNS:getStatusReturn" xmlns:retNS="http://webservices.storm.ufc.br" returnType="rtns:string" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:cst" xmlns:pns="http://webservices.storm.ufc.br" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="getProfile" qname="operNS:getProfile" xmlns:operNS="http://webservices.storm.ufc.br" returnQName="retNS:getProfileReturn" xmlns:retNS="http://webservices.storm.ufc.br" returnType="rtns:string" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:id" xmlns:pns="http://webservices.storm.ufc.br" type="tns:int" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="instantiate" qname="operNS:instantiate" xmlns:operNS="http://webservices.storm.ufc.br" returnQName="retNS:instantiateReturn" xmlns:retNS="http://webservices.storm.ufc.br" returnType="rtns:string" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:cst" xmlns:pns="http://webservices.storm.ufc.br" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="resolve" qname="operNS:resolve" xmlns:operNS="http://webservices.storm.ufc.br" returnQName="retNS:resolveReturn" xmlns:retNS="http://webservices.storm.ufc.br" returnType="rtns:string" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:cmp" xmlns:pns="http://webservices.storm.ufc.br" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="list" qname="operNS:list" xmlns:operNS="http://webservices.storm.ufc.br" returnQName="retNS:listReturn" xmlns:retNS="http://webservices.storm.ufc.br" returnType="rtns:string" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+      </operation>
+      <operation name="deploy" qname="operNS:deploy" xmlns:operNS="http://webservices.storm.ufc.br" returnQName="retNS:deployReturn" xmlns:retNS="http://webservices.storm.ufc.br" returnType="rtns:string" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:candidateList" xmlns:pns="http://webservices.storm.ufc.br" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <parameter name="allowedMethods" value="getContextContract instantiateACK resolve addQualityFunction addConcreteUnit getStatus instantiate deploy cancelSession addUnitFile addInnerComponent releasePlatform exportContextContract addContextParameter addAbstractComponent getAbstractComponentByID listContract addAbstractUnit getAbstractComponent exportComponentSignature getContextParameter getProfile list setObsolete addContextContract"/>
+
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>getAbstractComponentByIDResponse"
+        type="java:br.ufc.storm.webservices.GetAbstractComponentByIDResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>releasePlatform"
+        type="java:br.ufc.storm.webservices.ReleasePlatform"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>addQualityFunctionResponse"
+        type="java:br.ufc.storm.webservices.AddQualityFunctionResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>exportContextContract"
+        type="java:br.ufc.storm.webservices.ExportContextContract"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>listResponse"
+        type="java:br.ufc.storm.webservices.ListResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>getAbstractComponentByID"
+        type="java:br.ufc.storm.webservices.GetAbstractComponentByID"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>addConcreteUnitResponse"
+        type="java:br.ufc.storm.webservices.AddConcreteUnitResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>instantiateResponse"
+        type="java:br.ufc.storm.webservices.InstantiateResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>addUnitFile"
+        type="java:br.ufc.storm.webservices.AddUnitFile"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>resolve"
+        type="java:br.ufc.storm.webservices.Resolve"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>resolveResponse"
+        type="java:br.ufc.storm.webservices.ResolveResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>addAbstractComponentResponse"
+        type="java:br.ufc.storm.webservices.AddAbstractComponentResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>getProfile"
+        type="java:br.ufc.storm.webservices.GetProfile"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>deploy"
+        type="java:br.ufc.storm.webservices.Deploy"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>addQualityFunction"
+        type="java:br.ufc.storm.webservices.AddQualityFunction"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>listContractResponse"
+        type="java:br.ufc.storm.webservices.ListContractResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>addInnerComponentResponse"
+        type="java:br.ufc.storm.webservices.AddInnerComponentResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>listContract"
+        type="java:br.ufc.storm.webservices.ListContract"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://exception.storm.ufc.br"
+        qname="ns:ShelfException"
+        type="java:br.ufc.storm.exception.ShelfException"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>addInnerComponent"
+        type="java:br.ufc.storm.webservices.AddInnerComponent"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>exportContextContractResponse"
+        type="java:br.ufc.storm.webservices.ExportContextContractResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>getContextParameter"
+        type="java:br.ufc.storm.webservices.GetContextParameter"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>getStatusResponse"
+        type="java:br.ufc.storm.webservices.GetStatusResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>setObsolete"
+        type="java:br.ufc.storm.webservices.SetObsolete"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>deployResponse"
+        type="java:br.ufc.storm.webservices.DeployResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>addContextParameter"
+        type="java:br.ufc.storm.webservices.AddContextParameter"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>cancelSessionResponse"
+        type="java:br.ufc.storm.webservices.CancelSessionResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>exportComponentSignature"
+        type="java:br.ufc.storm.webservices.ExportComponentSignature"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>getContextParameterResponse"
+        type="java:br.ufc.storm.webservices.GetContextParameterResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>getContextContractResponse"
+        type="java:br.ufc.storm.webservices.GetContextContractResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>releasePlatformResponse"
+        type="java:br.ufc.storm.webservices.ReleasePlatformResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>instantiateACKResponse"
+        type="java:br.ufc.storm.webservices.InstantiateACKResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>addContextParameterResponse"
+        type="java:br.ufc.storm.webservices.AddContextParameterResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>getAbstractComponent"
+        type="java:br.ufc.storm.webservices.GetAbstractComponent"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>addAbstractUnit"
+        type="java:br.ufc.storm.webservices.AddAbstractUnit"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>cancelSession"
+        type="java:br.ufc.storm.webservices.CancelSession"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>getAbstractComponentResponse"
+        type="java:br.ufc.storm.webservices.GetAbstractComponentResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>addContextContractResponse"
+        type="java:br.ufc.storm.webservices.AddContextContractResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>instantiateACK"
+        type="java:br.ufc.storm.webservices.InstantiateACK"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>addConcreteUnit"
+        type="java:br.ufc.storm.webservices.AddConcreteUnit"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>addUnitFileResponse"
+        type="java:br.ufc.storm.webservices.AddUnitFileResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>addAbstractComponent"
+        type="java:br.ufc.storm.webservices.AddAbstractComponent"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>getProfileResponse"
+        type="java:br.ufc.storm.webservices.GetProfileResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://exception.storm.ufc.br"
+        qname="ns:DBHandlerException"
+        type="java:br.ufc.storm.exception.DBHandlerException"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>exportComponentSignatureResponse"
+        type="java:br.ufc.storm.webservices.ExportComponentSignatureResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://sax.xml.org"
+        qname="ns:SAXException"
+        type="java:org.xml.sax.SAXException"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>addContextContract"
+        type="java:br.ufc.storm.webservices.AddContextContract"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>addAbstractUnitResponse"
+        type="java:br.ufc.storm.webservices.AddAbstractUnitResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>list"
+        type="java:br.ufc.storm.webservices.List"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>instantiate"
+        type="java:br.ufc.storm.webservices.Instantiate"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>getContextContract"
+        type="java:br.ufc.storm.webservices.GetContextContract"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>setObsoleteResponse"
+        type="java:br.ufc.storm.webservices.SetObsoleteResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://webservices.storm.ufc.br"
+        qname="ns:>getStatus"
+        type="java:br.ufc.storm.webservices.GetStatus"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+  </service>
+</deployment>

@@ -1,0 +1,1613 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://webservices.storm.ufc.br" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://webservices.storm.ufc.br" xmlns:intf="http://webservices.storm.ufc.br" xmlns:tns1="http://sax.xml.org" xmlns:tns2="http://lang.java" xmlns:tns3="http://exception.storm.ufc.br" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<!--WSDL created by Apache Axis version: 1.4
+Built on Apr 22, 2006 (06:55:48 PDT)-->
+ <wsdl:types>
+  <schema elementFormDefault="qualified" targetNamespace="http://webservices.storm.ufc.br" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://sax.xml.org"/>
+   <import namespace="http://exception.storm.ufc.br"/>
+   <import namespace="http://lang.java"/>
+   <element name="addConcreteUnit">
+    <complexType>
+     <sequence>
+      <element name="cmp" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addConcreteUnitResponse">
+    <complexType>
+     <sequence>
+      <element name="addConcreteUnitReturn" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getAbstractComponentByID">
+    <complexType>
+     <sequence>
+      <element name="id" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getAbstractComponentByIDResponse">
+    <complexType>
+     <sequence>
+      <element name="getAbstractComponentByIDReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="exportContextContract">
+    <complexType>
+     <sequence>
+      <element name="cc_id" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="exportContextContractResponse">
+    <complexType>
+     <sequence>
+      <element name="exportContextContractReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="setObsolete">
+    <complexType>
+     <sequence>
+      <element name="cmp" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="setObsoleteResponse">
+    <complexType>
+     <sequence>
+      <element name="setObsoleteReturn" type="xsd:boolean"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addAbstractComponent">
+    <complexType>
+     <sequence>
+      <element name="cmp" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addAbstractComponentResponse">
+    <complexType>
+     <sequence>
+      <element name="addAbstractComponentReturn" type="xsd:boolean"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="fault" type="tns1:SAXException"/>
+   <element name="fault1" type="tns3:DBHandlerException"/>
+   <element name="listContract">
+    <complexType>
+     <sequence>
+      <element name="ac_id" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="listContractResponse">
+    <complexType>
+     <sequence>
+      <element name="listContractReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getContextContract">
+    <complexType>
+     <sequence>
+      <element name="id" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getContextContractResponse">
+    <complexType>
+     <sequence>
+      <element name="getContextContractReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getContextParameter">
+    <complexType>
+     <sequence>
+      <element name="name" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getContextParameterResponse">
+    <complexType>
+     <sequence>
+      <element name="getContextParameterReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addInnerComponent">
+    <complexType>
+     <sequence>
+      <element name="cmp" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addInnerComponentResponse">
+    <complexType>
+     <sequence>
+      <element name="addInnerComponentReturn" type="xsd:boolean"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="exportComponentSignature">
+    <complexType>
+     <sequence>
+      <element name="ac_id" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="exportComponentSignatureResponse">
+    <complexType>
+     <sequence>
+      <element name="exportComponentSignatureReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="cancelSession">
+    <complexType>
+     <sequence>
+      <element name="sessionID" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="cancelSessionResponse">
+    <complexType>
+     <sequence>
+      <element name="cancelSessionReturn" type="xsd:boolean"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getAbstractComponent">
+    <complexType>
+     <sequence>
+      <element name="name" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getAbstractComponentResponse">
+    <complexType>
+     <sequence>
+      <element name="getAbstractComponentReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="instantiateACK">
+    <complexType>
+     <sequence>
+      <element name="address" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="instantiateACKResponse">
+    <complexType>
+     <sequence>
+      <element name="instantiateACKReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addQualityFunction">
+    <complexType>
+     <sequence>
+      <element name="func" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addQualityFunctionResponse">
+    <complexType>
+     <sequence>
+      <element name="addQualityFunctionReturn" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addContextContract">
+    <complexType>
+     <sequence>
+      <element name="cmp" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addContextContractResponse">
+    <complexType>
+     <sequence>
+      <element name="addContextContractReturn" type="xsd:boolean"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addContextParameter">
+    <complexType>
+     <sequence>
+      <element name="cmp" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addContextParameterResponse">
+    <complexType>
+     <sequence>
+      <element name="addContextParameterReturn" type="xsd:boolean"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="releasePlatform">
+    <complexType>
+     <sequence>
+      <element name="cst" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="releasePlatformResponse">
+    <complexType>
+     <sequence>
+      <element name="releasePlatformReturn" type="xsd:boolean"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addAbstractUnit">
+    <complexType>
+     <sequence>
+      <element name="cmp" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addAbstractUnitResponse">
+    <complexType>
+     <sequence>
+      <element name="addAbstractUnitReturn" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addUnitFile">
+    <complexType>
+     <sequence>
+      <element name="data" type="xsd:base64Binary"/>
+      <element name="xml" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addUnitFileResponse">
+    <complexType>
+     <sequence>
+      <element name="addUnitFileReturn" type="xsd:boolean"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getStatus">
+    <complexType>
+     <sequence>
+      <element name="cst" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getStatusResponse">
+    <complexType>
+     <sequence>
+      <element name="getStatusReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getProfile">
+    <complexType>
+     <sequence>
+      <element name="id" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getProfileResponse">
+    <complexType>
+     <sequence>
+      <element name="getProfileReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="instantiate">
+    <complexType>
+     <sequence>
+      <element name="cst" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="instantiateResponse">
+    <complexType>
+     <sequence>
+      <element name="instantiateReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="resolve">
+    <complexType>
+     <sequence>
+      <element name="cmp" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="resolveResponse">
+    <complexType>
+     <sequence>
+      <element name="resolveReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="list">
+    <complexType/>
+   </element>
+   <element name="listResponse">
+    <complexType>
+     <sequence>
+      <element name="listReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="deploy">
+    <complexType>
+     <sequence>
+      <element name="candidateList" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="deployResponse">
+    <complexType>
+     <sequence>
+      <element name="deployReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+  </schema>
+  <schema elementFormDefault="qualified" targetNamespace="http://sax.xml.org" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://exception.storm.ufc.br"/>
+   <import namespace="http://lang.java"/>
+   <complexType name="SAXException">
+    <sequence>
+     <element name="cause" nillable="true" type="xsd:anyType"/>
+     <element name="exception" nillable="true" type="xsd:anyType"/>
+     <element name="message" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+  </schema>
+  <schema elementFormDefault="qualified" targetNamespace="http://exception.storm.ufc.br" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://sax.xml.org"/>
+   <import namespace="http://lang.java"/>
+   <complexType name="ShelfException">
+    <sequence/>
+   </complexType>
+   <complexType name="DBHandlerException">
+    <complexContent>
+     <extension base="tns3:ShelfException">
+      <sequence/>
+     </extension>
+    </complexContent>
+   </complexType>
+  </schema>
+ </wsdl:types>
+
+   <wsdl:message name="resolveResponse">
+
+      <wsdl:part element="impl:resolveResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="releasePlatformRequest">
+
+      <wsdl:part element="impl:releasePlatform" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getAbstractComponentByIDResponse">
+
+      <wsdl:part element="impl:getAbstractComponentByIDResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="addInnerComponentRequest">
+
+      <wsdl:part element="impl:addInnerComponent" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="listResponse">
+
+      <wsdl:part element="impl:listResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="addAbstractComponentResponse">
+
+      <wsdl:part element="impl:addAbstractComponentResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="listContractRequest">
+
+      <wsdl:part element="impl:listContract" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="addUnitFileResponse">
+
+      <wsdl:part element="impl:addUnitFileResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getStatusResponse">
+
+      <wsdl:part element="impl:getStatusResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="addInnerComponentResponse">
+
+      <wsdl:part element="impl:addInnerComponentResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="addAbstractUnitResponse">
+
+      <wsdl:part element="impl:addAbstractUnitResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="addAbstractUnitRequest">
+
+      <wsdl:part element="impl:addAbstractUnit" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getStatusRequest">
+
+      <wsdl:part element="impl:getStatus" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="addQualityFunctionRequest">
+
+      <wsdl:part element="impl:addQualityFunction" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="instantiateACKResponse">
+
+      <wsdl:part element="impl:instantiateACKResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="DBHandlerException">
+
+      <wsdl:part element="impl:fault1" name="fault">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getContextContractRequest">
+
+      <wsdl:part element="impl:getContextContract" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="instantiateACKRequest">
+
+      <wsdl:part element="impl:instantiateACK" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="addQualityFunctionResponse">
+
+      <wsdl:part element="impl:addQualityFunctionResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="addUnitFileRequest">
+
+      <wsdl:part element="impl:addUnitFile" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getContextContractResponse">
+
+      <wsdl:part element="impl:getContextContractResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="setObsoleteRequest">
+
+      <wsdl:part element="impl:setObsolete" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="cancelSessionResponse">
+
+      <wsdl:part element="impl:cancelSessionResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="SAXException">
+
+      <wsdl:part element="impl:fault" name="fault">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="deployResponse">
+
+      <wsdl:part element="impl:deployResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="listRequest">
+
+      <wsdl:part element="impl:list" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="setObsoleteResponse">
+
+      <wsdl:part element="impl:setObsoleteResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="addContextParameterRequest">
+
+      <wsdl:part element="impl:addContextParameter" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="addConcreteUnitRequest">
+
+      <wsdl:part element="impl:addConcreteUnit" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="cancelSessionRequest">
+
+      <wsdl:part element="impl:cancelSession" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="instantiateResponse">
+
+      <wsdl:part element="impl:instantiateResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getProfileRequest">
+
+      <wsdl:part element="impl:getProfile" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getAbstractComponentByIDRequest">
+
+      <wsdl:part element="impl:getAbstractComponentByID" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="addContextContractRequest">
+
+      <wsdl:part element="impl:addContextContract" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="deployRequest">
+
+      <wsdl:part element="impl:deploy" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="instantiateRequest">
+
+      <wsdl:part element="impl:instantiate" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getAbstractComponentRequest">
+
+      <wsdl:part element="impl:getAbstractComponent" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getContextParameterRequest">
+
+      <wsdl:part element="impl:getContextParameter" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="exportContextContractResponse">
+
+      <wsdl:part element="impl:exportContextContractResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="listContractResponse">
+
+      <wsdl:part element="impl:listContractResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="resolveRequest">
+
+      <wsdl:part element="impl:resolve" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="exportComponentSignatureResponse">
+
+      <wsdl:part element="impl:exportComponentSignatureResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="exportContextContractRequest">
+
+      <wsdl:part element="impl:exportContextContract" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="exportComponentSignatureRequest">
+
+      <wsdl:part element="impl:exportComponentSignature" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getContextParameterResponse">
+
+      <wsdl:part element="impl:getContextParameterResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getAbstractComponentResponse">
+
+      <wsdl:part element="impl:getAbstractComponentResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getProfileResponse">
+
+      <wsdl:part element="impl:getProfileResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="addConcreteUnitResponse">
+
+      <wsdl:part element="impl:addConcreteUnitResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="releasePlatformResponse">
+
+      <wsdl:part element="impl:releasePlatformResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="addAbstractComponentRequest">
+
+      <wsdl:part element="impl:addAbstractComponent" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="addContextContractResponse">
+
+      <wsdl:part element="impl:addContextContractResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="addContextParameterResponse">
+
+      <wsdl:part element="impl:addContextParameterResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:portType name="CoreServices">
+
+      <wsdl:operation name="addConcreteUnit">
+
+         <wsdl:input message="impl:addConcreteUnitRequest" name="addConcreteUnitRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:addConcreteUnitResponse" name="addConcreteUnitResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getAbstractComponentByID">
+
+         <wsdl:input message="impl:getAbstractComponentByIDRequest" name="getAbstractComponentByIDRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:getAbstractComponentByIDResponse" name="getAbstractComponentByIDResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="exportContextContract">
+
+         <wsdl:input message="impl:exportContextContractRequest" name="exportContextContractRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:exportContextContractResponse" name="exportContextContractResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="setObsolete">
+
+         <wsdl:input message="impl:setObsoleteRequest" name="setObsoleteRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:setObsoleteResponse" name="setObsoleteResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addAbstractComponent">
+
+         <wsdl:input message="impl:addAbstractComponentRequest" name="addAbstractComponentRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:addAbstractComponentResponse" name="addAbstractComponentResponse">
+
+       </wsdl:output>
+
+         <wsdl:fault message="impl:DBHandlerException" name="DBHandlerException">
+
+       </wsdl:fault>
+
+         <wsdl:fault message="impl:SAXException" name="SAXException">
+
+       </wsdl:fault>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="listContract">
+
+         <wsdl:input message="impl:listContractRequest" name="listContractRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:listContractResponse" name="listContractResponse">
+
+       </wsdl:output>
+
+         <wsdl:fault message="impl:DBHandlerException" name="DBHandlerException">
+
+       </wsdl:fault>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getContextContract">
+
+         <wsdl:input message="impl:getContextContractRequest" name="getContextContractRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:getContextContractResponse" name="getContextContractResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getContextParameter">
+
+         <wsdl:input message="impl:getContextParameterRequest" name="getContextParameterRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:getContextParameterResponse" name="getContextParameterResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addInnerComponent">
+
+         <wsdl:input message="impl:addInnerComponentRequest" name="addInnerComponentRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:addInnerComponentResponse" name="addInnerComponentResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="exportComponentSignature">
+
+         <wsdl:input message="impl:exportComponentSignatureRequest" name="exportComponentSignatureRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:exportComponentSignatureResponse" name="exportComponentSignatureResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="cancelSession">
+
+         <wsdl:input message="impl:cancelSessionRequest" name="cancelSessionRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:cancelSessionResponse" name="cancelSessionResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getAbstractComponent">
+
+         <wsdl:input message="impl:getAbstractComponentRequest" name="getAbstractComponentRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:getAbstractComponentResponse" name="getAbstractComponentResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="instantiateACK">
+
+         <wsdl:input message="impl:instantiateACKRequest" name="instantiateACKRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:instantiateACKResponse" name="instantiateACKResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addQualityFunction">
+
+         <wsdl:input message="impl:addQualityFunctionRequest" name="addQualityFunctionRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:addQualityFunctionResponse" name="addQualityFunctionResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addContextContract">
+
+         <wsdl:input message="impl:addContextContractRequest" name="addContextContractRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:addContextContractResponse" name="addContextContractResponse">
+
+       </wsdl:output>
+
+         <wsdl:fault message="impl:SAXException" name="SAXException">
+
+       </wsdl:fault>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addContextParameter">
+
+         <wsdl:input message="impl:addContextParameterRequest" name="addContextParameterRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:addContextParameterResponse" name="addContextParameterResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="releasePlatform">
+
+         <wsdl:input message="impl:releasePlatformRequest" name="releasePlatformRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:releasePlatformResponse" name="releasePlatformResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addAbstractUnit">
+
+         <wsdl:input message="impl:addAbstractUnitRequest" name="addAbstractUnitRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:addAbstractUnitResponse" name="addAbstractUnitResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addUnitFile">
+
+         <wsdl:input message="impl:addUnitFileRequest" name="addUnitFileRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:addUnitFileResponse" name="addUnitFileResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getStatus">
+
+         <wsdl:input message="impl:getStatusRequest" name="getStatusRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:getStatusResponse" name="getStatusResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getProfile">
+
+         <wsdl:input message="impl:getProfileRequest" name="getProfileRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:getProfileResponse" name="getProfileResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="instantiate">
+
+         <wsdl:input message="impl:instantiateRequest" name="instantiateRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:instantiateResponse" name="instantiateResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="resolve">
+
+         <wsdl:input message="impl:resolveRequest" name="resolveRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:resolveResponse" name="resolveResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="list">
+
+         <wsdl:input message="impl:listRequest" name="listRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:listResponse" name="listResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="deploy">
+
+         <wsdl:input message="impl:deployRequest" name="deployRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:deployResponse" name="deployResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:portType>
+
+   <wsdl:binding name="CoreServicesSoapBinding" type="impl:CoreServices">
+
+      <wsdlsoap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+      <wsdl:operation name="addConcreteUnit">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="addConcreteUnitRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="addConcreteUnitResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getAbstractComponentByID">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getAbstractComponentByIDRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getAbstractComponentByIDResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="exportContextContract">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="exportContextContractRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="exportContextContractResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="setObsolete">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="setObsoleteRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="setObsoleteResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addAbstractComponent">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="addAbstractComponentRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="addAbstractComponentResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+         <wsdl:fault name="DBHandlerException">
+
+            <wsdlsoap:fault name="DBHandlerException" use="literal"/>
+
+         </wsdl:fault>
+
+         <wsdl:fault name="SAXException">
+
+            <wsdlsoap:fault name="SAXException" use="literal"/>
+
+         </wsdl:fault>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="listContract">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="listContractRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="listContractResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+         <wsdl:fault name="DBHandlerException">
+
+            <wsdlsoap:fault name="DBHandlerException" use="literal"/>
+
+         </wsdl:fault>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getContextContract">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getContextContractRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getContextContractResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getContextParameter">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getContextParameterRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getContextParameterResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addInnerComponent">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="addInnerComponentRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="addInnerComponentResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="exportComponentSignature">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="exportComponentSignatureRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="exportComponentSignatureResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="cancelSession">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="cancelSessionRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="cancelSessionResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getAbstractComponent">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getAbstractComponentRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getAbstractComponentResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="instantiateACK">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="instantiateACKRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="instantiateACKResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addQualityFunction">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="addQualityFunctionRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="addQualityFunctionResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addContextContract">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="addContextContractRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="addContextContractResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+         <wsdl:fault name="SAXException">
+
+            <wsdlsoap:fault name="SAXException" use="literal"/>
+
+         </wsdl:fault>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addContextParameter">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="addContextParameterRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="addContextParameterResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="releasePlatform">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="releasePlatformRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="releasePlatformResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addAbstractUnit">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="addAbstractUnitRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="addAbstractUnitResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addUnitFile">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="addUnitFileRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="addUnitFileResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getStatus">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getStatusRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getStatusResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getProfile">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getProfileRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getProfileResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="instantiate">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="instantiateRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="instantiateResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="resolve">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="resolveRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="resolveResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="list">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="listRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="listResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="deploy">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="deployRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="deployResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:binding>
+
+   <wsdl:service name="CoreServicesService">
+
+      <wsdl:port binding="impl:CoreServicesSoapBinding" name="CoreServices">
+
+         <wsdlsoap:address location="http://tempuri.org/HPC-Shelf-Core/services/CoreServices"/>
+
+      </wsdl:port>
+
+   </wsdl:service>
+
+</wsdl:definitions>

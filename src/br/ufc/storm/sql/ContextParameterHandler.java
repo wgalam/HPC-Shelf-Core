@@ -16,7 +16,7 @@ import br.ufc.storm.exception.ResolveException;
 
 public class ContextParameterHandler extends DBHandler {
 
-	private final static String INSERT_CONTEXT_PARAMETER ="INSERT INTO context_parameter (bound_id, cp_name, ac_id) VALUES ((select cc_id from context_contract where cc_name=?), ? ,(select ac_id from abstract_component where ac_name=?)) RETURNING cp_id;";
+	private final static String INSERT_CONTEXT_PARAMETER ="INSERT INTO context_parameter (bound_id, cp_name, ac_id, kind_id) VALUES ((select cc_id from context_contract where cc_name=?), ? ,(select ac_id from abstract_component where ac_name=?), ?) RETURNING cp_id;";
 	private final static String SELECT_COMPONENT_PARAMETER = "select * from context_parameter where ac_id = ? AND parameter_type = ?;";
 	private static final String SELECT_BOUND = "SELECT bound_id FROM context_parameter WHERE cp_id = ?;";
 	private static final String INSERT_BOUND_VALUE = "INSERT INTO bound_value (cp_id, bound_value) VALUES (?,?);";
@@ -92,7 +92,7 @@ public class ContextParameterHandler extends DBHandler {
 //
 //	}
 	
-	public static int addContextParameter(String name, String bound_name, String abstractcomponent_name, String context_variable_name, String boundValue, String required_variable_name, Map<String, Integer> map) throws DBHandlerException, ResolveException{
+	public static int addContextParameter(String name, String bound_name, String abstractcomponent_name, String context_variable_name, String boundValue, String required_variable_name, Map<String, Integer> map, int kind) throws DBHandlerException, ResolveException{
 		//		TODO: Adicionar variavel compartilhada
 		//		Listar todas variáveis compartilhadas, criar método que a partir de um ac, encontra todas as variáveis compartilhadas com aninhados
 		int cp_id;
@@ -105,6 +105,7 @@ public class ContextParameterHandler extends DBHandler {
 			prepared.setString(1, bound_name);
 			prepared.setString(2, name);
 			prepared.setString(3, abstractcomponent_name);
+			prepared.setInt(4, kind);
 			ResultSet result = prepared.executeQuery();
 			if(result.next()){
 				cp_id = result.getInt("cp_id");
@@ -259,6 +260,7 @@ public class ContextParameterHandler extends DBHandler {
 			if(resultSet.next()) { 
 				cp.setCpId(cp_id);
 				cp.setName(resultSet.getString("cp_name"));
+				cp.setKind(resultSet.getInt("kind_id"));
 			}
 
 			try {
@@ -305,6 +307,7 @@ public class ContextParameterHandler extends DBHandler {
 				ContextParameterType cp = new ContextParameterType();
 				cp.setCpId(resultSet.getInt("cp_id"));
 				cp.setName(resultSet.getString("cp_name"));
+				cp.setKind(resultSet.getInt("kind_id"));
 				int bound_id = resultSet.getInt("bound_id");
 				try{
 					if(bound_id != ac_id){
@@ -449,5 +452,15 @@ public class ContextParameterHandler extends DBHandler {
 		} catch (SQLException e) { 
 			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
+	}
+	
+	
+	public static ContextParameterType findCp(AbstractComponentType ac, int cp_id){
+		for(ContextParameterType cpt: ac.getContextParameter()){
+			if(cpt.getCpId()==cp_id){
+				return cpt;
+			}
+		}
+		return null;
 	}
 }

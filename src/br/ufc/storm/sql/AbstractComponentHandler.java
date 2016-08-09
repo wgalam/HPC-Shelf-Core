@@ -115,7 +115,7 @@ public class AbstractComponentHandler extends DBHandler{
 					if(cp.getContextVariableProvided()!=null){
 						sharedVariables.put(cp.getContextVariableProvided(), cp.getCpId());
 					}
-					cp.setCpId(ContextParameterHandler.addContextParameter(cp.getName(),boundName, ac.getName(), null, cp.getBoundValue(), cp.getContextVariableRequired(), sharedVariables));
+					cp.setCpId(ContextParameterHandler.addContextParameter(cp.getName(),boundName, ac.getName(), null, cp.getBoundValue(), cp.getContextVariableRequired(), sharedVariables, cp.getKind()));
 				}
 			}
 			//Add each abstract unit

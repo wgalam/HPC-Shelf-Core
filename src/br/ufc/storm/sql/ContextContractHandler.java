@@ -36,7 +36,7 @@ public class ContextContractHandler extends DBHandler{
 			if(result.next()){
 				cc_id = result.getInt("cc_id");
 				//Add context arguments
-				for(ContextArgumentType cat:cc.getContextArguments()){
+				for(ContextArgumentType cat:cc.getContextArgumentsProvided()){
 					cat.setCcId(cc_id);
 					ContextArgumentHandler.addContextArgument(cat);
 				}
@@ -112,9 +112,9 @@ public class ContextContractHandler extends DBHandler{
 				cc.setCcName(name);
 				cc.setOwnerId(Integer.parseInt(owner));
 				cc.setAbstractComponent(AbstractComponentHandler.getAbstractComponent(ac_id));
-				cc.getContextArguments().addAll(ContextArgumentHandler.getContextArguments(cc_id));
+				cc.getContextArgumentsProvided().addAll(ContextArgumentHandler.getContextArguments(cc_id));
 				//Inicio mudança
-				for(ContextArgumentType cat:cc.getContextArguments()){
+				for(ContextArgumentType cat:cc.getContextArgumentsProvided()){
 					//Creating a pointer into context parameter to context argument
 					for(ContextParameterType cpt : cc.getAbstractComponent().getContextParameter()){
 						if(cpt.getCpId()==cat.getCpId()){
@@ -263,15 +263,13 @@ public class ContextContractHandler extends DBHandler{
 	 */
 	public static void completeContextContract(ContextContract application) throws DBHandlerException{
 		application.setAbstractComponent(AbstractComponentHandler.getAbstractComponent(application.getAbstractComponent().getIdAc()));
-		for(ContextArgumentType cat:application.getContextArguments()){
+		for(ContextArgumentType cat:application.getContextArgumentsProvided()){
 			if(cat.getContextContract()!=null){
 				cat.getContextContract().setCcName(ContextContractHandler.getContextContractName(cat.getContextContract().getCcId()));
-				//					cat.setKind(DBHandler.getComponentKind(cat.getContextContract().getAbstractComponent().getIdAc()));
 				AbstractComponentType ac = AbstractComponentHandler.getAbstractComponentFromContextContractID(cat.getContextContract().getCcId());
 				cat.getContextContract().setAbstractComponent(ac);
 				completeContextContract(cat.getContextContract());
 				application.getAbstractComponent().getAbstractUnit().addAll(AbstractUnitHandler.getAbstractUnits(application.getAbstractComponent().getIdAc()));
-				//TODO: Adicionar argumentos de qualidade, custo e ranking, bem como os componenetes aninhados
 			}
 		}
 		

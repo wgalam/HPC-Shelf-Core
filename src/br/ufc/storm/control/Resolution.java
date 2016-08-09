@@ -13,6 +13,7 @@ import br.ufc.storm.jaxb.CalculatedArgumentType;
 import br.ufc.storm.jaxb.CalculatedParameterType;
 import br.ufc.storm.jaxb.CandidateListType;
 import br.ufc.storm.jaxb.ContextArgumentType;
+import br.ufc.storm.jaxb.ContextArgumentValueType;
 import br.ufc.storm.jaxb.ContextContract;
 import br.ufc.storm.jaxb.ContextParameterType;
 import br.ufc.storm.jaxb.PlatformProfileType;
@@ -35,17 +36,30 @@ public class Resolution{
 	public static void main(String args[]) throws DBHandlerException{
 
 		ContextContract cc = new ContextContract();
+//		cc.setCcName("Minha Multiplicação de Matriz");
 		AbstractComponentType ac = new AbstractComponentType();
 		ac.setIdAc(161);
 		cc.setAbstractComponent(ac);
 		ContextContract plat = new ContextContract();
-		plat.setCcName("Plataforma do Wagner");
+//		plat.setCcName("Plataforma do Wagner");
 		plat.setAbstractComponent(new AbstractComponentType());
 		plat.getAbstractComponent().setIdAc(19);
 		cc.setPlatform(new PlatformProfileType());
 		cc.getPlatform().setPlatformContract(plat);
 		cc.setOwnerId(1);
-
+		
+		//*******************************************************
+		
+		ContextArgumentType arg0 = new ContextArgumentType();
+		arg0.setCpId(107);
+		ContextArgumentValueType cav = new ContextArgumentValueType();
+		cav.setValue("10");
+		arg0.setValue(cav);
+		cc.getContextArgumentsProvided().add(arg0);
+		
+		//CC do contrato original 138
+		
+		//*******************************************************
 		//------------------------------------------------------- Inners
 		//		ContextContract inner1 = new ContextContract();
 		//		inner1.setCcName("Aninhado do contrato da plataforma");
@@ -153,10 +167,11 @@ public class Resolution{
 		ResolutionNode.setup();
 		int calculated;
 		try {
-			ContextContractHandler.completeContextContract(application);
+			ContextContractHandler.completeContextContract(application);//aqui
 		} catch (DBHandlerException e1) {
 			throw new ResolveException("Can not complete context contract data: ",e1);
 		}
+		
 		CandidateListType candidateList = new CandidateListType();
 		CandidateListType newCandidateList = new CandidateListType();
 		List<ContextContract> concreteComponentCandidatesList;
@@ -170,12 +185,18 @@ public class Resolution{
 		int index = 0;
 		if(concreteComponentCandidatesList.size() > 0){
 			for(ContextContract candidate:concreteComponentCandidatesList){
+				candidate.getContextArgumentsProvided().addAll(application.getContextArgumentsProvided());
 				try {
 					if(componentSubTypeRecursiveTest(application, candidate, null, application.getAbstractComponent())){
 						if(candidate.getPlatform() == null){
 							//Will test the next software contract
 							continue;
 						}
+												
+						
+						
+						
+						
 						List<ContextContract> componentCandidatePlatformlist = null;
 						LogHandler.getLogger().info("Generating Hardware Candidate List for candidate: "+index);
 						try {
@@ -279,14 +300,14 @@ public class Resolution{
 	 */
 	public static ContextArgumentType getArgumentRecursive(ContextContract cc, Integer cp_id){
 		if(cc!=null){
-			for(ContextArgumentType cat: cc.getContextArguments()){
+			for(ContextArgumentType cat: cc.getContextArgumentsProvided()){
 				if(cat.getKind()==3 || cat.getKind()==4 || cat.getKind()==5){
 					if(cat.getCpId() == cp_id){
 						return cat;
 					}
 				}
 			}
-			for(ContextArgumentType cat: cc.getContextArguments()){
+			for(ContextArgumentType cat: cc.getContextArgumentsProvided()){
 				if(cat.getKind()==1){
 					return Resolution.getArgumentRecursive(cat.getContextContract(), cp_id);
 				}
@@ -342,7 +363,6 @@ public class Resolution{
 	public static boolean componentSubTypeRecursiveTest(ContextContract applicationContract, ContextContract candidate, Integer cp_id, AbstractComponentType parentAc) throws DBHandlerException{
 		boolean subtype = true;
 		ContextContract bound;
-
 		if(cp_id!=null){
 			bound = getBoundFromContextParameter(parentAc, cp_id);
 			int candidateContractIdAc = candidate.getAbstractComponent().getIdAc(); //ID_ac candidato
@@ -352,12 +372,12 @@ public class Resolution{
 			}
 			if(supertype.getAc_id() != candidateContractIdAc){
 				subtype = false;
-			}	
+			}
 		}
-
 		if(subtype){
-			if(applicationContract.getContextArguments().size() > 0){
-				for(ContextArgumentType cat:applicationContract.getContextArguments()){
+			//TODO: Validar essa modificação, era provided
+			if(applicationContract.getContextArgumentsRequired().size() > 0){
+				for(ContextArgumentType cat:applicationContract.getContextArgumentsRequired()){
 					subtype = subtype && componentSubTypeRecursiveTest(cat.getContextContract(), getContextContractFromArgument(cat,candidate), cat.getCpId(), applicationContract.getAbstractComponent());
 				}
 			}
@@ -399,8 +419,8 @@ public class Resolution{
 			subtype = false;
 		}
 		if(subtype){
-			if(componentPlatformType.getContextArguments().size() > 0){
-				for(ContextArgumentType cat:componentPlatformType.getContextArguments()){
+			if(componentPlatformType.getContextArgumentsProvided().size() > 0){
+				for(ContextArgumentType cat:componentPlatformType.getContextArgumentsProvided()){
 					if(cat.getValue()==null){
 						subtype = subtype && isPlatformSubTypeTest(cat.getContextContract(), getContextContractFromArgument(cat,testedPlatformCandidate), cat.getCpId(), applicationPlatform);
 					}else{
@@ -529,8 +549,8 @@ public class Resolution{
 	 * @return
 	 */
 	public static ContextContract getContextContractFromArgument(ContextArgumentType cat_from_app_var, ContextContract candidate){
-		if(candidate.getContextArguments()!= null){
-			for(ContextArgumentType cat: candidate.getContextArguments()){
+		if(candidate.getContextArgumentsProvided()!= null){
+			for(ContextArgumentType cat: candidate.getContextArgumentsProvided()){
 				if(cat_from_app_var.getCpId()==cat.getCpId()){
 					return cat.getContextContract();
 				}
@@ -547,7 +567,7 @@ public class Resolution{
 	 */
 	private static ContextArgumentType getValueFromCandidateArgument(ContextArgumentType cat, ContextContract candidate) {
 		int cp_id = cat.getCpId();
-		for(ContextArgumentType app_cat: candidate.getContextArguments()){
+		for(ContextArgumentType app_cat: candidate.getContextArgumentsProvided()){
 			if(app_cat.getCpId() == cp_id){
 				return app_cat;
 			}
@@ -589,7 +609,7 @@ public class Resolution{
 	 * @return
 	 */
 	public static ContextArgumentType getArgument(ContextContract cc, Integer cp_id){
-		for(ContextArgumentType cat: cc.getContextArguments()){
+		for(ContextArgumentType cat: cc.getContextArgumentsProvided()){
 			if(cat.getCpId() == cp_id){
 				return cat;
 			}

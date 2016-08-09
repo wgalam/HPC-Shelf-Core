@@ -65,6 +65,7 @@
     	</sequence>
     	<attribute name="name" type="string"></attribute>
     	<attribute name="cp_id" type="int"></attribute>
+    	<attribute name="kind" type="int"></attribute>
     </complexType>
 
     <complexType name="context_argument_type">
@@ -97,7 +98,7 @@
 
     <complexType name="context_contract">
     	<sequence>
-    		<element name="context_arguments"
+    		<element name="context_arguments_provided"
     			type="tns:context_argument_type" maxOccurs="unbounded"
     			minOccurs="0">
     		</element>
@@ -115,8 +116,9 @@
     			type="tns:calculated_argument_type" maxOccurs="unbounded"
     			minOccurs="0">
     		</element>
-    		<element name="cost_arguments" type="tns:calculated_argument_type"
-    			maxOccurs="unbounded" minOccurs="0">
+    		<element name="cost_arguments"
+    			type="tns:calculated_argument_type" maxOccurs="unbounded"
+    			minOccurs="0">
     		</element>
     		<choice>
     			<element name="inner_components_resolved"
@@ -131,6 +133,7 @@
     		<element name="concrete_units" type="tns:concrete_unit_type"
     			maxOccurs="unbounded" minOccurs="0">
     		</element>
+    		<element name="context_arguments_required" type="tns:context_argument_type" maxOccurs="unbounded" minOccurs="0"></element>
     	</sequence>
     	<attribute name="cc_name" type="string"></attribute>
     	<attribute name="cc_id" type="int"></attribute>

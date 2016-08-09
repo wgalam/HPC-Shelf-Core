@@ -414,7 +414,7 @@ public class XMLHandler {
 		}
 		ContextParameterType cp = ac.getContextParameter().get(0);
 		try {
-			ContextParameterHandler.addContextParameter(cp.getName(), cp.getBound().getAbstractComponent().getName(), ac.getName(), cp.getContextVariableProvided(), cp.getBoundValue(), null , null);
+			ContextParameterHandler.addContextParameter(cp.getName(), cp.getBound().getAbstractComponent().getName(), ac.getName(), cp.getContextVariableProvided(), cp.getBoundValue(), null , null, cp.getKind());
 		} catch (DBHandlerException | ResolveException e) {
 			throw new XMLException(e);
 		}

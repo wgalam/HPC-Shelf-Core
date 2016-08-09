@@ -29,7 +29,7 @@ public class ArgumentTable {
 	
 	private void fill(ContextContract cc) {
 		//Adds all numerical arguments to hash table for performance purpose
-		for(ContextArgumentType cat:cc.getContextArguments()){
+		for(ContextArgumentType cat:cc.getContextArgumentsProvided()){
 			if(cat.getValue()!=null){
 				this.addNewArgument(cat.getCpId(), ""+cat.getValue().getValue());
 			}else{
