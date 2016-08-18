@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Hashtable;
 import java.util.List;
 
 import com.udojava.evalex.Expression;
@@ -120,9 +121,6 @@ public class CalculatedArgumentHandler extends DBHandler{
 			prepared.setInt(2, type);
 			ResultSet resultSet = prepared.executeQuery(); 
 			while(resultSet.next()){ 
-				//				if(resultSet.getInt("cp_id") == 112){
-				//				System.out.println(resultSet.getString("cp_name"));
-				//				}
 				CalculatedParameterType calcp = new CalculatedParameterType();
 				calcp.setCalcId(resultSet.getInt("cp_id"));
 				calcp.setName(resultSet.getString("cp_name"));
@@ -262,7 +260,7 @@ public class CalculatedArgumentHandler extends DBHandler{
 					CalculatedArgumentType qat = new CalculatedArgumentType();
 					qat.setCalcId(calcpt.getCalcId());
 					qat.setValue(CalculatedArgumentHandler.calculate(function));
-					argTable.addNewArgument(calcpt.getCalcId(), ""+qat.getValue());
+					argTable.addNewArgument(calcpt.getCalcId(), ""+qat.getValue(), calcpt.getKindId());
 					calcpt.setCalculatedArgument(qat);
 
 					switch (type) {
@@ -274,10 +272,10 @@ public class CalculatedArgumentHandler extends DBHandler{
 						cc.getCostArguments().add(qat);
 						count++;
 						break;
-					case ContextParameterHandler.RANKING:
-						cc.getRankingArguments().add(qat);
-						count++;
-						break;
+//					case ContextParameterHandler.RANKING:
+//						cc.getRankingArguments().add(qat);
+//						count++;
+//						break;
 					}
 				}
 			} catch (Exception e) {
@@ -291,6 +289,57 @@ public class CalculatedArgumentHandler extends DBHandler{
 		return count;
 	}
 
+
+	public static int calulateRankArguments(ContextContract cc, ArgumentTable argTable, Hashtable <Integer , Double> maximum) throws FunctionException{
+		int count = 0;
+		List<CalculatedParameterType> calcps = ResolutionNode.resolutionTree.findNode(cc.getAbstractComponent().getIdAc()).getRps();
+		//Begin of calculus
+		for(CalculatedParameterType calcpt:calcps){//calcula cada parametro
+			CalculatedFunctionType function = null;
+			try {
+				function = CalculatedArgumentHandler.getCalculatedFunction(calcpt.getCalcId(), cc.getCcId(), ContextParameterHandler.RANKING);
+				if(function != null){
+					ArrayList<CalculatedFunctionTermType> terms = null;
+					terms = CalculatedArgumentHandler.getCalculatedFunctionParameter(function.getFunctionId());
+					for(CalculatedFunctionTermType qftt: terms){//busca cada argumento de cada termo da função
+						ContextArgumentType cat = argTable.getArgument(qftt.getCpId());
+						if(maximum.get(qftt.getCpId())!=null){
+							if(cat.getKind()==ContextParameterHandler.INCREASEKIND){
+								cat.getValue().setValue(""+Double.parseDouble(cat.getValue().getValue())/maximum.get(qftt.getCpId()));
+							}else{
+								if(cat.getKind()==ContextParameterHandler.DECREASEKIND){
+									Double m = Double.parseDouble(cat.getValue().getValue())/maximum.get(qftt.getCpId());
+									m = 1-m;
+									cat.getValue().setValue(""+m);
+								}
+							}
+							
+							System.out.println(cat.getValue().getValue());
+							
+						}
+						if(cat!=null){
+							function.getFunctionArguments().add(cat);
+						}
+					}
+					CalculatedArgumentType qat = new CalculatedArgumentType();
+					qat.setCalcId(calcpt.getCalcId());
+					qat.setValue(CalculatedArgumentHandler.calculate(function));
+					argTable.addNewArgument(calcpt.getCalcId(), ""+qat.getValue(), calcpt.getKindId());
+					calcpt.setCalculatedArgument(qat);
+
+					cc.getRankingArguments().add(qat);
+					count++;
+				}
+			} catch (Exception e) {
+				LogHandler.getLogger().info("Error while getting function. "+e.getCause());
+				e.printStackTrace();
+			}
+		}
+		if(cc.getPlatform()!=null){
+			count+=calulateRankArguments(cc.getPlatform().getPlatformContract(), argTable, maximum);
+		}
+		return count;
+	}
 
 	/**
 	 * Given a calculated function, this method evaluate the function

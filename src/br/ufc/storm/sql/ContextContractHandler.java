@@ -113,7 +113,6 @@ public class ContextContractHandler extends DBHandler{
 				cc.setOwnerId(Integer.parseInt(owner));
 				cc.setAbstractComponent(AbstractComponentHandler.getAbstractComponent(ac_id));
 				cc.getContextArgumentsProvided().addAll(ContextArgumentHandler.getContextArguments(cc_id));
-				//Inicio mudança
 				for(ContextArgumentType cat:cc.getContextArgumentsProvided()){
 					//Creating a pointer into context parameter to context argument
 					for(ContextParameterType cpt : cc.getAbstractComponent().getContextParameter()){

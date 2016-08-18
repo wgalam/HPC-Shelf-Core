@@ -8,11 +8,18 @@ import com.udojava.evalex.Expression;
 
 import br.ufc.storm.backend.BackendHandler;
 import br.ufc.storm.exception.DBHandlerException;
+import br.ufc.storm.exception.ResolveException;
 import br.ufc.storm.exception.XMLException;
 import br.ufc.storm.export.FormalFormat;
 import br.ufc.storm.io.FileHandler;
 import br.ufc.storm.io.LogHandler;
+import br.ufc.storm.jaxb.AbstractComponentType;
 import br.ufc.storm.jaxb.ConcreteUnitType;
+import br.ufc.storm.jaxb.ContextArgumentType;
+import br.ufc.storm.jaxb.ContextArgumentValueType;
+import br.ufc.storm.jaxb.ContextContract;
+import br.ufc.storm.jaxb.ContextParameterType;
+import br.ufc.storm.jaxb.PlatformProfileType;
 import br.ufc.storm.jaxb.UnitFileType;
 import br.ufc.storm.sql.AbstractComponentHandler;
 import br.ufc.storm.sql.ConcreteUnitHandler;
@@ -32,14 +39,6 @@ public class Main {
 //			e.printStackTrace();
 //		}
 		
-		Expression e = new Expression("v0-v1");
-		int i = 0;
-			e.with("v"+i, new BigDecimal(5));
-			i++;
-			e.with("v"+i, new BigDecimal(2));
-			//System.out.println(qft.getFunctionValue()+" ... "+qft.getFunctionArguments().get(0).getValue().getValue()+" ... "+qft.getFunctionArguments().get(1).getValue().getValue());
-	
-		System.out.println(e.eval());
 		
 		//try {
 //			System.out.println(XMLHandler.getContextContract(126));
@@ -53,6 +52,12 @@ public class Main {
 //		System.out.println(CoreServices.getContextContract(136));
 		
 		
+//		try {
+//			System.out.println(XMLHandler.listComponent());
+//		} catch (XMLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		
 		
 		

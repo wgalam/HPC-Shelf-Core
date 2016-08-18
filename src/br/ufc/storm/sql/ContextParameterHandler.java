@@ -33,7 +33,8 @@ public class ContextParameterHandler extends DBHandler {
 	public final static int QUALITY = 2;
 	public final static int COST = 3;
 	public final static int RANKING = 4;
-	
+	public static final int INCREASEKIND = 4;
+	public static final int DECREASEKIND = 5;
 	
 	/**
 	 * This method should test if a component do not generate infinite loops in composition walk
@@ -92,9 +93,12 @@ public class ContextParameterHandler extends DBHandler {
 //
 //	}
 	
-	public static int addContextParameter(String name, String bound_name, String abstractcomponent_name, String context_variable_name, String boundValue, String required_variable_name, Map<String, Integer> map, int kind) throws DBHandlerException, ResolveException{
+	public static int addContextParameter(String name, String bound_name, String abstractcomponent_name, String context_variable_name, String boundValue, String required_variable_name, Map<String, Integer> map, Integer kind) throws DBHandlerException, ResolveException{
 		//		TODO: Adicionar variavel compartilhada
 		//		Listar todas variáveis compartilhadas, criar método que a partir de um ac, encontra todas as variáveis compartilhadas com aninhados
+		if(kind==null){
+			throw new ResolveException("Context parameter kind can't be null for parameter: "+name);
+		}
 		int cp_id;
 		try { 
 			Connection con = getConnection();

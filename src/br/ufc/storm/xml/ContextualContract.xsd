@@ -210,31 +210,34 @@
     	<attribute name="calc_id" type="int"></attribute>
     	<attribute name="kind_id" type="int"></attribute>
     </complexType>
-    
-    <complexType name="calculated_argument_type">
-    	<sequence>
-    		<element name="function" type="tns:calculated_function_type" maxOccurs="1" minOccurs="0"></element>
-    	</sequence>
-    	<attribute name="calc_id" type="int"></attribute>
-    	<attribute name="value" type="double"></attribute>
-    </complexType>
 
-    
-
-
-
-
-
-
-
-    
+	<complexType name="calculated_argument_type">
+		<sequence>
+			<element name="function" type="tns:calculated_function_type"
+				maxOccurs="1" minOccurs="0">
+			</element>
+		</sequence>
+		<attribute name="calc_id" type="int"></attribute>
+		<attribute name="value" type="double"></attribute>
+		<attribute name="kind_id" type="int"></attribute>
+	</complexType>
 
 
 
 
 
 
-    <complexType name="slice_type">
+
+
+
+
+
+
+
+
+
+
+	<complexType name="slice_type">
     	<attribute name="slice_id" type="int"></attribute>
     	<attribute name="inner_component_id" type="int"></attribute>
     	<attribute name="inner_unity_id" type="int"></attribute>

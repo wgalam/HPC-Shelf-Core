@@ -2,7 +2,7 @@
 // Este arquivo foi gerado pela Arquitetura JavaTM para Implementação de Referência (JAXB) de Bind XML, v2.2.8-b130911.1802 
 // Consulte <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Todas as modificações neste arquivo serão perdidas após a recompilação do esquema de origem. 
-// Gerado em: 2016.08.09 às 11:14:23 AM BRT 
+// Gerado em: 2016.08.18 às 03:16:55 PM BRT 
 //
 
 
@@ -28,6 +28,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;/sequence>
  *       &lt;attribute name="calc_id" type="{http://www.w3.org/2001/XMLSchema}int" />
  *       &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}double" />
+ *       &lt;attribute name="kind_id" type="{http://www.w3.org/2001/XMLSchema}int" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -46,6 +47,8 @@ public class CalculatedArgumentType {
     protected Integer calcId;
     @XmlAttribute(name = "value")
     protected Double value;
+    @XmlAttribute(name = "kind_id")
+    protected Integer kindId;
 
     /**
      * Obtém o valor da propriedade function.
@@ -117,6 +120,30 @@ public class CalculatedArgumentType {
      */
     public void setValue(Double value) {
         this.value = value;
+    }
+
+    /**
+     * Obtém o valor da propriedade kindId.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Integer }
+     *     
+     */
+    public Integer getKindId() {
+        return kindId;
+    }
+
+    /**
+     * Define o valor da propriedade kindId.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Integer }
+     *     
+     */
+    public void setKindId(Integer value) {
+        this.kindId = value;
     }
 
 }

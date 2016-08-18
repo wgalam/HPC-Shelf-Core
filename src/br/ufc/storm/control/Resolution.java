@@ -1,5 +1,9 @@
 package br.ufc.storm.control;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.List;
 
 import br.ufc.storm.exception.DBHandlerException;
@@ -10,6 +14,7 @@ import br.ufc.storm.export.FormalFormat;
 import br.ufc.storm.io.LogHandler;
 import br.ufc.storm.jaxb.AbstractComponentType;
 import br.ufc.storm.jaxb.CalculatedArgumentType;
+import br.ufc.storm.jaxb.CalculatedFunctionTermType;
 import br.ufc.storm.jaxb.CalculatedParameterType;
 import br.ufc.storm.jaxb.CandidateListType;
 import br.ufc.storm.jaxb.ContextArgumentType;
@@ -34,19 +39,16 @@ public class Resolution{
 	 */
 	
 	public static void main(String args[]) throws DBHandlerException{
-
 		ContextContract cc = new ContextContract();
-//		cc.setCcName("Minha Multiplicação de Matriz");
-		AbstractComponentType ac = new AbstractComponentType();
-		ac.setIdAc(161);
-		cc.setAbstractComponent(ac);
-		ContextContract plat = new ContextContract();
-//		plat.setCcName("Plataforma do Wagner");
-		plat.setAbstractComponent(new AbstractComponentType());
-		plat.getAbstractComponent().setIdAc(19);
-		cc.setPlatform(new PlatformProfileType());
-		cc.getPlatform().setPlatformContract(plat);
+		cc.setCcName("Multiplicação de Matrizes do Wagner");
 		cc.setOwnerId(1);
+		cc.setAbstractComponent(new AbstractComponentType());
+		cc.getAbstractComponent().setIdAc(161);
+		cc.setPlatform(new PlatformProfileType());
+		cc.getPlatform().setPlatformContract(new ContextContract());
+		cc.getPlatform().getPlatformContract().setAbstractComponent(new AbstractComponentType());
+		cc.getPlatform().getPlatformContract().getAbstractComponent().setIdAc(19);
+		
 		
 		//*******************************************************
 		
@@ -84,7 +86,11 @@ public class Resolution{
 					}
 				*/
 				//			System.out.println("Candidato compatível ("+ cont++ +"): "+XMLHandler.getContextContract(a));
-							System.out.println(FormalFormat.exportContextContract(a, null));
+							
+				
+//				###########18/07/2016
+				System.out.println(FormalFormat.exportContextContract(a, null));
+//				###########
 			}
 //						System.out.println("Último Candidato Compatível\n"+XMLHandler.getContextContract(resolve.getCandidate().get(resolve.getCandidate().size()-1)));
 //						System.out.println("Último Candidato Compatível\n"+FormalFormat.exportContextContract(resolve.getCandidate().get(resolve.getCandidate().size()-1), null));
@@ -166,8 +172,9 @@ public class Resolution{
 		LogHandler.getLogger().info("Resolution Class: Starting to resolve a component!");
 		ResolutionNode.setup();
 		int calculated;
+		Hashtable <Integer , Hashtable <Integer , ArgumentTable>> tableOfSWidArgumentTable = new Hashtable<Integer, Hashtable <Integer , ArgumentTable>>();
 		try {
-			ContextContractHandler.completeContextContract(application);//aqui
+			ContextContractHandler.completeContextContract(application);
 		} catch (DBHandlerException e1) {
 			throw new ResolveException("Can not complete context contract data: ",e1);
 		}
@@ -247,7 +254,11 @@ public class Resolution{
 							for(ContextContract cc:candidateList.getCandidate()){
 
 								ArgumentTable argumentTable = new ArgumentTable(cc);//Store argument table of a platform
-
+								if(tableOfSWidArgumentTable.get(cc.getCcId())==null){
+									tableOfSWidArgumentTable.put(cc.getCcId(), new Hashtable<>());
+								}
+								tableOfSWidArgumentTable.get(cc.getCcId()).put(cc.getPlatform().getPlatformContract().getCcId(), argumentTable);
+//								.tableOfHWidArgumentTable.put(cc.getPlatform().getPlatformContract().getCcId(), argumentTable);
 								//calcula parametros de qualidade
 								try {
 									calculated = CalculatedArgumentHandler.calulateContextContractArguments(cc, argumentTable, ContextParameterHandler.QUALITY);
@@ -264,12 +275,6 @@ public class Resolution{
 											e1.printStackTrace();
 										} 
 										if(Resolution.isSubTypeByCalculatedArgument(application.getPlatform().getPlatformContract(), cc.getPlatform().getPlatformContract(), null, ContextParameterHandler.COST)){
-											//calcula parametros de ranqueamento
-											try {
-												CalculatedArgumentHandler.calulateContextContractArguments(cc,argumentTable,ContextParameterHandler.RANKING);
-											} catch (FunctionException e) {
-												//do nothing
-											} 
 											newCandidateList.getCandidate().add(cc);
 											LogHandler.getLogger().info("Candidate "+cc.getCcName()+" added");
 										}
@@ -288,10 +293,107 @@ public class Resolution{
 			}
 		}
 		newCandidateList.setUserId(application.getOwnerId());
+		Resolution.rankCandidates(newCandidateList, tableOfSWidArgumentTable); //Rank all candidates
+		Resolution.sortCandidateList(newCandidateList, 0);//Primeira função de ranqueamento
 		long elapsed = System.currentTimeMillis() - start;
 		System.out.println("Resolution Time(ms): "+elapsed);
 		return newCandidateList;
 	}
+
+	/**
+	 * This method receives a list of candidates and sort according its i rank parameter
+	 * @param newCandidateList
+	 * @param i
+	 */
+	private static void sortCandidateList(CandidateListType cl, int i) {
+		// TODO Auto-generated method stub
+		Collections.sort (cl.getCandidate(), new ComparatorCandidates(false, i));
+	}
+
+	private static Hashtable <Integer , Double> getMaximumValues(ContextContract cc, Hashtable <Integer , Double> maximum){
+			for(ContextArgumentType cat : cc.getContextArgumentsProvided()){
+				//se tiver valor faz o que segue
+				if(cat.getValue()!=null){
+					if(maximum.contains(cat.getCpId())){
+						if(maximum.get(cat.getCpId()) < Double.parseDouble(cat.getValue().getValue())){
+							maximum.replace(cat.getCpId(), Double.parseDouble(cat.getValue().getValue()));
+						}
+					}else{
+						maximum.put(cat.getCpId(), Double.parseDouble(cat.getValue().getValue()));
+					}
+				}else{
+					if(cat.getContextContract() != null){
+						maximum.putAll(getMaximumValues(cat.getContextContract(), maximum));
+						//Variável compartilhada, buscar valor compartilhado
+					}
+				}
+			}
+			for(CalculatedArgumentType cat : cc.getQualityArguments()){
+					if(maximum.get(cat.getCalcId()) != null){
+						if(maximum.get(cat.getCalcId()) < cat.getValue()){
+							maximum.replace(cat.getCalcId(), cat.getValue());
+							
+						}
+					}else{
+						maximum.put(cat.getCalcId(), cat.getValue());
+					}
+			}
+			for(CalculatedArgumentType cat : cc.getCostArguments()){
+				if(maximum.get(cat.getCalcId()) != null){
+					if(maximum.get(cat.getCalcId()) < cat.getValue()){
+						maximum.replace(cat.getCalcId(), cat.getValue());
+						
+					}
+				}else{
+					maximum.put(cat.getCalcId(), cat.getValue());
+				}
+		}
+			
+			
+			return maximum;
+		}
+	
+	
+	
+	private static Hashtable <Integer , Double> getMaximumValues(CandidateListType cl){
+		Hashtable <Integer , Double> maximum = new Hashtable<Integer, Double>();
+		for(ContextContract cc : cl.getCandidate()){
+			maximum.putAll(getMaximumValues(cc, maximum));
+			maximum.putAll(getMaximumValues(cc.getPlatform().getPlatformContract(), maximum));
+		}
+		
+//		para cada argumento, buscar o maior valor em todos os candidatos e manter na tabela.
+//		Será usado na normalização posteriormente
+		
+		return maximum;
+	}
+	
+	public static CandidateListType rankCandidates(CandidateListType cl, Hashtable <Integer , Hashtable <Integer , ArgumentTable>> tableOfSWidArgumentTable){
+		Hashtable <Integer , Double> maximum = Resolution.getMaximumValues(cl);
+			
+		for(ContextContract cc:cl.getCandidate()){
+			try {
+				CalculatedArgumentHandler.calulateRankArguments(cc, tableOfSWidArgumentTable.get(cc.getCcId()).get(cc.getPlatform().getPlatformContract().getCcId()), maximum);
+			} catch (FunctionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			
+			
+
+//			Para cada parâmetro de qualidade, custo, e ranqueamento, percorrer todos e buscar o maior
+//			manter na memória (hash table) o maior para fins de normalização
+//			definir como funciona quando o valor for contravariante, como ter maior nota para menor valor
+//			(1 - normalização) possibilidade de normalização ao contrário	
+			
+			
+		}
+		return cl;
+		
+		
+	}
+	
 	/**
 	 * 
 	 * @param cc
@@ -634,4 +736,25 @@ public class Resolution{
 		return null;		
 	}
 
+}
+
+@SuppressWarnings("rawtypes")
+class ComparatorCandidates implements Comparator {  
+	boolean crescente = true;  
+	Integer i = null;
+
+	public ComparatorCandidates(boolean crescente, Integer i) {  
+		this.crescente = crescente;  
+		this.i = i;
+	}  
+
+	public int compare(Object o1, Object o2) {  
+		ContextContract p1 = (ContextContract) o1;  
+		ContextContract p2 = (ContextContract) o2;  
+		if (crescente) {  
+			return p1.getRankingArguments().get(i).getValue() < p2.getRankingArguments().get(i).getValue() ? -1 : (p1.getRankingArguments().get(i).getValue() > p2.getRankingArguments().get(i).getValue() ? +1 : 0);  
+		} else {  
+			return p1.getRankingArguments().get(i).getValue() < p2.getRankingArguments().get(i).getValue() ? +1 : (p1.getRankingArguments().get(i).getValue() > p2.getRankingArguments().get(i).getValue() ? -1 : 0);  
+		}  
+	}  
 }

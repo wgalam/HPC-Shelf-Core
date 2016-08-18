@@ -692,11 +692,11 @@ public class XMLHandler {
 	
 	
 	public static String listComponent() throws XMLException{
-		
 		List<AbstractComponentType> abscom = null;
 		try {
+			ResolutionNode.setup();
 			abscom = AbstractComponentHandler.listAbstractComponents();
-		} catch (DBHandlerException e) {
+		} catch (Exception e) {
 			throw new XMLException(e);
 		}
 		org.jdom2.Element cp = new org.jdom2.Element("root");
@@ -707,7 +707,6 @@ public class XMLHandler {
 			contextParameter.setAttribute(new Attribute("name", abscom.get(i).getName()));
 			contextParameter.setAttribute(new Attribute("path", ResolutionNode.resolutionTree.findNode(abscom.get(i).getIdAc()).getPath()));
 			contextParameter.setAttribute(new Attribute("supertype", abscom.get(i).getSupertype().getName()));
-			//contextParameter.setAttribute(new Attribute("kind", abscom.get(i).getKind()+""));
 			doc.getRootElement().addContent(contextParameter);
 		}
 		XMLOutputter xmlOutput = new XMLOutputter();

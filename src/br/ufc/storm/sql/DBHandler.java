@@ -60,18 +60,4 @@ public class DBHandler {
 		}
 	}
 
-	/**
-	 * this method close the database connection
-	 * @param con Database connection
-	 */
-
-	public static void closeConnnection(Connection con) { 
-		/*try { 
-			con.close();
-		} catch (SQLException e){ 
-			System.out.println("STORM: Close Connection Error: ");
-			e.printStackTrace(); 
-		} */
-	}
-
 }

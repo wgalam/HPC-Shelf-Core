@@ -8,20 +8,21 @@ import br.ufc.storm.exception.DBHandlerException;
 import br.ufc.storm.jaxb.ContextArgumentType;
 import br.ufc.storm.jaxb.ContextArgumentValueType;
 import br.ufc.storm.jaxb.ContextContract;
+import br.ufc.storm.jaxb.ContextParameterType;
 
 public class ArgumentTable {
 
 	Hashtable <Integer , ContextArgumentType> argumentTable = new Hashtable<Integer, ContextArgumentType>();
 	//The key is cp_id
 	
-	public static void main(String [] a){
-		try {
-			Resolution.main(a);
-		} catch (DBHandlerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+//	public static void main(String [] a){
+//		try {
+//			Resolution.main(a);
+//		} catch (DBHandlerException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
 	
 	public ArgumentTable(ContextContract cc){
 		fill(cc);
@@ -31,7 +32,12 @@ public class ArgumentTable {
 		//Adds all numerical arguments to hash table for performance purpose
 		for(ContextArgumentType cat:cc.getContextArgumentsProvided()){
 			if(cat.getValue()!=null){
-				this.addNewArgument(cat.getCpId(), ""+cat.getValue().getValue());
+				for(ContextParameterType cpt:cc.getAbstractComponent().getContextParameter()){
+					if(cpt.getCpId()==cat.getCpId()){
+						this.addNewArgument(cat.getCpId(), ""+cat.getValue().getValue(), cpt.getKind());
+					}
+				}
+				
 			}else{
 				if(cat.getContextContract()!=null){
 					fill(cat.getContextContract());
@@ -47,12 +53,13 @@ public class ArgumentTable {
 		argumentTable.put(cp_id, arg);
 	}
 	
-	public void addNewArgument(int cp_id, String value){
+	public void addNewArgument(int cp_id, String value, int kind){
 		ContextArgumentType cat = new ContextArgumentType();
 		ContextArgumentValueType x = new ContextArgumentValueType();
 		x.setDataType("Double");
 		x.setValue(value);
 		cat.setValue(x);
+		cat.setKind(kind);
 		argumentTable.put(cp_id, cat);
 	}
 	
