@@ -25,6 +25,7 @@ import br.ufc.storm.jaxb.ContextArgumentType;
 import br.ufc.storm.jaxb.ContextContract;
 import br.ufc.storm.jaxb.ContextParameterType;
 import br.ufc.storm.model.ArgumentTable;
+import br.ufc.storm.model.MaxElement;
 import br.ufc.storm.model.ResolutionNode;
 
 public class CalculatedArgumentHandler extends DBHandler{
@@ -272,10 +273,6 @@ public class CalculatedArgumentHandler extends DBHandler{
 						cc.getCostArguments().add(qat);
 						count++;
 						break;
-//					case ContextParameterHandler.RANKING:
-//						cc.getRankingArguments().add(qat);
-//						count++;
-//						break;
 					}
 				}
 			} catch (Exception e) {
@@ -290,7 +287,7 @@ public class CalculatedArgumentHandler extends DBHandler{
 	}
 
 
-	public static int calulateRankArguments(ContextContract cc, ArgumentTable argTable, Hashtable <Integer , Double> maximum) throws FunctionException{
+	public static int calulateRankArguments(ContextContract cc, ArgumentTable argTable, Hashtable <Integer , MaxElement> maximum) throws FunctionException{
 		int count = 0;
 		List<CalculatedParameterType> calcps = ResolutionNode.resolutionTree.findNode(cc.getAbstractComponent().getIdAc()).getRps();
 		//Begin of calculus
@@ -299,25 +296,40 @@ public class CalculatedArgumentHandler extends DBHandler{
 			try {
 				function = CalculatedArgumentHandler.getCalculatedFunction(calcpt.getCalcId(), cc.getCcId(), ContextParameterHandler.RANKING);
 				if(function != null){
-					ArrayList<CalculatedFunctionTermType> terms = null;
-					terms = CalculatedArgumentHandler.getCalculatedFunctionParameter(function.getFunctionId());
+					ArrayList<CalculatedFunctionTermType> terms = CalculatedArgumentHandler.getCalculatedFunctionParameter(function.getFunctionId());
 					for(CalculatedFunctionTermType qftt: terms){//busca cada argumento de cada termo da função
 						ContextArgumentType cat = argTable.getArgument(qftt.getCpId());
-						if(maximum.get(qftt.getCpId())!=null){
-							if(cat.getKind()==ContextParameterHandler.INCREASEKIND){
-								cat.getValue().setValue(""+Double.parseDouble(cat.getValue().getValue())/maximum.get(qftt.getCpId()));
-							}else{
-								if(cat.getKind()==ContextParameterHandler.DECREASEKIND){
-									Double m = Double.parseDouble(cat.getValue().getValue())/maximum.get(qftt.getCpId());
-									m = 1-m;
-									cat.getValue().setValue(""+m);
+						ContextParameterType k = ContextParameterHandler.getContextParameter(qftt.getCpId());
+						if(cat!=null){
+							if(maximum.get(qftt.getCpId())!=null){
+								if(k.getKind()==ContextParameterHandler.INCREASEKIND){
+									if(cat.getValue().getValue()!=null){
+										if(maximum.get(qftt.getCpId()).getCount() > 1){
+											cat.getValue().setValue(""+Double.parseDouble(cat.getValue().getValue())/maximum.get(qftt.getCpId()).getValue());
+										}else{
+											cat.getValue().setValue("1");
+										}
+									}else{
+										cat.getValue().setValue("0");
+									}
+								}else{
+									if(k.getKind()==ContextParameterHandler.DECREASEKIND){
+										if(cat.getValue().getValue()!=null){
+											if(maximum.get(qftt.getCpId()).getCount() > 1){
+												Double m = Double.parseDouble(cat.getValue().getValue())/maximum.get(qftt.getCpId()).getValue();
+												m = 1-m;
+												cat.getValue().setValue(""+m);
+											}else{
+												cat.getValue().setValue("1");
+											}
+										}else{
+											cat.getValue().setValue("0");
+										}
+
+									}
 								}
 							}
-							
-							System.out.println(cat.getValue().getValue());
-							
-						}
-						if(cat!=null){
+
 							function.getFunctionArguments().add(cat);
 						}
 					}
@@ -351,10 +363,10 @@ public class CalculatedArgumentHandler extends DBHandler{
 		int numOfarguments = qft.getFunctionArguments().size();
 
 		Expression expression = new Expression(qft.getFunctionValue());
-		for(int i = 0; i < numOfarguments; i++){
+		for(int i = 0; i < numOfarguments; i++){		
 			expression.with("v"+i, (qft.getFunctionArguments().get(i).getValue().getValue()));
 		}
-		expression.setPrecision(2);
+		expression.setPrecision(6);
 		result = expression.eval();
 		return result.doubleValue();
 	}

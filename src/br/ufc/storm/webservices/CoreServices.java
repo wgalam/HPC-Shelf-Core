@@ -17,6 +17,7 @@ import br.ufc.storm.sql.ContextContractHandler;
 import br.ufc.storm.sql.SessionHandler;
 import br.ufc.storm.xml.XMLHandler;
 import br.ufc.storm.backend.BackendHandler;
+import br.ufc.storm.control.Resolution;
 import br.ufc.storm.exception.DBHandlerException;
 import br.ufc.storm.exception.ResolveException;
 import br.ufc.storm.exception.ShelfRuntimeException;
@@ -305,6 +306,18 @@ public class CoreServices {
 		}
 	}
 	
+	public static String convertContextContract(String cmp){
+		try {
+//			LogHandler.getLogger().info("Starting to convert a context contract...");
+			String str = XMLHandler.exportContextContractFromContractXML(cmp);
+//			LogHandler.close();
+			return str;
+		} catch (XMLException e) {
+//			LogHandler.close();
+			return null;
+		}
+	}
+	
 	/**
 	 * This method return a context contract in usual Shelf notation
 	 * @param ac_id
@@ -318,6 +331,9 @@ public class CoreServices {
 			return null;
 		}
 	}
+	
+	
+	
 	/**
 	 * This method resolve a context contract
 	 * @param cmp Context contract
@@ -371,6 +387,19 @@ public class CoreServices {
 			LogHandler.close();
 			return XMLHandler.getComputationalSystem(ppt);
 		} catch (XMLException | ShelfRuntimeException e) {
+			return "An error occurred while deploying application";
+		}
+	}
+	
+	public static String sortCandidates(String candidateList, int i){
+		CandidateListType clt;
+		try {
+			clt = XMLHandler.getCandidateList(candidateList);
+			LogHandler.getLogger().info("Starting to sort a candidate list...");
+			String ppt = XMLHandler.sortCandidateList(candidateList, i);
+			LogHandler.close();
+			return ppt;
+		} catch (XMLException e) {
 			return "An error occurred while deploying application";
 		}
 	}

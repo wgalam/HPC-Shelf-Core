@@ -5,6 +5,7 @@ import java.util.Hashtable;
 
 import br.ufc.storm.control.Resolution;
 import br.ufc.storm.exception.DBHandlerException;
+import br.ufc.storm.exception.FunctionException;
 import br.ufc.storm.jaxb.ContextArgumentType;
 import br.ufc.storm.jaxb.ContextArgumentValueType;
 import br.ufc.storm.jaxb.ContextContract;
@@ -90,7 +91,21 @@ public class ArgumentTable {
 	}
 	
 	public ContextArgumentType getArgument(int cp_id){
-		return argumentTable.get(cp_id);
+			ContextArgumentType cat = argumentTable.get(cp_id);
+			ContextArgumentType copy = new ContextArgumentType();
+			ContextArgumentValueType cavt = new ContextArgumentValueType();
+			if(cat!=null){
+				cavt.setValue(""+Double.parseDouble(cat.getValue().getValue()));
+				cavt.setDataType(cat.getValue().getDataType()+"");
+				copy.setValue(cavt);
+				copy.setKind(cat.getKind().intValue());
+			}else{
+				cavt.setValue(null); //Neutral element of multiplication
+				cavt.setDataType("Double"); //Default data type
+				copy.setValue(cavt); 
+			}
+			
+			return copy;
 	}
 	
 	

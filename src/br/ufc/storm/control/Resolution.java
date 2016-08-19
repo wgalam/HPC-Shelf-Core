@@ -23,6 +23,7 @@ import br.ufc.storm.jaxb.ContextContract;
 import br.ufc.storm.jaxb.ContextParameterType;
 import br.ufc.storm.jaxb.PlatformProfileType;
 import br.ufc.storm.model.ArgumentTable;
+import br.ufc.storm.model.MaxElement;
 import br.ufc.storm.model.ResolutionNode;
 import br.ufc.storm.sql.CalculatedArgumentHandler;
 import br.ufc.storm.sql.ContextContractHandler;
@@ -76,6 +77,8 @@ public class Resolution{
 		try {
 			resolve = resolve(cc, null);
 			System.out.println("Size of resolve: "+resolve.getCandidate().size());
+			//Reordena conforme o preset 3
+			resolve = sortCandidateList(resolve, 3);
 			int cont = 0;
 			for(ContextContract a:resolve.getCandidate()){
 				/*
@@ -304,22 +307,23 @@ public class Resolution{
 	 * This method receives a list of candidates and sort according its i rank parameter
 	 * @param newCandidateList
 	 * @param i
+	 * @return 
 	 */
-	private static void sortCandidateList(CandidateListType cl, int i) {
-		// TODO Auto-generated method stub
+	public static CandidateListType sortCandidateList(CandidateListType cl, int i) {
 		Collections.sort (cl.getCandidate(), new ComparatorCandidates(false, i));
+		return cl;
 	}
 
-	private static Hashtable <Integer , Double> getMaximumValues(ContextContract cc, Hashtable <Integer , Double> maximum){
+	private static Hashtable <Integer , MaxElement> getMaximumValues(ContextContract cc, Hashtable <Integer , MaxElement> maximum){
 			for(ContextArgumentType cat : cc.getContextArgumentsProvided()){
 				//se tiver valor faz o que segue
 				if(cat.getValue()!=null){
 					if(maximum.contains(cat.getCpId())){
-						if(maximum.get(cat.getCpId()) < Double.parseDouble(cat.getValue().getValue())){
-							maximum.replace(cat.getCpId(), Double.parseDouble(cat.getValue().getValue()));
+						if(maximum.get(cat.getCpId()).getValue() < Double.parseDouble(cat.getValue().getValue())){
+							maximum.get(cat.getCpId()).setValue(Double.parseDouble(cat.getValue().getValue()));
 						}
 					}else{
-						maximum.put(cat.getCpId(), Double.parseDouble(cat.getValue().getValue()));
+						maximum.put(cat.getCpId(), new MaxElement(Double.parseDouble(cat.getValue().getValue())));
 					}
 				}else{
 					if(cat.getContextContract() != null){
@@ -328,24 +332,23 @@ public class Resolution{
 					}
 				}
 			}
+			
 			for(CalculatedArgumentType cat : cc.getQualityArguments()){
 					if(maximum.get(cat.getCalcId()) != null){
-						if(maximum.get(cat.getCalcId()) < cat.getValue()){
-							maximum.replace(cat.getCalcId(), cat.getValue());
-							
+						if(maximum.get(cat.getCalcId()).getValue() < cat.getValue()){
+							maximum.get(cat.getCalcId()).setValue(cat.getValue());
 						}
 					}else{
-						maximum.put(cat.getCalcId(), cat.getValue());
+						maximum.put(cat.getCalcId(), new MaxElement(cat.getValue()));
 					}
 			}
 			for(CalculatedArgumentType cat : cc.getCostArguments()){
 				if(maximum.get(cat.getCalcId()) != null){
-					if(maximum.get(cat.getCalcId()) < cat.getValue()){
-						maximum.replace(cat.getCalcId(), cat.getValue());
-						
+					if(maximum.get(cat.getCalcId()).getValue() < cat.getValue()){
+						maximum.get(cat.getCalcId()).setValue(cat.getValue());
 					}
 				}else{
-					maximum.put(cat.getCalcId(), cat.getValue());
+					maximum.put(cat.getCalcId(), new MaxElement(cat.getValue()));
 				}
 		}
 			
@@ -355,8 +358,8 @@ public class Resolution{
 	
 	
 	
-	private static Hashtable <Integer , Double> getMaximumValues(CandidateListType cl){
-		Hashtable <Integer , Double> maximum = new Hashtable<Integer, Double>();
+	private static Hashtable <Integer , MaxElement> getMaximumValues(CandidateListType cl){
+		Hashtable <Integer , MaxElement> maximum = new Hashtable<Integer, MaxElement>();
 		for(ContextContract cc : cl.getCandidate()){
 			maximum.putAll(getMaximumValues(cc, maximum));
 			maximum.putAll(getMaximumValues(cc.getPlatform().getPlatformContract(), maximum));
@@ -369,7 +372,7 @@ public class Resolution{
 	}
 	
 	public static CandidateListType rankCandidates(CandidateListType cl, Hashtable <Integer , Hashtable <Integer , ArgumentTable>> tableOfSWidArgumentTable){
-		Hashtable <Integer , Double> maximum = Resolution.getMaximumValues(cl);
+		Hashtable <Integer , MaxElement> maximum = Resolution.getMaximumValues(cl);
 			
 		for(ContextContract cc:cl.getCandidate()){
 			try {
@@ -380,13 +383,7 @@ public class Resolution{
 			}
 			
 			
-			
-
-//			Para cada parâmetro de qualidade, custo, e ranqueamento, percorrer todos e buscar o maior
-//			manter na memória (hash table) o maior para fins de normalização
-//			definir como funciona quando o valor for contravariante, como ter maior nota para menor valor
-//			(1 - normalização) possibilidade de normalização ao contrário	
-			
+	
 			
 		}
 		return cl;

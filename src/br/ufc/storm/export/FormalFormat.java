@@ -17,14 +17,20 @@ import br.ufc.storm.xml.XMLHandler;
 public class FormalFormat {
 
 	public static void main(String[] args) {
+//		try {
+//			/*
+//			ContextContract cc = ContextContractHandler.getContextContract(21);
+//			System.out.println(FormalFormat.exportContextContract(cc, null));
+//			*/
+//			System.out.println(FormalFormat.exportComponentSignature(AbstractComponentHandler.getAbstractComponent(5), null));
+//					//System.out.println(XMLHandler.getAbstractComponent("Cluster"));
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		try {
-			/*
-			ContextContract cc = ContextContractHandler.getContextContract(21);
-			System.out.println(FormalFormat.exportContextContract(cc, null));
-			*/
-			System.out.println(FormalFormat.exportComponentSignature(AbstractComponentHandler.getAbstractComponent(5), null));
-					//System.out.println(XMLHandler.getAbstractComponent("Cluster"));
-		} catch (Exception e) {
+			Resolution.main(args);
+		} catch (DBHandlerException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -50,7 +56,7 @@ public class FormalFormat {
 					if(cp.getBound().getCcName().equals("DATA")){
 						str+="\n"+space+cp.getName()+" : "+cp.getBound().getCcName()+",";
 					}else{
-						str+="\n"+space+cp.getName()+" : "+cp.getBound().getCcName()+" ["+exportComponentSignature(AbstractComponentHandler.getAbstractComponentFromContextContractID(cp.getBound().getCcId()), space)+"],";
+						str+="\n"+space+cp.getName()+" : "+cp.getBound().getCcName()+" ["+exportComponentSignature(AbstractComponentHandler.getAbstractComponentFromContextContractID(cp.getBound().getCcId()), ""+space)+"],";
 					}
 				} catch (DBHandlerException e) {
 					// TODO Auto-generated catch block
@@ -100,19 +106,12 @@ public class FormalFormat {
 		ac.getCostParameters().addAll(r.getCops());
 		ac.getRankingParameters().clear();
 		ac.getRankingParameters().addAll(r.getRps());
-		
-		/*if(ac.getIdAc()==161){
-			System.out.println(ac.getName()+" >> "+cc.getAbstractComponent().getQualityParameters().size());
-		}*/
-		
-		
-		
 		str+=cc.getCcName()+"[";
 		for(ContextParameterType cp: ac.getContextParameter()){
 			for(ContextArgumentType ca : cc.getContextArgumentsProvided()){
 				if(cp.getCpId()==ca.getCpId()){
 					if(ca.getContextContract()!=null){
-						str+="\n"+space+cp.getName()+" = "+exportContextContract(ca.getContextContract(),"    ")+",";
+						str+="\n"+space+cp.getName()+" = "+exportContextContract(ca.getContextContract(),space+"")+",";
 					}else{
 						if(ca.getValue()!= null){
 							str+="\n"+space+cp.getName()+" = "+ca.getValue().getValue()+",";
@@ -124,6 +123,9 @@ public class FormalFormat {
 					}
 				}
 			}
+		}
+		if(cc.getPlatform()!=null){
+			str+="\n"+space+"PLATFORM: = "+exportContextContract(cc.getPlatform().getPlatformContract(),space+"")+",";
 		}
 		for(CalculatedParameterType cp: ac.getQualityParameters()){
 //			str+="\n"+space+cp.getName()+" = ";
@@ -149,9 +151,7 @@ public class FormalFormat {
 				}
 			}
 		}
-		if(cc.getPlatform()!=null){
-			str+="\n"+space+"PLATFORM: = "+exportContextContract(cc.getPlatform().getPlatformContract(),null)+",";
-		}
+		
 		str+="]";
 		return str;
 	}

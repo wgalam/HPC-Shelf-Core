@@ -32,6 +32,7 @@ import br.ufc.storm.control.Resolution;
 import br.ufc.storm.exception.DBHandlerException;
 import br.ufc.storm.exception.ResolveException;
 import br.ufc.storm.exception.XMLException;
+import br.ufc.storm.export.FormalFormat;
 import br.ufc.storm.io.FileHandler;
 import br.ufc.storm.jaxb.AbstractComponentType;
 import br.ufc.storm.jaxb.AbstractUnitType;
@@ -140,6 +141,62 @@ public class XMLHandler {
 			} catch (ResolveException e) {
 				throw new XMLException(e);
 			}
+			marshaller.marshal(element1, sw);
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		}
+		String str = sw.toString();
+		try {
+			sw.close();
+		} catch (IOException e) {
+			throw new XMLException(e);
+		}
+		return str;
+
+	}
+	
+	public static String exportContextContractFromContractXML(String file) throws XMLException{
+		ContextContract cc = new ContextContract();
+		JAXBContext context;
+		try {
+			context = JAXBContext.newInstance(br.ufc.storm.jaxb.ObjectFactory.class.getPackage().getName(),
+					br.ufc.storm.jaxb.ObjectFactory.class.getClassLoader());
+			Unmarshaller unmarshaller = context.createUnmarshaller();
+			@SuppressWarnings("unchecked")
+			JAXBElement<ContextContract> element = (JAXBElement<ContextContract>) unmarshaller.unmarshal(new InputSource(new java.io.StringReader(file)));
+			cc=element.getValue();
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		}
+		
+		return FormalFormat.exportContextContract(cc, null);
+
+	}
+	
+	public static String sortCandidateList(String file, int rank) throws XMLException{
+		CandidateListType cl = new CandidateListType();
+		JAXBContext context;
+		try {
+			context = JAXBContext.newInstance(br.ufc.storm.jaxb.ObjectFactory.class.getPackage().getName(),
+					br.ufc.storm.jaxb.ObjectFactory.class.getClassLoader());
+			Unmarshaller unmarshaller = context.createUnmarshaller();
+			@SuppressWarnings("unchecked")
+			JAXBElement<CandidateListType> element = (JAXBElement<CandidateListType>) unmarshaller.unmarshal(new InputSource(new java.io.StringReader(file)));
+			cl=element.getValue();
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		}
+		
+		java.io.StringWriter sw = new StringWriter();
+		context = null;
+		try {
+			context = JAXBContext.newInstance(br.ufc.storm.jaxb.ObjectFactory.class.getPackage().getName(),
+					br.ufc.storm.jaxb.ObjectFactory.class.getClassLoader());
+			Marshaller marshaller = context.createMarshaller();
+			marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+			JAXBElement<CandidateListType> element1;
+			element1 = new ObjectFactory().createCandidateList(Resolution.sortCandidateList(cl, rank));
 			marshaller.marshal(element1, sw);
 		} catch (JAXBException e) {
 			e.printStackTrace();
