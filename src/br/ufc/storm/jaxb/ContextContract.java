@@ -2,7 +2,7 @@
 // Este arquivo foi gerado pela Arquitetura JavaTM para Implementação de Referência (JAXB) de Bind XML, v2.2.8-b130911.1802 
 // Consulte <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Todas as modificações neste arquivo serão perdidas após a recompilação do esquema de origem. 
-// Gerado em: 2016.08.18 às 03:16:55 PM BRT 
+// Gerado em: 2016.08.20 às 02:31:09 AM BRT 
 //
 
 
@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;element name="context_arguments_provided" type="{http://storm.lia.ufc.br}context_argument_type" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="abstract_component" type="{http://storm.lia.ufc.br}abstract_component_type"/>
+ *         &lt;element name="abstract_component" type="{http://storm.lia.ufc.br}abstract_component_type" minOccurs="0"/>
  *         &lt;element name="platform" type="{http://storm.lia.ufc.br}platform_profile_type" minOccurs="0"/>
  *         &lt;element name="quality_arguments" type="{http://storm.lia.ufc.br}calculated_argument_type" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="ranking_arguments" type="{http://storm.lia.ufc.br}calculated_argument_type" maxOccurs="unbounded" minOccurs="0"/>
@@ -67,7 +67,7 @@ public class ContextContract {
 
     @XmlElement(name = "context_arguments_provided")
     protected List<ContextArgumentType> contextArgumentsProvided;
-    @XmlElement(name = "abstract_component", required = true)
+    @XmlElement(name = "abstract_component")
     protected AbstractComponentType abstractComponent;
     protected PlatformProfileType platform;
     @XmlElement(name = "quality_arguments")

@@ -61,7 +61,7 @@
     		<element name="context_variable_provided" type="string"
     			maxOccurs="1" minOccurs="0">
     		</element>
-    		<element name="context_variable_required_id" type="int"></element>
+    		<element name="context_variable_required_id" type="int" maxOccurs="1" minOccurs="0"></element>
     	</sequence>
     	<attribute name="name" type="string"></attribute>
     	<attribute name="cp_id" type="int"></attribute>
@@ -103,7 +103,7 @@
     			minOccurs="0">
     		</element>
     		<element name="abstract_component"
-    			type="tns:abstract_component_type" maxOccurs="1" minOccurs="1">
+    			type="tns:abstract_component_type" maxOccurs="1" minOccurs="0">
     		</element>
     		<element name="platform" type="tns:platform_profile_type"
     			maxOccurs="1" minOccurs="0">
@@ -238,12 +238,16 @@
 
 
 	<complexType name="slice_type">
-    	<attribute name="slice_id" type="int"></attribute>
-    	<attribute name="inner_component_id" type="int"></attribute>
-    	<attribute name="inner_unity_id" type="int"></attribute>
-    </complexType>
+		<sequence>
+			<element name="inner_unit_name" type="string" maxOccurs="1" minOccurs="0"></element>
+			<element name="inner_component_name" type="string" maxOccurs="1" minOccurs="0"></element>
+		</sequence>
+		<attribute name="slice_id" type="int"></attribute>
+		<attribute name="inner_component_id" type="int"></attribute>
+		<attribute name="inner_unit_id" type="int"></attribute>
+	</complexType>
 
-    <complexType name="concrete_unit_type">
+	<complexType name="concrete_unit_type">
     	<sequence></sequence>
     	<attribute name="u_id" type="int"></attribute>
     	<attribute name="au_id" type="int"></attribute>

@@ -92,20 +92,15 @@ public class AbstractComponentHandler extends DBHandler{
 		ac.getContextParameter().get(0).setKind(1);
 		ac.getContextParameter().get(0).setBound(new ContextContract());
 		ac.getContextParameter().get(0).getBound().setCcId(21);
-		ac.getContextParameter().add(new ContextParameterType());
-		ac.getContextParameter().get(1).setName("par-teste-2");
-		ac.getContextParameter().get(1).setKind(1);
-		ac.getContextParameter().get(1).setBound(new ContextContract());
-		ac.getContextParameter().get(1).getBound().setCcId(28);
 		ac.getInnerComponents().add(new AbstractComponentType());
-		ac.getInnerComponents().get(0).setIdAc(123);
-		ac.getInnerComponents().add(new AbstractComponentType());
-		ac.getInnerComponents().get(1).setIdAc(124);
+		ac.getInnerComponents().get(0).setName("teste1");
+		ac.getInnerComponents().get(0).setSupertype(new AbstractComponentType());
+		ac.getInnerComponents().get(0).getSupertype().setIdAc(2);
+		ac.getAbstractUnit().add(new AbstractUnitType());
+		ac.getAbstractUnit().get(0).setAuName("teste");
 		ac.getSlices().add(new SliceType());
-//		ac.getSlices().get(0).setInnerUnityId(value);
-//		ac.getSlices().get(0).setInnerComponentId();
-		
-		
+		ac.getSlices().get(0).setInnerUnitName("teste");
+		ac.getSlices().get(0).setInnerComponentName("teste1");
 		
 		
 		
@@ -125,6 +120,8 @@ public class AbstractComponentHandler extends DBHandler{
 	public static int addAbstractComponent(AbstractComponentType ac, Map<String, Integer> sharedVariables) throws DBHandlerException, ResolveException{
 
 		try {
+			Integer ac_id = null;
+			
 			Connection con = DBHandler.getConnection();
 			con.setAutoCommit(false);
 			PreparedStatement prepared = con.prepareStatement(INSERT_ABSTRACT_COMPONENT);
@@ -133,6 +130,7 @@ public class AbstractComponentHandler extends DBHandler{
 			ResultSet result = prepared.executeQuery();
 			if(result.next()){
 				ac.setIdAc(result.getInt("ac_id"));
+				ac_id = ac.getIdAc();
 			}else{
 				throw new DBHandlerException("Abstract component id not returned");
 			}
@@ -166,20 +164,18 @@ public class AbstractComponentHandler extends DBHandler{
 			}
 			//Add each abstract unit
 			for(AbstractUnitType aut: ac.getAbstractUnit()){
-				aut.setAuId(AbstractUnitHandler.addAbstractUnit(aut.getAcId(), aut.getAuName()));;
+				aut.setAuId(AbstractUnitHandler.addAbstractUnit(ac.getName(), aut.getAuName()));;
 			}
 			//Register inner components if not registered yet
 			for(AbstractComponentType inner:ac.getInnerComponents()){
 				if(inner.getIdAc()==null){
 					inner.setIdAc(addAbstractComponent(inner, sharedVariables));
-				}
-				for(SliceType st:ac.getSlices()){
-					if(st.getInnerComponentId()==inner.getIdAc()){
-						SliceHandler.addSlice(st, ac.getIdAc());
-					}
+					addInnerComponnet(ac.getIdAc(), inner.getIdAc());
 				}
 			}
-			//Only create slices if have inner components
+			for(SliceType st:ac.getSlices()){
+					SliceHandler.addSlice(st.getInnerComponentName(), st.getInnerUnitName(), ac.getName());
+			}
 				
 			return ac.getIdAc();
 			
@@ -229,7 +225,7 @@ public class AbstractComponentHandler extends DBHandler{
 		ac.getCostParameters().addAll(CalculatedArgumentHandler.getCalculatedParameters(ac_id, ContextParameterHandler.COST));
 		ac.getRankingParameters().addAll(CalculatedArgumentHandler.getCalculatedParameters(ac_id, ContextParameterHandler.RANKING));
 		ac.getAbstractUnit().addAll(AbstractUnitHandler.getAbstractUnits(ac_id));
-		ac.getSlices().addAll(getSlices(ac_id));
+		ac.getSlices().addAll(SliceHandler.getSlices(ac_id));
 		return ac;
 	}
 
@@ -353,35 +349,6 @@ public class AbstractComponentHandler extends DBHandler{
 		} catch (SQLException e) {
 			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
-	}
-
-	/**
-	 * This method caches all abstract slices from a component 
-	 * @param ac_id
-	 * @return List of abstract slices
-	 * @throws DBHandlerException
-	 */
-
-	private static List<SliceType> getSlices(int ac_id) throws DBHandlerException {
-
-		try {
-			Connection con = getConnection();
-			ArrayList<SliceType> slices = new ArrayList<SliceType>();
-			PreparedStatement prepared = con.prepareStatement(SELECT_ALL_SLICES);
-			prepared.setInt(1, ac_id);
-			ResultSet resultSet = prepared.executeQuery();
-			while (resultSet.next()) {				
-				SliceType slc = new SliceType();
-				slc.setSliceId(resultSet.getInt("slice_id"));
-				slc.setInnerComponentId(resultSet.getInt("inner_component_id"));
-				slc.setInnerUnityId(resultSet.getInt("inner_unit_id"));
-				slices.add(slc);
-			} 
-			return slices; 
-		} catch (SQLException e) {
-			throw new DBHandlerException("A sql error occurred: ", e);
-		}
-
 	}
 
 	/**

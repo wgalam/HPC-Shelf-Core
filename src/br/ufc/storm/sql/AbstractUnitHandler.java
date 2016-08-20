@@ -24,13 +24,13 @@ public class AbstractUnitHandler extends DBHandler {
 	 * @throws DBHandlerException 
 	 * @throws SQLException 
 	 */
-	public static int addAbstractUnit(int ac_id, String au_name) throws DBHandlerException {
+	public static int addAbstractUnit(String ac_name, String au_name) throws DBHandlerException {
 
 		try {
 			Connection con = getConnection();
 			int au_id = 0;
 			PreparedStatement prepared = con.prepareStatement(INSERT_ABSTRACT_UNIT); 
-			prepared.setInt(1, ac_id);
+			prepared.setString(1, ac_name);
 			prepared.setString(2, au_name);  
 			ResultSet result = prepared.executeQuery(); 
 			if(result.next()){

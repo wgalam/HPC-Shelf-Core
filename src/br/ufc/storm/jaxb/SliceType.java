@@ -2,7 +2,7 @@
 // Este arquivo foi gerado pela Arquitetura JavaTM para Implementação de Referência (JAXB) de Bind XML, v2.2.8-b130911.1802 
 // Consulte <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Todas as modificações neste arquivo serão perdidas após a recompilação do esquema de origem. 
-// Gerado em: 2016.08.18 às 03:16:55 PM BRT 
+// Gerado em: 2016.08.20 às 02:31:09 AM BRT 
 //
 
 
@@ -11,6 +11,7 @@ package br.ufc.storm.jaxb;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -23,9 +24,13 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="slice_type">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *       &lt;sequence>
+ *         &lt;element name="inner_unit_name" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="inner_component_name" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *       &lt;/sequence>
  *       &lt;attribute name="slice_id" type="{http://www.w3.org/2001/XMLSchema}int" />
  *       &lt;attribute name="inner_component_id" type="{http://www.w3.org/2001/XMLSchema}int" />
- *       &lt;attribute name="inner_unity_id" type="{http://www.w3.org/2001/XMLSchema}int" />
+ *       &lt;attribute name="inner_unit_id" type="{http://www.w3.org/2001/XMLSchema}int" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -34,15 +39,70 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "slice_type")
+@XmlType(name = "slice_type", propOrder = {
+    "innerUnitName",
+    "innerComponentName"
+})
 public class SliceType {
 
+    @XmlElement(name = "inner_unit_name")
+    protected String innerUnitName;
+    @XmlElement(name = "inner_component_name")
+    protected String innerComponentName;
     @XmlAttribute(name = "slice_id")
     protected Integer sliceId;
     @XmlAttribute(name = "inner_component_id")
     protected Integer innerComponentId;
-    @XmlAttribute(name = "inner_unity_id")
-    protected Integer innerUnityId;
+    @XmlAttribute(name = "inner_unit_id")
+    protected Integer innerUnitId;
+
+    /**
+     * Obtém o valor da propriedade innerUnitName.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getInnerUnitName() {
+        return innerUnitName;
+    }
+
+    /**
+     * Define o valor da propriedade innerUnitName.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setInnerUnitName(String value) {
+        this.innerUnitName = value;
+    }
+
+    /**
+     * Obtém o valor da propriedade innerComponentName.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getInnerComponentName() {
+        return innerComponentName;
+    }
+
+    /**
+     * Define o valor da propriedade innerComponentName.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setInnerComponentName(String value) {
+        this.innerComponentName = value;
+    }
 
     /**
      * Obtém o valor da propriedade sliceId.
@@ -93,27 +153,27 @@ public class SliceType {
     }
 
     /**
-     * Obtém o valor da propriedade innerUnityId.
+     * Obtém o valor da propriedade innerUnitId.
      * 
      * @return
      *     possible object is
      *     {@link Integer }
      *     
      */
-    public Integer getInnerUnityId() {
-        return innerUnityId;
+    public Integer getInnerUnitId() {
+        return innerUnitId;
     }
 
     /**
-     * Define o valor da propriedade innerUnityId.
+     * Define o valor da propriedade innerUnitId.
      * 
      * @param value
      *     allowed object is
      *     {@link Integer }
      *     
      */
-    public void setInnerUnityId(Integer value) {
-        this.innerUnityId = value;
+    public void setInnerUnitId(Integer value) {
+        this.innerUnitId = value;
     }
 
 }

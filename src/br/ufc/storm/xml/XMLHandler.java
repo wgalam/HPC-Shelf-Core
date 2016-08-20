@@ -567,7 +567,7 @@ public class XMLHandler {
 		}
 		for(AbstractUnitType aut : ac.getAbstractUnit()){
 			try {
-				AbstractUnitHandler.addAbstractUnit(aut.getAcId(), aut.getAuName());
+				AbstractUnitHandler.addAbstractUnit(ac.getName(), aut.getAuName());
 			} catch (DBHandlerException e) {
 				throw new XMLException(e);
 			}
@@ -682,7 +682,7 @@ public class XMLHandler {
 			throw new XMLException("An error occurred while converting XML", e);
 		}
 		try {
-			return AbstractUnitHandler.addAbstractUnit(aut.getAcId(), aut.getAuName());
+			return AbstractUnitHandler.addAbstractUnit(AbstractComponentHandler.getAbstractComponentName(aut.getAcId()), aut.getAuName());
 		} catch (DBHandlerException e) {
 			throw new XMLException("An error occurred while registering abstract unit", e);
 		}

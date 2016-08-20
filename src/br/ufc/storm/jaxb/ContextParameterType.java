@@ -2,7 +2,7 @@
 // Este arquivo foi gerado pela Arquitetura JavaTM para Implementação de Referência (JAXB) de Bind XML, v2.2.8-b130911.1802 
 // Consulte <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Todas as modificações neste arquivo serão perdidas após a recompilação do esquema de origem. 
-// Gerado em: 2016.08.18 às 03:16:55 PM BRT 
+// Gerado em: 2016.08.20 às 02:31:09 AM BRT 
 //
 
 
@@ -32,7 +32,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;/choice>
  *         &lt;element name="context_argument" type="{http://storm.lia.ufc.br}context_argument_type" minOccurs="0"/>
  *         &lt;element name="context_variable_provided" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="context_variable_required_id" type="{http://www.w3.org/2001/XMLSchema}int"/>
+ *         &lt;element name="context_variable_required_id" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="cp_id" type="{http://www.w3.org/2001/XMLSchema}int" />
@@ -65,7 +65,7 @@ public class ContextParameterType {
     @XmlElement(name = "context_variable_provided")
     protected String contextVariableProvided;
     @XmlElement(name = "context_variable_required_id")
-    protected int contextVariableRequiredId;
+    protected Integer contextVariableRequiredId;
     @XmlAttribute(name = "name")
     protected String name;
     @XmlAttribute(name = "cp_id")
@@ -196,16 +196,24 @@ public class ContextParameterType {
     /**
      * Obtém o valor da propriedade contextVariableRequiredId.
      * 
+     * @return
+     *     possible object is
+     *     {@link Integer }
+     *     
      */
-    public int getContextVariableRequiredId() {
+    public Integer getContextVariableRequiredId() {
         return contextVariableRequiredId;
     }
 
     /**
      * Define o valor da propriedade contextVariableRequiredId.
      * 
+     * @param value
+     *     allowed object is
+     *     {@link Integer }
+     *     
      */
-    public void setContextVariableRequiredId(int value) {
+    public void setContextVariableRequiredId(Integer value) {
         this.contextVariableRequiredId = value;
     }
 
