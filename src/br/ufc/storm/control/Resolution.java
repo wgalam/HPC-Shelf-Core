@@ -92,7 +92,7 @@ public class Resolution{
 							
 				
 //				###########18/07/2016
-				System.out.println(FormalFormat.exportContextContract(a, null));
+//				System.out.println(FormalFormat.exportContextContract(a, null));
 //				###########
 			}
 //						System.out.println("Último Candidato Compatível\n"+XMLHandler.getContextContract(resolve.getCandidate().get(resolve.getCandidate().size()-1)));
@@ -299,7 +299,7 @@ public class Resolution{
 		Resolution.rankCandidates(newCandidateList, tableOfSWidArgumentTable); //Rank all candidates
 		Resolution.sortCandidateList(newCandidateList, 0);//Primeira função de ranqueamento
 		long elapsed = System.currentTimeMillis() - start;
-		System.out.println("Resolution Time(ms): "+elapsed);
+		System.out.println("Resolution Time: "+elapsed+"ms");
 		return newCandidateList;
 	}
 

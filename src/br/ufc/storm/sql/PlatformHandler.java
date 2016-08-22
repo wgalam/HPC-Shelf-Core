@@ -14,6 +14,7 @@ public class PlatformHandler extends DBHandler {
 
 	private static final String SELECT_PLATFORM_BY_CC_ID = "select * from context_contract A, component_platform B, maintainer C where A.cc_id = B.platform_cc_id and B.cc_id = ?;";
 	private static final String SELECT_IP_BY_CC_ID = "select maintainer_url from platform_owner A, maintainer B where A.platform_cc_id = ?;";
+	private static final String INSERT_PLATFORM_OWNER = "INSERT INTO platform_owner (platform_cc_id, maintainer_id) VALUES (?,?);";
 
 
 	/**
@@ -89,6 +90,18 @@ public class PlatformHandler extends DBHandler {
 		} catch (SQLException e) { 
 			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
+	}
+
+	public static void addPlatformOwner(ContextContract cc) throws DBHandlerException {
+		try {
+			PreparedStatement prepared = getConnection().prepareStatement(INSERT_PLATFORM_OWNER); 
+			prepared.setInt(1, cc.getCcId());
+			prepared.setInt(2, cc.getOwnerId());
+			prepared.execute();
+		} catch (SQLException e) {
+			throw new DBHandlerException("A sql error occurred: ", e);
+		}
+		
 	}
 
 

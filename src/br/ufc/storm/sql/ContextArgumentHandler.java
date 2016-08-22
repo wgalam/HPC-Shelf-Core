@@ -13,7 +13,7 @@ import br.ufc.storm.exception.DBHandlerException;
 
 public class ContextArgumentHandler extends DBHandler {
 
-	private static final String INSERT_CONTEXT_ARGUMENT = "INSERT INTO context_argument (cc_id, cp_id) VALUES ((select cc_id from context_contract where cc_name=?),(select cp_id from context_parameter where cp_name=?));";
+	private static final String INSERT_CONTEXT_ARGUMENT = "INSERT INTO context_argument (cc_id, variable_cp_id) VALUES (?,?) RETURNING ca_id;";
 	private final static String SELECT_CONTEXT_ARGUMENT_BY_ID = "select * from context_argument A, context_parameter B where cc_id = ? and A.variable_cp_id = B.cp_id;";
 	private static final String SELECT_VARIABLE_VALUE = "select * from context_argument A, closed_argument_values B WHERE A.variable_cp_id = ? AND A.cc_id = ? AND A.ca_id = B.ca_id;";
 	private static final String SELECT_SHARED_VARIABLE_CP = "select refers_to_var from context_parameter A, shared_context_variables B  WHERE A.cp_id = B.cp_id AND A.cp_id = ?;";
@@ -39,24 +39,15 @@ public class ContextArgumentHandler extends DBHandler {
 			PreparedStatement prepared = con.prepareStatement(INSERT_CONTEXT_ARGUMENT); 
 			prepared.setInt(1, cat.getCcId());
 			prepared.setInt(2, cat.getCpId()); 
-			if(cat.getValue()!=null){
-				prepared.setBoolean(3, true);
-			}else{
-				prepared.setBoolean(3, false);
+			ResultSet resultSet = prepared.executeQuery(); 
+			if(resultSet.next()){
+				cat.setCaId(resultSet.getInt("ca_id"));
 			}
-			prepared.executeQuery(); 
 			if(cat.getValue()!=null){
 				addContextArgumentValue(cat.getCaId(),cat.getValue());
-				//				Adicionar valor na respectiva tabela
 			}else{
 				if(cat.getContextContract()!=null){
-					//					TODO: Falta testar
 					addContextArgumentContextContract(cat.getCaId(),cat.getContextContract());
-					//					Adicionar contrato na respectiva tabela
-				}else{
-					//					TODO: Falta testar
-					addContextArgumentVariableReference(cat.getCpId(),cat.getSharedVariableCpId());
-					//					Adicionar referência à variável
 				}
 			}
 			return true;
@@ -102,7 +93,7 @@ public class ContextArgumentHandler extends DBHandler {
 			PreparedStatement prepared = getConnection().prepareStatement(INSERT_CONTEXT_ARGUMENT_CONTEXT_CONTRACT); 
 			prepared.setInt(1, ca_id);
 			prepared.setInt(2, contextContract.getCcId());
-			prepared.executeQuery();
+			prepared.execute();
 		} catch (SQLException e) {
 			throw new DBHandlerException("A sql error occurred: ", e);
 		}
@@ -123,7 +114,7 @@ public class ContextArgumentHandler extends DBHandler {
 			prepared.setInt(1, cat_id);
 			prepared.setString(2, cavt.getDataType());
 			prepared.setString(3, cavt.getValue());
-			prepared.executeQuery();
+			prepared.execute();
 		} catch (SQLException e) {
 			throw new DBHandlerException("A sql error occurred: ", e);
 		}

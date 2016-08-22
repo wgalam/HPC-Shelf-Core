@@ -12,12 +12,14 @@ import br.ufc.storm.jaxb.AbstractComponentType;
 import br.ufc.storm.jaxb.AbstractUnitType;
 import br.ufc.storm.jaxb.CalculatedArgumentType;
 import br.ufc.storm.jaxb.ContextArgumentType;
+import br.ufc.storm.jaxb.ContextArgumentValueType;
 import br.ufc.storm.jaxb.ContextContract;
 import br.ufc.storm.jaxb.ContextParameterType;
 import br.ufc.storm.jaxb.ContractList;
+import br.ufc.storm.jaxb.PlatformProfileType;
 
 public class ContextContractHandler extends DBHandler{
-	private final static String INSERT_CONTEXT_CONTRACT = "INSERT INTO context_contract (ac_id, cc_name) VALUES ((select ac_id from abstract_component where ac_name = ?), ?) RETURNING cc_id;";
+	private final static String INSERT_CONTEXT_CONTRACT = "INSERT INTO context_contract (ac_id, cc_name, type_id, owner_id) VALUES ((select ac_id from abstract_component where ac_name = ?), ?, ?, ?) RETURNING cc_id;";
 	private final static String SELECT_CONTEXT_CONTRACT_ID = "select cc_id from context_contract where cc_name = ?;";
 	private static final String SELECT_CONTEXT_CONTRACT_NAME = "select cc_name from context_contract where cc_id = ?;";
 	private static final String SELECT_CONTEXT_CONTRACT = "select * from context_contract where cc_id = ?;";
@@ -25,37 +27,115 @@ public class ContextContractHandler extends DBHandler{
 	private final static String INSERT_INNER_COMPONENT = "INSERT INTO inner_components (parent_id, inner_component_name, component_id) VALUES ((select ac_id from abstract_component where ac_name = ?), ?, ?);";
 	private final static String SELECT_INNER_COMPONENTS_IDs = "select A.ac_id from inner_components A, abstract_component B where A.parent_id = ? AND A.parent_id = B.ac_id;";
 
-	public static void  addContextContract(ContextContract cc) throws DBHandlerException{
+	public static void main(String[] args) {
+		for(int i = 0; i < 1000; i++){
+			ContextContract mc = new ContextContract();
+			ContextContract cc = new ContextContract();
+			cc.setCcName("PlataformaTesteWagner"+i);
+			cc.setOwnerId(1);
+			cc.setAbstractComponent(new AbstractComponentType());
+			cc.getAbstractComponent().setName("Cluster");
+			cc.getContextArgumentsProvided().add(new ContextArgumentType());
+			cc.getContextArgumentsProvided().get(0).setCpId(23);
+			cc.getContextArgumentsProvided().get(0).setContextContract(new ContextContract());
+			cc.getContextArgumentsProvided().get(0).getContextContract().setCcId(128);
+			cc.getContextArgumentsProvided().add(new ContextArgumentType());
+			cc.getContextArgumentsProvided().get(1).setCpId(24);
+			cc.getContextArgumentsProvided().get(1).setContextContract(new ContextContract());
+			cc.getContextArgumentsProvided().get(1).getContextContract().setCcId(134);
+			cc.getContextArgumentsProvided().add(new ContextArgumentType());
+			cc.getContextArgumentsProvided().get(2).setCpId(26);
+			cc.getContextArgumentsProvided().get(2).setContextContract(new ContextContract());
+			cc.getContextArgumentsProvided().get(2).getContextContract().setCcId(133);
+			cc.getContextArgumentsProvided().add(new ContextArgumentType());
+			cc.getContextArgumentsProvided().get(3).setCpId(27);
+			cc.getContextArgumentsProvided().get(3).setValue(new ContextArgumentValueType());
+			cc.getContextArgumentsProvided().get(3).getValue().setValue("8");
+			cc.getContextArgumentsProvided().get(3).getValue().setDataType("Double");
+			mc.setPlatform(new PlatformProfileType());
+			mc.getPlatform().setPlatformContract(cc);
+			
+			
+			try {
+				DBHandler.getConnection().setAutoCommit(false);
+				addContextContract(mc);
+				DBHandler.getConnection().commit();
+				DBHandler.getConnection().setAutoCommit(true);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		System.out.println("Finished");
+	}
+	
+	
+	
+	public static void  addContextContract(ContextContract mc) throws DBHandlerException{
+		
 		try {
-			Connection con = getConnection();
-			int cc_id = 0;
-			PreparedStatement prepared = con.prepareStatement(INSERT_CONTEXT_CONTRACT);
-			prepared.setString(1, cc.getAbstractComponent().getName());
-			prepared.setString(2, cc.getCcName());
-			ResultSet result = prepared.executeQuery();
-			if(result.next()){
-				cc_id = result.getInt("cc_id");
-				//Add context arguments
-				for(ContextArgumentType cat:cc.getContextArgumentsProvided()){
-					cat.setCcId(cc_id);
-					ContextArgumentHandler.addContextArgument(cat);
+			if(mc.getAbstractComponent()==null){//Context Platform
+				ContextContract cc = mc.getPlatform().getPlatformContract();
+				Connection con = getConnection();
+				PreparedStatement prepared = con.prepareStatement(INSERT_CONTEXT_CONTRACT);
+				prepared.setString(1, cc.getAbstractComponent().getName());
+				prepared.setString(2, cc.getCcName());
+				prepared.setInt(3, 1);
+				prepared.setInt(4, cc.getOwnerId());
+				ResultSet result = prepared.executeQuery();
+				if(result.next()){
+					cc.setCcId(result.getInt("cc_id"));
+					//Add context arguments
+					for(ContextArgumentType cat:cc.getContextArgumentsProvided()){
+						cat.setCcId(cc.getCcId());
+						ContextArgumentHandler.addContextArgument(cat);
+					}
+					//Add inner components
+					for(ContextContract inner : cc.getInnerComponents()){
+						addContextContract(inner);
+					}
+					//add quality functions
+					for(CalculatedArgumentType qa : cc.getQualityArguments()){
+						CalculatedArgumentHandler.addCalculatedFunction(qa.getFunction(), 1);
+					}
+					//add cost functions
+					for(CalculatedArgumentType ca : cc.getCostArguments()){
+						CalculatedArgumentHandler.addCalculatedFunction(ca.getFunction(), 2);
+						//CostHandler.addCostFunction(ca.getFunction());
+					}
 				}
-				
-				
-				
-				
-				//Add inner components
-				for(ContextContract inner : cc.getInnerComponents()){
-					addContextContract(inner);
-				}
-				//add quality functions
-				for(CalculatedArgumentType qa : cc.getQualityArguments()){
-					CalculatedArgumentHandler.addCalculatedFunction(qa.getFunction(), 1);
-				}
-				//add cost functions
-				for(CalculatedArgumentType ca : cc.getCostArguments()){
-					CalculatedArgumentHandler.addCalculatedFunction(ca.getFunction(), 2);
-					//CostHandler.addCostFunction(ca.getFunction());
+				PlatformHandler.addPlatformOwner(cc);
+			}else{//Context contract
+				ContextContract cc = mc;
+				Connection con = getConnection();
+				int cc_id = 0;
+				PreparedStatement prepared = con.prepareStatement(INSERT_CONTEXT_CONTRACT);
+				prepared.setString(1, cc.getAbstractComponent().getName());
+				prepared.setString(2, cc.getCcName());
+				prepared.setInt(3, 0);
+				prepared.setInt(4, cc.getOwnerId());
+				ResultSet result = prepared.executeQuery();
+				if(result.next()){
+					cc_id = result.getInt("cc_id");
+					//Add context arguments
+					for(ContextArgumentType cat:cc.getContextArgumentsProvided()){
+						cat.setCcId(cc_id);
+						ContextArgumentHandler.addContextArgument(cat);
+					}
+					//Add inner components
+					for(ContextContract inner : cc.getInnerComponents()){
+						addContextContract(inner);
+					}
+					//add quality functions
+					for(CalculatedArgumentType qa : cc.getQualityArguments()){
+						CalculatedArgumentHandler.addCalculatedFunction(qa.getFunction(), 1);
+					}
+					//add cost functions
+					for(CalculatedArgumentType ca : cc.getCostArguments()){
+						CalculatedArgumentHandler.addCalculatedFunction(ca.getFunction(), 2);
+						//CostHandler.addCostFunction(ca.getFunction());
+					}
 				}
 			}
 		} catch (SQLException e) {
