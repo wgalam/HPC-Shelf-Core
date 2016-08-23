@@ -2,7 +2,7 @@
 // Este arquivo foi gerado pela Arquitetura JavaTM para Implementação de Referência (JAXB) de Bind XML, v2.2.8-b130911.1802 
 // Consulte <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Todas as modificações neste arquivo serão perdidas após a recompilação do esquema de origem. 
-// Gerado em: 2016.08.20 às 02:31:09 AM BRT 
+// Gerado em: 2016.08.23 às 01:04:30 PM BRT 
 //
 
 
@@ -27,7 +27,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="context_arguments_provided" type="{http://storm.lia.ufc.br}context_argument_type" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="context_arguments" type="{http://storm.lia.ufc.br}context_argument_type" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="abstract_component" type="{http://storm.lia.ufc.br}abstract_component_type" minOccurs="0"/>
  *         &lt;element name="platform" type="{http://storm.lia.ufc.br}platform_profile_type" minOccurs="0"/>
  *         &lt;element name="quality_arguments" type="{http://storm.lia.ufc.br}calculated_argument_type" maxOccurs="unbounded" minOccurs="0"/>
@@ -38,7 +38,6 @@ import javax.xml.bind.annotation.XmlType;
  *           &lt;element name="inner_components" type="{http://storm.lia.ufc.br}context_contract" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;/choice>
  *         &lt;element name="concrete_units" type="{http://storm.lia.ufc.br}concrete_unit_type" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="context_arguments_required" type="{http://storm.lia.ufc.br}context_argument_type" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attribute name="cc_name" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="cc_id" type="{http://www.w3.org/2001/XMLSchema}int" />
@@ -52,7 +51,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "context_contract", propOrder = {
-    "contextArgumentsProvided",
+    "contextArguments",
     "abstractComponent",
     "platform",
     "qualityArguments",
@@ -60,13 +59,12 @@ import javax.xml.bind.annotation.XmlType;
     "costArguments",
     "innerComponentsResolved",
     "innerComponents",
-    "concreteUnits",
-    "contextArgumentsRequired"
+    "concreteUnits"
 })
 public class ContextContract {
 
-    @XmlElement(name = "context_arguments_provided")
-    protected List<ContextArgumentType> contextArgumentsProvided;
+    @XmlElement(name = "context_arguments")
+    protected List<ContextArgumentType> contextArguments;
     @XmlElement(name = "abstract_component")
     protected AbstractComponentType abstractComponent;
     protected PlatformProfileType platform;
@@ -82,8 +80,6 @@ public class ContextContract {
     protected List<ContextContract> innerComponents;
     @XmlElement(name = "concrete_units")
     protected List<ConcreteUnitType> concreteUnits;
-    @XmlElement(name = "context_arguments_required")
-    protected List<ContextArgumentType> contextArgumentsRequired;
     @XmlAttribute(name = "cc_name")
     protected String ccName;
     @XmlAttribute(name = "cc_id")
@@ -92,18 +88,18 @@ public class ContextContract {
     protected Integer ownerId;
 
     /**
-     * Gets the value of the contextArgumentsProvided property.
+     * Gets the value of the contextArguments property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the contextArgumentsProvided property.
+     * This is why there is not a <CODE>set</CODE> method for the contextArguments property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getContextArgumentsProvided().add(newItem);
+     *    getContextArguments().add(newItem);
      * </pre>
      * 
      * 
@@ -113,11 +109,11 @@ public class ContextContract {
      * 
      * 
      */
-    public List<ContextArgumentType> getContextArgumentsProvided() {
-        if (contextArgumentsProvided == null) {
-            contextArgumentsProvided = new ArrayList<ContextArgumentType>();
+    public List<ContextArgumentType> getContextArguments() {
+        if (contextArguments == null) {
+            contextArguments = new ArrayList<ContextArgumentType>();
         }
-        return this.contextArgumentsProvided;
+        return this.contextArguments;
     }
 
     /**
@@ -340,35 +336,6 @@ public class ContextContract {
             concreteUnits = new ArrayList<ConcreteUnitType>();
         }
         return this.concreteUnits;
-    }
-
-    /**
-     * Gets the value of the contextArgumentsRequired property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the contextArgumentsRequired property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getContextArgumentsRequired().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link ContextArgumentType }
-     * 
-     * 
-     */
-    public List<ContextArgumentType> getContextArgumentsRequired() {
-        if (contextArgumentsRequired == null) {
-            contextArgumentsRequired = new ArrayList<ContextArgumentType>();
-        }
-        return this.contextArgumentsRequired;
     }
 
     /**

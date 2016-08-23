@@ -31,7 +31,7 @@ public class ArgumentTable {
 	
 	private void fill(ContextContract cc) {
 		//Adds all numerical arguments to hash table for performance purpose
-		for(ContextArgumentType cat:cc.getContextArgumentsProvided()){
+		for(ContextArgumentType cat:cc.getContextArguments()){
 			if(cat.getValue()!=null){
 				for(ContextParameterType cpt:cc.getAbstractComponent().getContextParameter()){
 					if(cpt.getCpId()==cat.getCpId()){

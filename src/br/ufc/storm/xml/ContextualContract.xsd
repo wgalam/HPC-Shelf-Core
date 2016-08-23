@@ -98,7 +98,7 @@
 
     <complexType name="context_contract">
     	<sequence>
-    		<element name="context_arguments_provided"
+    		<element name="context_arguments"
     			type="tns:context_argument_type" maxOccurs="unbounded"
     			minOccurs="0">
     		</element>
@@ -133,7 +133,6 @@
     		<element name="concrete_units" type="tns:concrete_unit_type"
     			maxOccurs="unbounded" minOccurs="0">
     		</element>
-    		<element name="context_arguments_required" type="tns:context_argument_type" maxOccurs="unbounded" minOccurs="0"></element>
     	</sequence>
     	<attribute name="cc_name" type="string"></attribute>
     	<attribute name="cc_id" type="int"></attribute>

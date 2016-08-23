@@ -100,7 +100,7 @@ public class BackendHandler {
 			}
 		}
 		
-		for(ContextArgumentType cat : cc.getContextArgumentsProvided()){
+		for(ContextArgumentType cat : cc.getContextArguments()){
 			if (cat.getContextContract()!=null){
 				List<ConcreteUnitType> listOfConcreteUnits;
 				

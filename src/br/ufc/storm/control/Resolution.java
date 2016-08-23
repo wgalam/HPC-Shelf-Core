@@ -58,7 +58,7 @@ public class Resolution{
 		ContextArgumentValueType cav = new ContextArgumentValueType();
 		cav.setValue("10");
 		arg0.setValue(cav);
-		cc.getContextArgumentsProvided().add(arg0);
+		cc.getContextArguments().add(arg0);
 		
 		//CC do contrato original 138
 		
@@ -195,18 +195,14 @@ public class Resolution{
 		int index = 0;
 		if(concreteComponentCandidatesList.size() > 0){
 			for(ContextContract candidate:concreteComponentCandidatesList){
-				candidate.getContextArgumentsProvided().addAll(application.getContextArgumentsProvided());
 				try {
 					if(componentSubTypeRecursiveTest(application, candidate, null, application.getAbstractComponent())){
 						if(candidate.getPlatform() == null){
 							//Will test the next software contract
 							continue;
 						}
-												
-						
-						
-						
-						
+						Resolution.mergeContract(application, candidate);						
+											
 						List<ContextContract> componentCandidatePlatformlist = null;
 						LogHandler.getLogger().info("Generating Hardware Candidate List for candidate: "+index);
 						try {
@@ -302,6 +298,29 @@ public class Resolution{
 		System.out.println("Resolution Time: "+elapsed+"ms");
 		return newCandidateList;
 	}
+	
+	private static void mergeContract(ContextContract application, ContextContract candidate){
+		for(ContextArgumentType acat: application.getContextArguments()){
+			Integer i = findArgument(acat, candidate.getContextArguments());
+			if(i!=null){
+				candidate.getContextArguments().set(i, acat);
+				
+			}else{
+				candidate.getContextArguments().add(acat);
+			}	
+		}		
+	}
+	
+	private static Integer findArgument(ContextArgumentType acat, List <ContextArgumentType> list){
+		ContextArgumentType ccat;
+		for(int i = 0; i < list.size(); i++){
+			ccat = list.get(i);
+			if(acat.getCpId()==ccat.getCpId()){
+				return i;
+			}
+		}
+		return null;
+	}
 
 	/**
 	 * This method receives a list of candidates and sort according its i rank parameter
@@ -315,7 +334,7 @@ public class Resolution{
 	}
 
 	private static Hashtable <Integer , MaxElement> getMaximumValues(ContextContract cc, Hashtable <Integer , MaxElement> maximum){
-			for(ContextArgumentType cat : cc.getContextArgumentsProvided()){
+			for(ContextArgumentType cat : cc.getContextArguments()){
 				//se tiver valor faz o que segue
 				if(cat.getValue()!=null){
 					if(maximum.contains(cat.getCpId())){
@@ -399,14 +418,14 @@ public class Resolution{
 	 */
 	public static ContextArgumentType getArgumentRecursive(ContextContract cc, Integer cp_id){
 		if(cc!=null){
-			for(ContextArgumentType cat: cc.getContextArgumentsProvided()){
+			for(ContextArgumentType cat: cc.getContextArguments()){
 				if(cat.getKind()==3 || cat.getKind()==4 || cat.getKind()==5){
 					if(cat.getCpId() == cp_id){
 						return cat;
 					}
 				}
 			}
-			for(ContextArgumentType cat: cc.getContextArgumentsProvided()){
+			for(ContextArgumentType cat: cc.getContextArguments()){
 				if(cat.getKind()==1){
 					return Resolution.getArgumentRecursive(cat.getContextContract(), cp_id);
 				}
@@ -475,9 +494,11 @@ public class Resolution{
 		}
 		if(subtype){
 			//TODO: Validar essa modificação, era provided
-			if(applicationContract.getContextArgumentsRequired().size() > 0){
-				for(ContextArgumentType cat:applicationContract.getContextArgumentsRequired()){
-					subtype = subtype && componentSubTypeRecursiveTest(cat.getContextContract(), getContextContractFromArgument(cat,candidate), cat.getCpId(), applicationContract.getAbstractComponent());
+			if(applicationContract.getContextArguments().size() > 0){
+				for(ContextArgumentType cat:applicationContract.getContextArguments()){
+					if(cat.getContextContract()!=null){
+						subtype = subtype && componentSubTypeRecursiveTest(cat.getContextContract(), getContextContractFromArgument(cat,candidate), cat.getCpId(), applicationContract.getAbstractComponent());
+					}
 				}
 			}
 		}
@@ -518,8 +539,8 @@ public class Resolution{
 			subtype = false;
 		}
 		if(subtype){
-			if(componentPlatformType.getContextArgumentsProvided().size() > 0){
-				for(ContextArgumentType cat:componentPlatformType.getContextArgumentsProvided()){
+			if(componentPlatformType.getContextArguments().size() > 0){
+				for(ContextArgumentType cat:componentPlatformType.getContextArguments()){
 					if(cat.getValue()==null){
 						subtype = subtype && isPlatformSubTypeTest(cat.getContextContract(), getContextContractFromArgument(cat,testedPlatformCandidate), cat.getCpId(), applicationPlatform);
 					}else{
@@ -648,8 +669,8 @@ public class Resolution{
 	 * @return
 	 */
 	public static ContextContract getContextContractFromArgument(ContextArgumentType cat_from_app_var, ContextContract candidate){
-		if(candidate.getContextArgumentsProvided()!= null){
-			for(ContextArgumentType cat: candidate.getContextArgumentsProvided()){
+		if(candidate.getContextArguments()!= null){
+			for(ContextArgumentType cat: candidate.getContextArguments()){
 				if(cat_from_app_var.getCpId()==cat.getCpId()){
 					return cat.getContextContract();
 				}
@@ -666,7 +687,7 @@ public class Resolution{
 	 */
 	private static ContextArgumentType getValueFromCandidateArgument(ContextArgumentType cat, ContextContract candidate) {
 		int cp_id = cat.getCpId();
-		for(ContextArgumentType app_cat: candidate.getContextArgumentsProvided()){
+		for(ContextArgumentType app_cat: candidate.getContextArguments()){
 			if(app_cat.getCpId() == cp_id){
 				return app_cat;
 			}
@@ -708,7 +729,7 @@ public class Resolution{
 	 * @return
 	 */
 	public static ContextArgumentType getArgument(ContextContract cc, Integer cp_id){
-		for(ContextArgumentType cat: cc.getContextArgumentsProvided()){
+		for(ContextArgumentType cat: cc.getContextArguments()){
 			if(cat.getCpId() == cp_id){
 				return cat;
 			}

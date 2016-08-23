@@ -108,7 +108,7 @@ public class FormalFormat {
 		ac.getRankingParameters().addAll(r.getRps());
 		str+=cc.getCcName()+"[";
 		for(ContextParameterType cp: ac.getContextParameter()){
-			for(ContextArgumentType ca : cc.getContextArgumentsProvided()){
+			for(ContextArgumentType ca : cc.getContextArguments()){
 				if(cp.getCpId()==ca.getCpId()){
 					if(ca.getContextContract()!=null){
 						str+="\n"+space+cp.getName()+" = "+exportContextContract(ca.getContextContract(),space+"")+",";

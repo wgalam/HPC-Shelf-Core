@@ -38,7 +38,7 @@ public class PlatformHandler extends DBHandler {
 				cc.getAbstractComponent().setIdAc(resultSet.getInt("ac_id")); 
 				cc.setCcName(resultSet.getString("cc_name"));
 				cc.setAbstractComponent(AbstractComponentHandler.getAbstractComponent(cc.getAbstractComponent().getIdAc()));
-				cc.getContextArgumentsProvided().addAll(ContextArgumentHandler.getContextArguments(cc.getCcId()));
+				cc.getContextArguments().addAll(ContextArgumentHandler.getContextArguments(cc.getCcId()));
 				return cc;
 			}else{
 				throw new DBHandlerException("Platform with abstract component id = "+cc_id+" was not found");
@@ -80,7 +80,7 @@ public class PlatformHandler extends DBHandler {
 				cc.getAbstractComponent().setIdAc(resultSet.getInt("ac_id")); 
 				cc.setCcName(resultSet.getString("cc_name"));
 				cc.setAbstractComponent(AbstractComponentHandler.getAbstractComponent(cc.getAbstractComponent().getIdAc()));
-				cc.getContextArgumentsProvided().addAll(ContextArgumentHandler.getContextArguments(cc.getCcId()));
+				cc.getContextArguments().addAll(ContextArgumentHandler.getContextArguments(cc.getCcId()));
 				ppt.setPlatformContract(cc);
 				ppt.setNetworkIpAddress(resultSet.getString("maintainer_url"));
 				return ppt;

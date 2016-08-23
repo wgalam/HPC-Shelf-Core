@@ -35,23 +35,23 @@ public class ContextContractHandler extends DBHandler{
 			cc.setOwnerId(1);
 			cc.setAbstractComponent(new AbstractComponentType());
 			cc.getAbstractComponent().setName("Cluster");
-			cc.getContextArgumentsProvided().add(new ContextArgumentType());
-			cc.getContextArgumentsProvided().get(0).setCpId(23);
-			cc.getContextArgumentsProvided().get(0).setContextContract(new ContextContract());
-			cc.getContextArgumentsProvided().get(0).getContextContract().setCcId(128);
-			cc.getContextArgumentsProvided().add(new ContextArgumentType());
-			cc.getContextArgumentsProvided().get(1).setCpId(24);
-			cc.getContextArgumentsProvided().get(1).setContextContract(new ContextContract());
-			cc.getContextArgumentsProvided().get(1).getContextContract().setCcId(134);
-			cc.getContextArgumentsProvided().add(new ContextArgumentType());
-			cc.getContextArgumentsProvided().get(2).setCpId(26);
-			cc.getContextArgumentsProvided().get(2).setContextContract(new ContextContract());
-			cc.getContextArgumentsProvided().get(2).getContextContract().setCcId(133);
-			cc.getContextArgumentsProvided().add(new ContextArgumentType());
-			cc.getContextArgumentsProvided().get(3).setCpId(27);
-			cc.getContextArgumentsProvided().get(3).setValue(new ContextArgumentValueType());
-			cc.getContextArgumentsProvided().get(3).getValue().setValue("8");
-			cc.getContextArgumentsProvided().get(3).getValue().setDataType("Double");
+			cc.getContextArguments().add(new ContextArgumentType());
+			cc.getContextArguments().get(0).setCpId(23);
+			cc.getContextArguments().get(0).setContextContract(new ContextContract());
+			cc.getContextArguments().get(0).getContextContract().setCcId(128);
+			cc.getContextArguments().add(new ContextArgumentType());
+			cc.getContextArguments().get(1).setCpId(24);
+			cc.getContextArguments().get(1).setContextContract(new ContextContract());
+			cc.getContextArguments().get(1).getContextContract().setCcId(134);
+			cc.getContextArguments().add(new ContextArgumentType());
+			cc.getContextArguments().get(2).setCpId(26);
+			cc.getContextArguments().get(2).setContextContract(new ContextContract());
+			cc.getContextArguments().get(2).getContextContract().setCcId(133);
+			cc.getContextArguments().add(new ContextArgumentType());
+			cc.getContextArguments().get(3).setCpId(27);
+			cc.getContextArguments().get(3).setValue(new ContextArgumentValueType());
+			cc.getContextArguments().get(3).getValue().setValue("8");
+			cc.getContextArguments().get(3).getValue().setDataType("Double");
 			mc.setPlatform(new PlatformProfileType());
 			mc.getPlatform().setPlatformContract(cc);
 			
@@ -87,7 +87,7 @@ public class ContextContractHandler extends DBHandler{
 				if(result.next()){
 					cc.setCcId(result.getInt("cc_id"));
 					//Add context arguments
-					for(ContextArgumentType cat:cc.getContextArgumentsProvided()){
+					for(ContextArgumentType cat:cc.getContextArguments()){
 						cat.setCcId(cc.getCcId());
 						ContextArgumentHandler.addContextArgument(cat);
 					}
@@ -119,7 +119,7 @@ public class ContextContractHandler extends DBHandler{
 				if(result.next()){
 					cc_id = result.getInt("cc_id");
 					//Add context arguments
-					for(ContextArgumentType cat:cc.getContextArgumentsProvided()){
+					for(ContextArgumentType cat:cc.getContextArguments()){
 						cat.setCcId(cc_id);
 						ContextArgumentHandler.addContextArgument(cat);
 					}
@@ -193,8 +193,8 @@ public class ContextContractHandler extends DBHandler{
 				cc.setCcName(name);
 				cc.setOwnerId(Integer.parseInt(owner));
 				cc.setAbstractComponent(AbstractComponentHandler.getAbstractComponent(ac_id));
-				cc.getContextArgumentsProvided().addAll(ContextArgumentHandler.getContextArguments(cc_id));
-				for(ContextArgumentType cat:cc.getContextArgumentsProvided()){
+				cc.getContextArguments().addAll(ContextArgumentHandler.getContextArguments(cc_id));
+				for(ContextArgumentType cat:cc.getContextArguments()){
 					//Creating a pointer into context parameter to context argument
 					for(ContextParameterType cpt : cc.getAbstractComponent().getContextParameter()){
 						if(cpt.getCpId()==cat.getCpId()){
@@ -322,7 +322,6 @@ public class ContextContractHandler extends DBHandler{
 		} catch (SQLException e) {
 			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
-
 	}
 
 	public static ContractList listContract(int ac_id) throws DBHandlerException{
@@ -343,7 +342,7 @@ public class ContextContractHandler extends DBHandler{
 	 */
 	public static void completeContextContract(ContextContract application) throws DBHandlerException{
 		application.setAbstractComponent(AbstractComponentHandler.getAbstractComponent(application.getAbstractComponent().getIdAc()));
-		for(ContextArgumentType cat:application.getContextArgumentsProvided()){
+		for(ContextArgumentType cat:application.getContextArguments()){
 			if(cat.getContextContract()!=null){
 				cat.getContextContract().setCcName(ContextContractHandler.getContextContractName(cat.getContextContract().getCcId()));
 				AbstractComponentType ac = AbstractComponentHandler.getAbstractComponentFromContextContractID(cat.getContextContract().getCcId());

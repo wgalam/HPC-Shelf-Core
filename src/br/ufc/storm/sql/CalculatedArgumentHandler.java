@@ -200,7 +200,7 @@ public class CalculatedArgumentHandler extends DBHandler{
 	}
 
 	public static Object getContractArgument(int cp_id, ContextContract cc){
-		for(ContextArgumentType cat : cc.getContextArgumentsProvided()){
+		for(ContextArgumentType cat : cc.getContextArguments()){
 			if(cat.getCpId()==cp_id){
 				return cat.getValue();
 			}else{
@@ -218,7 +218,7 @@ public class CalculatedArgumentHandler extends DBHandler{
 		//Calculates arguments contracts parameters before it own quality arguments
 
 		int count = 0;
-		for(ContextArgumentType cat : cc.getContextArgumentsProvided()){
+		for(ContextArgumentType cat : cc.getContextArguments()){
 			//pegar o parametro
 			Integer kind=-1;
 			for(ContextParameterType cpt:ResolutionNode.resolutionTree.findNode(cc.getAbstractComponent().getIdAc()).getCps()){
