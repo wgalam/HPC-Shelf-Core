@@ -57,11 +57,18 @@ public class Resolution{
 		cc.getPlatform().setPlatformContract(new ContextContract());
 		cc.getPlatform().getPlatformContract().setAbstractComponent(new AbstractComponentType());
 		cc.getPlatform().getPlatformContract().getAbstractComponent().setIdAc(19);
-		cc.getPlatform().getPlatformContract().getContextArguments().add(new ContextArgumentType());
-		cc.getPlatform().getPlatformContract().getContextArguments().get(0).setCpId(26);
-		cc.getPlatform().getPlatformContract().getContextArguments().get(0).setContextContract(new ContextContract());
-		cc.getPlatform().getPlatformContract().getContextArguments().get(0).getContextContract().setCcId(133);
+		
+		//Testando a filtragem por argumento de contexto (localizado em Fortaleza) (só o micro não passa)
+//		cc.getPlatform().getPlatformContract().getContextArguments().add(new ContextArgumentType());
+//		cc.getPlatform().getPlatformContract().getContextArguments().get(0).setCpId(26);
+//		cc.getPlatform().getPlatformContract().getContextArguments().get(0).setContextContract(new ContextContract());
+//		cc.getPlatform().getPlatformContract().getContextArguments().get(0).getContextContract().setCcId(133);
 
+		cc.getPlatform().getPlatformContract().getContextArguments().add(new ContextArgumentType());
+		cc.getPlatform().getPlatformContract().getContextArguments().get(0).setCpId(35);
+		cc.getPlatform().getPlatformContract().getContextArguments().get(0).setContextContract(new ContextContract());
+		cc.getPlatform().getPlatformContract().getContextArguments().get(0).getContextContract().setCcId(175);
+		
 		//*******************************************************
 
 		ContextArgumentType arg0 = new ContextArgumentType();
@@ -71,17 +78,17 @@ public class Resolution{
 		arg0.setValue(cav);
 		cc.getContextArguments().add(arg0);
 
-		//Testando a filtragem por parametro de qualidade
-		CalculatedArgumentType cat = new CalculatedArgumentType();
-		cat.setCpId(1);
-		cat.setValue(1.0);
-		cc.getPlatform().getPlatformContract().getQualityArguments().add(cat);
+		//Testando a filtragem por parametro de qualidade (total de núcleos superior a este valor)
+//		CalculatedArgumentType cat = new CalculatedArgumentType();
+//		cat.setCpId(1);
+//		cat.setValue(1.0);
+//		cc.getPlatform().getPlatformContract().getQualityArguments().add(cat);
 
-
-				cat = new CalculatedArgumentType();
-				cat.setCpId(112);
-				cat.setValue(100.0);
-				cc.getPlatform().getPlatformContract().getCostArguments().add(cat);
+		//Testando a filtragem por parametro de custo (só o gpu passa)
+//				cat = new CalculatedArgumentType();
+//				cat.setCpId(112);
+//				cat.setValue(100.0);
+//				cc.getPlatform().getPlatformContract().getCostArguments().add(cat);
 
 
 		//*******************************************************

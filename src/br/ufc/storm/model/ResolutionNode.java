@@ -133,23 +133,6 @@ public class ResolutionNode {
 		return null;
 	}
 
-//	public ResolutionNode findNode(String nameToResolve){
-//		if(nameToResolve.equals(acPath.toString()+"."+name) ){
-//			return this;
-//		}else{
-//			for(ResolutionNode rn: this.getSubtype()){
-//				ResolutionNode x = rn.findNode(nameToResolve);
-//				if(x != null){
-//					return x;
-//				}
-//			}
-//		}
-//		return null;
-//	}
-
-
-
-
 	/**
 	 * Control null return 
 	 * @param id
