@@ -130,7 +130,7 @@ public class FormalFormat {
 		for(CalculatedParameterType cp: ac.getQualityParameters()){
 //			str+="\n"+space+cp.getName()+" = ";
 			for(CalculatedArgumentType c : cc.getQualityArguments()){
-				if(c.getCalcId()==cp.getCalcId()){
+				if(c.getCpId()==cp.getCalcId()){
 					str+="\n"+space+cp.getName()+" = "+c.getValue();//terminar
 				}
 			}
@@ -138,7 +138,7 @@ public class FormalFormat {
 		for(CalculatedParameterType cp: ac.getCostParameters()){
 //			str+="\n"+space+cp.getName()+" = ";
 			for(CalculatedArgumentType c : cc.getCostArguments()){
-				if(c.getCalcId()==cp.getCalcId()){
+				if(c.getCpId()==cp.getCalcId()){
 					str+="\n"+space+cp.getName()+" = "+c.getValue();//terminar
 				}
 			}
@@ -146,7 +146,7 @@ public class FormalFormat {
 		for(CalculatedParameterType cp: ac.getRankingParameters()){
 //			str+="\n"+space+cp.getName()+" = ";
 			for(CalculatedArgumentType c : cc.getRankingArguments()){
-				if(c.getCalcId()==cp.getCalcId()){
+				if(c.getCpId()==cp.getCalcId()){
 					str+="\n"+space+cp.getName()+" = "+c.getValue();//terminar
 				}
 			}

@@ -28,7 +28,7 @@ public class ContextContractHandler extends DBHandler{
 	private final static String SELECT_INNER_COMPONENTS_IDs = "select A.ac_id from inner_components A, abstract_component B where A.parent_id = ? AND A.parent_id = B.ac_id;";
 
 	public static void main(String[] args) {
-		for(int i = 0; i < 1000; i++){
+		for(int i = 0; i < 0; i++){
 			ContextContract mc = new ContextContract();
 			ContextContract cc = new ContextContract();
 			cc.setCcName("PlataformaTesteWagner"+i);
@@ -54,8 +54,8 @@ public class ContextContractHandler extends DBHandler{
 			cc.getContextArguments().get(3).getValue().setDataType("Double");
 			mc.setPlatform(new PlatformProfileType());
 			mc.getPlatform().setPlatformContract(cc);
-			
-			
+
+
 			try {
 				DBHandler.getConnection().setAutoCommit(false);
 				addContextContract(mc);
@@ -66,14 +66,14 @@ public class ContextContractHandler extends DBHandler{
 				e.printStackTrace();
 			}
 		}
-		
+
 		System.out.println("Finished");
 	}
-	
-	
-	
+
+
+
 	public static void  addContextContract(ContextContract mc) throws DBHandlerException{
-		
+
 		try {
 			if(mc.getAbstractComponent()==null){//Context Platform
 				ContextContract cc = mc.getPlatform().getPlatformContract();
@@ -238,10 +238,10 @@ public class ContextContractHandler extends DBHandler{
 				AbstractComponentType ac = new AbstractComponentType();
 				ac.setIdAc(ac_id);
 			}
-			
+
 			//			cc.setAbstractComponent(DBHandler.getAbstractComponentIncomplete(ac_id));
 			//			cc.getContextArguments().addAll(DBHandler.getContextArguments(cc_id));
-			
+
 		} catch (SQLException e) {
 			throw new DBHandlerException("Context contract not found with cc_id "+bound_id, e);
 		} 
@@ -326,10 +326,10 @@ public class ContextContractHandler extends DBHandler{
 
 	public static ContractList listContract(int ac_id) throws DBHandlerException{
 		ContractList list = new ContractList();
-			for(Integer i : getContextContractByAcId(ac_id)){
-				list.getContract().add(getContextContract(i));
-			}
-			return list;
+		for(Integer i : getContextContractByAcId(ac_id)){
+			list.getContract().add(getContextContract(i));
+		}
+		return list;
 	}
 
 
@@ -343,16 +343,28 @@ public class ContextContractHandler extends DBHandler{
 	public static void completeContextContract(ContextContract application) throws DBHandlerException{
 		application.setAbstractComponent(AbstractComponentHandler.getAbstractComponent(application.getAbstractComponent().getIdAc()));
 		for(ContextArgumentType cat:application.getContextArguments()){
+
 			if(cat.getContextContract()!=null){
 				cat.getContextContract().setCcName(ContextContractHandler.getContextContractName(cat.getContextContract().getCcId()));
 				AbstractComponentType ac = AbstractComponentHandler.getAbstractComponentFromContextContractID(cat.getContextContract().getCcId());
 				cat.getContextContract().setAbstractComponent(ac);
 				completeContextContract(cat.getContextContract());
 				application.getAbstractComponent().getAbstractUnit().addAll(AbstractUnitHandler.getAbstractUnits(application.getAbstractComponent().getIdAc()));
+			}else{
+//				if(cat.getCcId() != null){
+//					cat.setContextContract(new ContextContract());
+//					cat.getContextContract().setCcId(cat.getCcId());
+//					cat.getContextContract().setCcName(ContextContractHandler.getContextContractName(cat.getCcId()));
+////					AbstractComponentType ac = AbstractComponentHandler.getAbstractComponentFromContextContractID(cat.getCcId());
+////					cat.getContextContract().setAbstractComponent(ac);
+////					completeContextContract(cat.getContextContract());
+//				}
 			}
 		}
-		
-		
+		if(application.getPlatform()!=null){
+			completeContextContract(application.getPlatform().getPlatformContract());
+		}
+
 	}
 
 

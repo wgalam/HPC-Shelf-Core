@@ -2,7 +2,7 @@
 // Este arquivo foi gerado pela Arquitetura JavaTM para Implementação de Referência (JAXB) de Bind XML, v2.2.8-b130911.1802 
 // Consulte <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Todas as modificações neste arquivo serão perdidas após a recompilação do esquema de origem. 
-// Gerado em: 2016.08.23 às 01:04:30 PM BRT 
+// Gerado em: 2016.08.26 às 01:03:07 PM BRT 
 //
 
 
@@ -26,7 +26,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence>
  *         &lt;element name="function" type="{http://storm.lia.ufc.br}calculated_function_type" minOccurs="0"/>
  *       &lt;/sequence>
- *       &lt;attribute name="calc_id" type="{http://www.w3.org/2001/XMLSchema}int" />
+ *       &lt;attribute name="cp_id" type="{http://www.w3.org/2001/XMLSchema}int" />
  *       &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}double" />
  *       &lt;attribute name="kind_id" type="{http://www.w3.org/2001/XMLSchema}int" />
  *     &lt;/restriction>
@@ -43,8 +43,8 @@ import javax.xml.bind.annotation.XmlType;
 public class CalculatedArgumentType {
 
     protected CalculatedFunctionType function;
-    @XmlAttribute(name = "calc_id")
-    protected Integer calcId;
+    @XmlAttribute(name = "cp_id")
+    protected Integer cpId;
     @XmlAttribute(name = "value")
     protected Double value;
     @XmlAttribute(name = "kind_id")
@@ -75,27 +75,27 @@ public class CalculatedArgumentType {
     }
 
     /**
-     * Obtém o valor da propriedade calcId.
+     * Obtém o valor da propriedade cpId.
      * 
      * @return
      *     possible object is
      *     {@link Integer }
      *     
      */
-    public Integer getCalcId() {
-        return calcId;
+    public Integer getCpId() {
+        return cpId;
     }
 
     /**
-     * Define o valor da propriedade calcId.
+     * Define o valor da propriedade cpId.
      * 
      * @param value
      *     allowed object is
      *     {@link Integer }
      *     
      */
-    public void setCalcId(Integer value) {
-        this.calcId = value;
+    public void setCpId(Integer value) {
+        this.cpId = value;
     }
 
     /**

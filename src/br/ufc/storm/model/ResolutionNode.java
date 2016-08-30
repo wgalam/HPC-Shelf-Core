@@ -119,7 +119,7 @@ public class ResolutionNode {
 	 * @return
 	 */
 	public ResolutionNode findNode(Integer id){
-		/*
+		
 		if(ac_id==id){
 			return this;
 		}else{
@@ -131,8 +131,6 @@ public class ResolutionNode {
 			}
 		}
 		return null;
-		*/
-		return treeTable.get(id);
 	}
 
 //	public ResolutionNode findNode(String nameToResolve){

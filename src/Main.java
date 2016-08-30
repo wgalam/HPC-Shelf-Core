@@ -40,17 +40,14 @@ public class Main {
 //		}
 		
 		
-		//try {
+		try {
 //			System.out.println(XMLHandler.getContextContract(126));
 			//System.out.println(FormalFormat.exportContextContract(ContextContractHandler.getContextContract(126), null));
-//			System.out.println(FormalFormat.exportComponentSignature(AbstractComponentHandler.getAbstractComponent(19), null));
+			System.out.println(FormalFormat.exportComponentSignature(AbstractComponentHandler.getAbstractComponent(19), null));
 //			System.out.println(XMLHandler.getAbstractComponent("MatrixMultiplication"));
-		//} catch (Exception e) {
-			// TODO Auto-generated catch block
-		//	e.printStackTrace();
-	//	}
-//		System.out.println(CoreServices.getContextContract(136));
-		
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 //		try {
 //			System.out.println(XMLHandler.listComponent());

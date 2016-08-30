@@ -1,10 +1,14 @@
 package br.ufc.storm.control;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
+
+import com.sun.org.apache.xerces.internal.util.SynchronizedSymbolTable;
 
 import br.ufc.storm.exception.DBHandlerException;
 import br.ufc.storm.exception.FunctionException;
@@ -38,7 +42,11 @@ public class Resolution{
 	 * @param args
 	 * @throws DBHandlerException
 	 */
-	
+
+	public static final int EQUAL = 3;
+	public static final int BIGGER = 4;
+	public static final int SMALLER = 5;
+
 	public static void main(String args[]) throws DBHandlerException{
 		ContextContract cc = new ContextContract();
 		cc.setCcName("Multiplicação de Matrizes do Wagner");
@@ -49,19 +57,33 @@ public class Resolution{
 		cc.getPlatform().setPlatformContract(new ContextContract());
 		cc.getPlatform().getPlatformContract().setAbstractComponent(new AbstractComponentType());
 		cc.getPlatform().getPlatformContract().getAbstractComponent().setIdAc(19);
-		
-		
+		cc.getPlatform().getPlatformContract().getContextArguments().add(new ContextArgumentType());
+		cc.getPlatform().getPlatformContract().getContextArguments().get(0).setCpId(26);
+		cc.getPlatform().getPlatformContract().getContextArguments().get(0).setContextContract(new ContextContract());
+		cc.getPlatform().getPlatformContract().getContextArguments().get(0).getContextContract().setCcId(133);
+
 		//*******************************************************
-		
+
 		ContextArgumentType arg0 = new ContextArgumentType();
 		arg0.setCpId(107);
 		ContextArgumentValueType cav = new ContextArgumentValueType();
 		cav.setValue("10");
 		arg0.setValue(cav);
 		cc.getContextArguments().add(arg0);
-		
-		//CC do contrato original 138
-		
+
+		//Testando a filtragem por parametro de qualidade
+		CalculatedArgumentType cat = new CalculatedArgumentType();
+		cat.setCpId(1);
+		cat.setValue(1.0);
+		cc.getPlatform().getPlatformContract().getQualityArguments().add(cat);
+
+
+				cat = new CalculatedArgumentType();
+				cat.setCpId(112);
+				cat.setValue(100.0);
+				cc.getPlatform().getPlatformContract().getCostArguments().add(cat);
+
+
 		//*******************************************************
 		//------------------------------------------------------- Inners
 		//		ContextContract inner1 = new ContextContract();
@@ -75,10 +97,10 @@ public class Resolution{
 		System.out.println("Aguarde buscando componentes...");
 		CandidateListType resolve = null;
 		try {
-			resolve = resolve(cc, null);
+			resolve = resolve(cc, cc.getPlatform().getPlatformContract());
 			System.out.println("Size of resolve: "+resolve.getCandidate().size());
 			//Reordena conforme o preset 3
-			resolve = sortCandidateList(resolve, 3);
+			//			resolve = sortCandidateList(resolve, 3);
 			int cont = 0;
 			for(ContextContract a:resolve.getCandidate()){
 				/*
@@ -87,16 +109,16 @@ public class Resolution{
 					} catch (ShelfRuntimeException e) {
 						e.printStackTrace();
 					}
-				*/
+				 */
 				//			System.out.println("Candidato compatível ("+ cont++ +"): "+XMLHandler.getContextContract(a));
-							
-				
-//				###########18/07/2016
-//				System.out.println(FormalFormat.exportContextContract(a, null));
-//				###########
+
+
+				//				###########18/07/2016
+				System.out.println(FormalFormat.exportContextContract(a, null));
+				//				###########
 			}
-//						System.out.println("Último Candidato Compatível\n"+XMLHandler.getContextContract(resolve.getCandidate().get(resolve.getCandidate().size()-1)));
-//						System.out.println("Último Candidato Compatível\n"+FormalFormat.exportContextContract(resolve.getCandidate().get(resolve.getCandidate().size()-1), null));
+			//						System.out.println("Último Candidato Compatível\n"+XMLHandler.getContextContract(resolve.getCandidate().get(resolve.getCandidate().size()-1)));
+			//						System.out.println("Último Candidato Compatível\n"+FormalFormat.exportContextContract(resolve.getCandidate().get(resolve.getCandidate().size()-1), null));
 		} catch (ResolveException e) {
 			System.out.println("Erro enquanto estava resolvendo um contrato");
 			e.printStackTrace();
@@ -174,16 +196,14 @@ public class Resolution{
 		long start = System.currentTimeMillis();
 		LogHandler.getLogger().info("Resolution Class: Starting to resolve a component!");
 		ResolutionNode.setup();
-		int calculated;
 		Hashtable <Integer , Hashtable <Integer , ArgumentTable>> tableOfSWidArgumentTable = new Hashtable<Integer, Hashtable <Integer , ArgumentTable>>();
 		try {
 			ContextContractHandler.completeContextContract(application);
 		} catch (DBHandlerException e1) {
 			throw new ResolveException("Can not complete context contract data: ",e1);
 		}
-		
+
 		CandidateListType candidateList = new CandidateListType();
-		CandidateListType newCandidateList = new CandidateListType();
 		List<ContextContract> concreteComponentCandidatesList;
 		LogHandler.getLogger().info("Generating Software Component Candidate List...");
 		try {
@@ -202,7 +222,7 @@ public class Resolution{
 							continue;
 						}
 						Resolution.mergeContract(application, candidate);						
-											
+
 						List<ContextContract> componentCandidatePlatformlist = null;
 						LogHandler.getLogger().info("Generating Hardware Candidate List for candidate: "+index);
 						try {
@@ -214,74 +234,7 @@ public class Resolution{
 						}
 						LogHandler.getLogger().info(componentCandidatePlatformlist.size()+" platforms were found for software component "+index);
 						if(componentCandidatePlatformlist.size() > 0){
-							for(int i = 0; i < componentCandidatePlatformlist.size(); i++){
-								//								System.out.println(componentCandidatePlatformlist.size());
-								ContextContract platform = componentCandidatePlatformlist.get(i);
-								if(applicationPlatform!=null){
-									candidate.getPlatform().setPlatformContract(applicationPlatform);
-									application.getPlatform().setPlatformContract(applicationPlatform);
-								}
-								if(isPlatformSubTypeTest(candidate.getPlatform().getPlatformContract(), platform, null, applicationPlatform)){
-									if(isPlatformSubTypeTest(application.getPlatform().getPlatformContract(), platform, null, applicationPlatform)){
-										ContextContract cct = XMLHandler.cloneContextContract(candidate);//Cloning component
-										cct.getPlatform().setPlatformContract(XMLHandler.cloneContextContract(platform));
-										if(application.getInnerComponents().size() > 0){
-											boolean fit = true;
-											for(int x = 0; x < application.getInnerComponents().size(); x++ ){
-												ContextContract applicationInner = XMLHandler.cloneContextContract(application.getInnerComponents().get(x));
-												applicationInner.getPlatform().setPlatformContract(XMLHandler.cloneContextContract(platform));
-												CandidateListType inners = Resolution.resolve(applicationInner.getPlatform().getPlatformContract(), XMLHandler.cloneContextContract(platform));
-												if(inners.getCandidate().size()>0 ){
-													cct.getInnerComponentsResolved().add(inners);
-												}else{
-													fit=false;
-												}
-											}
-											if(fit){
-												candidateList.getCandidate().add(cct);
-											}
-										}else{
-											candidateList.getCandidate().add(cct);
-										}
-									}
-								}
-							}
-							//----------------------------------------------------------------------------------------------------------------------------------------------
-							//partialComponentList has a list with all candidate components passed in first filter
-							//----------------------------------------------------------------------------------------------------------------------------------------------
-							LogHandler.getLogger().info("Calculating arguments...");
-							for(ContextContract cc:candidateList.getCandidate()){
-
-								ArgumentTable argumentTable = new ArgumentTable(cc);//Store argument table of a platform
-								if(tableOfSWidArgumentTable.get(cc.getCcId())==null){
-									tableOfSWidArgumentTable.put(cc.getCcId(), new Hashtable<>());
-								}
-								tableOfSWidArgumentTable.get(cc.getCcId()).put(cc.getPlatform().getPlatformContract().getCcId(), argumentTable);
-//								.tableOfHWidArgumentTable.put(cc.getPlatform().getPlatformContract().getCcId(), argumentTable);
-								//calcula parametros de qualidade
-								try {
-									calculated = CalculatedArgumentHandler.calulateContextContractArguments(cc, argumentTable, ContextParameterHandler.QUALITY);
-								} catch (FunctionException e2) {
-									//do nothing
-								}
-								try {
-									if(Resolution.isSubTypeByCalculatedArgument(application.getPlatform().getPlatformContract(), cc.getPlatform().getPlatformContract(), null, ContextParameterHandler.QUALITY)){
-										//calcula parametros de custo
-										try {
-											int x = CalculatedArgumentHandler.calulateContextContractArguments(cc, argumentTable, ContextParameterHandler.COST);
-										} catch (FunctionException e1) {
-											//do nothing
-											e1.printStackTrace();
-										} 
-										if(Resolution.isSubTypeByCalculatedArgument(application.getPlatform().getPlatformContract(), cc.getPlatform().getPlatformContract(), null, ContextParameterHandler.COST)){
-											newCandidateList.getCandidate().add(cc);
-											LogHandler.getLogger().info("Candidate "+cc.getCcName()+" added");
-										}
-									}
-								} catch (ShelfException e) {
-									e.printStackTrace();
-								}
-							}
+							candidateList = filterPlatformCandidateList(componentCandidatePlatformlist, application, applicationPlatform, candidate, tableOfSWidArgumentTable);
 						}
 					}
 				} catch (DBHandlerException e) {
@@ -291,26 +244,222 @@ public class Resolution{
 				index++;
 			}
 		}
-		newCandidateList.setUserId(application.getOwnerId());
-		Resolution.rankCandidates(newCandidateList, tableOfSWidArgumentTable); //Rank all candidates
-		Resolution.sortCandidateList(newCandidateList, 0);//Primeira função de ranqueamento
+		candidateList.setUserId(application.getOwnerId());
+		Resolution.rankCandidates(candidateList, tableOfSWidArgumentTable); //Rank all candidates
+		Resolution.sortCandidateList(candidateList, 0);//Primeira função de ranqueamento
 		long elapsed = System.currentTimeMillis() - start;
 		System.out.println("Resolution Time: "+elapsed+"ms");
-		return newCandidateList;
+		return candidateList;
 	}
-	
+
+	private static CandidateListType filterPlatformCandidateList( List<ContextContract> componentCandidatePlatformlist, ContextContract application, ContextContract applicationPlatform, ContextContract candidate, Hashtable <Integer , Hashtable <Integer , ArgumentTable>> tableOfSWidArgumentTable) {
+		CandidateListType candidateList = new CandidateListType();
+		CandidateListType newCandidateList = new CandidateListType();
+		int calculated;
+		for(int i = 0; i < componentCandidatePlatformlist.size(); i++){
+			ContextContract platform = componentCandidatePlatformlist.get(i);
+			if(isPlatformSubType(candidate.getPlatform().getPlatformContract(), platform, null)){
+				if(isPlatformSubType(application.getPlatform().getPlatformContract(), platform, null)){
+					ContextContract cct = XMLHandler.cloneContextContract(candidate);//Cloning component
+					cct.getPlatform().setPlatformContract(XMLHandler.cloneContextContract(platform));
+					if(application.getInnerComponents().size() > 0){
+						boolean fit = true;
+						for(int x = 0; x < application.getInnerComponents().size(); x++ ){
+							ContextContract applicationInner = XMLHandler.cloneContextContract(application.getInnerComponents().get(x));
+							applicationInner.getPlatform().setPlatformContract(XMLHandler.cloneContextContract(platform));
+							CandidateListType inners;
+							try {
+								inners = Resolution.resolve(applicationInner.getPlatform().getPlatformContract(), XMLHandler.cloneContextContract(platform));
+								if(inners.getCandidate().size()>0 ){
+									cct.getInnerComponentsResolved().add(inners);
+								}else{
+									fit=false;
+								}
+							} catch (ResolveException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+
+						}
+						if(fit){
+							candidateList.getCandidate().add(cct);
+						}
+					}else{
+						candidateList.getCandidate().add(cct);
+					}
+					//				}
+				}
+			}
+		}
+		LogHandler.getLogger().info("Calculating arguments...");
+		Iterator i = candidateList.getCandidate().iterator();
+		int size = candidateList.getCandidate().size();
+		//		for(int i = 0; i < size; i++){
+		while(i.hasNext()){
+			ContextContract cc = (ContextContract) i.next();
+
+			ArgumentTable argumentTable = new ArgumentTable(cc);//Store argument table of a platform
+			if(tableOfSWidArgumentTable.get(cc.getCcId())==null){
+				tableOfSWidArgumentTable.put(cc.getCcId(), new Hashtable<>());
+			}
+			tableOfSWidArgumentTable.get(cc.getCcId()).put(cc.getPlatform().getPlatformContract().getCcId(), argumentTable);
+			//								.tableOfHWidArgumentTable.put(cc.getPlatform().getPlatformContract().getCcId(), argumentTable);
+			//calcula parametros de qualidade
+			try {
+				calculated = CalculatedArgumentHandler.calulateContextContractArguments(cc, argumentTable, ContextParameterHandler.QUALITY);
+			} catch (FunctionException e2) {
+				//do nothing
+			}
+			try {
+				if(Resolution.isSubTypeByCalculatedArgument(application, cc, ContextParameterHandler.QUALITY)){
+					//calcula parametros de custo
+					try {
+						int x = CalculatedArgumentHandler.calulateContextContractArguments(cc, argumentTable, ContextParameterHandler.COST);
+					} catch (FunctionException e1) {
+						//do nothing
+						e1.printStackTrace();
+					} 
+					if(Resolution.isSubTypeByCalculatedArgument(application, cc, ContextParameterHandler.COST)){
+						LogHandler.getLogger().info("Candidate "+cc.getCcName()+" added");
+					}else{
+						i.remove();
+					}
+				}else{
+					i.remove();
+				}
+			} catch (ShelfException e) {
+				e.printStackTrace();
+			}
+		}
+		return candidateList;
+	}
+
+	/**
+	 * This method tests recursively subtyping relation between platforms.
+	 * @param componentRequiredPlatform
+	 * @param platformCandidate
+	 * @param cp_id
+	 * @param resolutionTree
+	 * @param applicationPlatformRequired
+	 * @return
+	 */
+
+	//	public static boolean isPlatformSubType(ContextContract componentRequiredPlatform, ContextContract platformCandidate, Integer cp_id, ContextContract applicationPlatformRequired){
+	//		try {
+	//			boolean subtype = true;
+	//			if(applicationPlatformRequired.getCcId()==platformCandidate.getCcId()){
+	//				return true;
+	//			}
+	//			//Test if a platform is subtype
+	//			if(componentRequiredPlatform != null && platformCandidate!=null){
+	//				if(cp_id!=null){
+	//					int candidateContractIdAc = platformCandidate.getAbstractComponent().getIdAc(); //ID_ac candidato
+	//					ResolutionNode supertype = ResolutionNode.resolutionTree.findNode(componentRequiredPlatform.getAbstractComponent().getIdAc());
+	//					if(supertype.findNode(candidateContractIdAc)== null){
+	//						subtype = false;
+	//					}
+	//				}
+	//			}else{
+	//				subtype = false;
+	//			}
+	//			if(subtype){
+	//				if(componentRequiredPlatform.getContextArguments().size() > 0){
+	//					for(ContextArgumentType cat:componentRequiredPlatform.getContextArguments()){
+	//						if(cat.getValue()==null){
+	//							subtype = subtype && isPlatformSubType(cat.getContextContract(), getContextContractFromArgument(cat,platformCandidate), cat.getCpId(), applicationPlatformRequired);
+	//						}else{
+	//							subtype = subtype && isPlatformSubType(cat, getValueFromCandidateArgument(cat,platformCandidate), cat.getKind());
+	//						}
+	//					}
+	//				}
+	//			}
+	//			return subtype;
+	//		} catch (Exception e) {
+	//			return false;
+	//		}
+	//	}
+
+	public static boolean isPlatformSubType(ContextContract requiredPlatform, ContextContract candidatePlatform, Integer cp_id){
+		try {
+			boolean subtype = true;
+			if(requiredPlatform.getCcId()==candidatePlatform.getCcId()){
+				return true;
+			}
+			//Test if a platform is subtype
+			//			if(requiredPlatform != null && candidatePlatform!=null){
+			if(cp_id!=null){
+				int candidateContractIdAc = candidatePlatform.getAbstractComponent().getIdAc(); //ID_ac candidato
+				ResolutionNode supertype = ResolutionNode.resolutionTree.findNode(requiredPlatform.getAbstractComponent().getIdAc());
+				if(supertype.findNode(candidateContractIdAc)== null){
+					subtype = false;
+				}
+			}
+			//			}else{
+			//				subtype = false;
+			//			}
+			if(subtype){
+				if(requiredPlatform.getContextArguments().size() > 0){
+					for(ContextArgumentType cat:requiredPlatform.getContextArguments()){
+						if(cat.getValue() == null){
+
+							//							System.out.println("Platform has arguments "+cat.getContextContract().getCcName()+"  ....  "+getContextContractFromArgument(cat,candidatePlatform).getCcName()+"    ------    "+cat.getCpId());
+
+							subtype = subtype && isPlatformSubType(cat.getContextContract(), getContextContractFromArgument(cat,candidatePlatform), cat.getCpId());
+						}else{
+							subtype = subtype && isPlatformSubType(cat, getValueFromCandidateArgument(cat,candidatePlatform), cat.getKind());
+						}
+					}
+				}
+			}
+			return subtype;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
+	/**
+	 * This method evaluate subtyping relation with numeric argument
+	 * @param contract
+	 * @param candidate
+	 * @param kind
+	 * @return
+	 */
+	public static boolean isPlatformSubType(ContextArgumentType contract, ContextArgumentType candidate, int kind){
+		switch(kind){
+		case EQUAL:
+			//In this case, if both are equal, return true.
+			if(contract.getValue().equals(candidate.getValue())){
+				return true;
+			}
+			break;
+		case BIGGER:
+			//In this case a bigger or equal number is subtype
+			if(Double.parseDouble(contract.getValue().getValue()) <= Double.parseDouble(candidate.getValue().getValue()) ){
+				return true;
+			}
+			break;
+		case SMALLER:
+			//In this case a smaller number is subtype
+			if(Double.parseDouble(contract.getValue().getValue()) >= Double.parseDouble(candidate.getValue().getValue()) ){
+				return true;
+			}
+			break;
+		}
+		return false;
+	}
+
 	private static void mergeContract(ContextContract application, ContextContract candidate){
 		for(ContextArgumentType acat: application.getContextArguments()){
 			Integer i = findArgument(acat, candidate.getContextArguments());
 			if(i!=null){
 				candidate.getContextArguments().set(i, acat);
-				
+
 			}else{
 				candidate.getContextArguments().add(acat);
 			}	
 		}		
 	}
-	
+
 	private static Integer findArgument(ContextArgumentType acat, List <ContextArgumentType> list){
 		ContextArgumentType ccat;
 		for(int i = 0; i < list.size(); i++){
@@ -334,65 +483,65 @@ public class Resolution{
 	}
 
 	private static Hashtable <Integer , MaxElement> getMaximumValues(ContextContract cc, Hashtable <Integer , MaxElement> maximum){
-			for(ContextArgumentType cat : cc.getContextArguments()){
-				//se tiver valor faz o que segue
-				if(cat.getValue()!=null){
-					if(maximum.contains(cat.getCpId())){
-						if(maximum.get(cat.getCpId()).getValue() < Double.parseDouble(cat.getValue().getValue())){
-							maximum.get(cat.getCpId()).setValue(Double.parseDouble(cat.getValue().getValue()));
-						}
-					}else{
-						maximum.put(cat.getCpId(), new MaxElement(Double.parseDouble(cat.getValue().getValue())));
+		for(ContextArgumentType cat : cc.getContextArguments()){
+			//se tiver valor faz o que segue
+			if(cat.getValue()!=null){
+				if(maximum.contains(cat.getCpId())){
+					if(maximum.get(cat.getCpId()).getValue() < Double.parseDouble(cat.getValue().getValue())){
+						maximum.get(cat.getCpId()).setValue(Double.parseDouble(cat.getValue().getValue()));
 					}
 				}else{
-					if(cat.getContextContract() != null){
-						maximum.putAll(getMaximumValues(cat.getContextContract(), maximum));
-						//Variável compartilhada, buscar valor compartilhado
-					}
+					maximum.put(cat.getCpId(), new MaxElement(Double.parseDouble(cat.getValue().getValue())));
+				}
+			}else{
+				if(cat.getContextContract() != null){
+					maximum.putAll(getMaximumValues(cat.getContextContract(), maximum));
+					//Variável compartilhada, buscar valor compartilhado
 				}
 			}
-			
-			for(CalculatedArgumentType cat : cc.getQualityArguments()){
-					if(maximum.get(cat.getCalcId()) != null){
-						if(maximum.get(cat.getCalcId()).getValue() < cat.getValue()){
-							maximum.get(cat.getCalcId()).setValue(cat.getValue());
-						}
-					}else{
-						maximum.put(cat.getCalcId(), new MaxElement(cat.getValue()));
-					}
-			}
-			for(CalculatedArgumentType cat : cc.getCostArguments()){
-				if(maximum.get(cat.getCalcId()) != null){
-					if(maximum.get(cat.getCalcId()).getValue() < cat.getValue()){
-						maximum.get(cat.getCalcId()).setValue(cat.getValue());
-					}
-				}else{
-					maximum.put(cat.getCalcId(), new MaxElement(cat.getValue()));
+		}
+
+		for(CalculatedArgumentType cat : cc.getQualityArguments()){
+			if(maximum.get(cat.getCpId()) != null){
+				if(maximum.get(cat.getCpId()).getValue() < cat.getValue()){
+					maximum.get(cat.getCpId()).setValue(cat.getValue());
 				}
+			}else{
+				maximum.put(cat.getCpId(), new MaxElement(cat.getValue()));
+			}
 		}
-			
-			
-			return maximum;
+		for(CalculatedArgumentType cat : cc.getCostArguments()){
+			if(maximum.get(cat.getCpId()) != null){
+				if(maximum.get(cat.getCpId()).getValue() < cat.getValue()){
+					maximum.get(cat.getCpId()).setValue(cat.getValue());
+				}
+			}else{
+				maximum.put(cat.getCpId(), new MaxElement(cat.getValue()));
+			}
 		}
-	
-	
-	
+
+
+		return maximum;
+	}
+
+
+
 	private static Hashtable <Integer , MaxElement> getMaximumValues(CandidateListType cl){
 		Hashtable <Integer , MaxElement> maximum = new Hashtable<Integer, MaxElement>();
 		for(ContextContract cc : cl.getCandidate()){
 			maximum.putAll(getMaximumValues(cc, maximum));
 			maximum.putAll(getMaximumValues(cc.getPlatform().getPlatformContract(), maximum));
 		}
-		
-//		para cada argumento, buscar o maior valor em todos os candidatos e manter na tabela.
-//		Será usado na normalização posteriormente
-		
+
+		//		para cada argumento, buscar o maior valor em todos os candidatos e manter na tabela.
+		//		Será usado na normalização posteriormente
+
 		return maximum;
 	}
-	
+
 	public static CandidateListType rankCandidates(CandidateListType cl, Hashtable <Integer , Hashtable <Integer , ArgumentTable>> tableOfSWidArgumentTable){
 		Hashtable <Integer , MaxElement> maximum = Resolution.getMaximumValues(cl);
-			
+
 		for(ContextContract cc:cl.getCandidate()){
 			try {
 				CalculatedArgumentHandler.calulateRankArguments(cc, tableOfSWidArgumentTable.get(cc.getCcId()).get(cc.getPlatform().getPlatformContract().getCcId()), maximum);
@@ -400,16 +549,16 @@ public class Resolution{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-			
-	
-			
+
+
+
+
 		}
 		return cl;
-		
-		
+
+
 	}
-	
+
 	/**
 	 * 
 	 * @param cc
@@ -507,84 +656,6 @@ public class Resolution{
 
 	/**
 	 * This method tests recursively subtyping relation between platforms.
-	 * @param componentPlatformType
-	 * @param testedPlatformCandidate
-	 * @param cp_id
-	 * @param resolutionTree
-	 * @param applicationPlatform
-	 * @return
-	 */
-
-	public static boolean isPlatformSubTypeTest(ContextContract componentPlatformType, ContextContract testedPlatformCandidate, Integer cp_id, ContextContract applicationPlatform){
-		boolean subtype = true;
-		if(applicationPlatform!=null){
-			if(testedPlatformCandidate!=null){
-				if(applicationPlatform.getCcId()==testedPlatformCandidate.getCcId()){
-					return true;
-				}else{
-					return false;
-				}
-			}
-		}
-		//Test if a platform is subtype
-		if(componentPlatformType != null && testedPlatformCandidate!=null){
-			if(cp_id!=null){
-				int candidateContractIdAc = testedPlatformCandidate.getAbstractComponent().getIdAc(); //ID_ac candidato
-				ResolutionNode supertype = ResolutionNode.resolutionTree.findNode(componentPlatformType.getAbstractComponent().getIdAc());
-				if(supertype.findNode(candidateContractIdAc)== null){
-					subtype = false;
-				}
-			}
-		}else{
-			subtype = false;
-		}
-		if(subtype){
-			if(componentPlatformType.getContextArguments().size() > 0){
-				for(ContextArgumentType cat:componentPlatformType.getContextArguments()){
-					if(cat.getValue()==null){
-						subtype = subtype && isPlatformSubTypeTest(cat.getContextContract(), getContextContractFromArgument(cat,testedPlatformCandidate), cat.getCpId(), applicationPlatform);
-					}else{
-						subtype = subtype && isPlatformSubTypeTest(cat, getValueFromCandidateArgument(cat,testedPlatformCandidate), cat.getKind());
-					}
-				}
-			}
-		}
-		return subtype;
-	}
-
-	/**
-	 * This method evaluate subtyping relation with numeric argument
-	 * @param contract
-	 * @param candidate
-	 * @param kind
-	 * @return
-	 */
-	public static boolean isPlatformSubTypeTest(ContextArgumentType contract, ContextArgumentType candidate, int kind){
-		switch(kind){
-		case 3:
-			//In this case, if both are equal, return true.
-			if(contract.getValue().equals(candidate.getValue())){
-				return true;
-			}
-			break;
-		case 4:
-			//In this case a bigger or equal number is subtype
-			if(Double.parseDouble(contract.getValue().getValue()) <= Double.parseDouble(candidate.getValue().getValue()) ){
-				return true;
-			}
-			break;
-		case 5:
-			//In this case a smaller number is subtype
-			if(Double.parseDouble(contract.getValue().getValue()) <= Double.parseDouble(candidate.getValue().getValue()) ){
-				return true;
-			}
-			break;
-		}
-		return false;
-	}
-
-	/**
-	 * This method tests recursively subtyping relation between platforms.
 	 * @param candidate1step
 	 * @param platformCandidate2step
 	 * @param cp_id
@@ -592,35 +663,42 @@ public class Resolution{
 	 * @return
 	 * @throws ShelfException 
 	 */
-	public static boolean isSubTypeByCalculatedArgument(ContextContract applicationPlatform, ContextContract platformCandidate, Integer qp_id, int calculatedArgumentType) throws ShelfException{
+	public static boolean isSubTypeByCalculatedArgument(ContextContract application, ContextContract candidate, int calculatedArgumentType) throws ShelfException{
+		ContextContract applicationPlatform = application.getPlatform().getPlatformContract();
+		ContextContract platformCandidate = candidate.getPlatform().getPlatformContract();
 		boolean subtype = true;
 		if(applicationPlatform != null){
-			List<CalculatedArgumentType> list = null;
-			List<CalculatedParameterType> parametersList = null;
+			List<CalculatedArgumentType> list = new ArrayList<>();
+			List<CalculatedParameterType> parametersList = new ArrayList<>();
 			switch (calculatedArgumentType) {
 			case ContextParameterHandler.QUALITY:
-				list = applicationPlatform.getQualityArguments();
-				parametersList = applicationPlatform.getAbstractComponent().getQualityParameters();
+				list.addAll(application.getQualityArguments());
+				list.addAll(applicationPlatform.getQualityArguments());
+				parametersList.addAll(application.getAbstractComponent().getQualityParameters());
+				parametersList.addAll(applicationPlatform.getAbstractComponent().getQualityParameters());
 				break;
 			case ContextParameterHandler.COST:
-				list = applicationPlatform.getCostArguments();
-				parametersList = applicationPlatform.getAbstractComponent().getCostParameters();
-				break;
-			case ContextParameterHandler.RANKING:
-				list = applicationPlatform.getRankingArguments();
-				parametersList = applicationPlatform.getAbstractComponent().getRankingParameters();
+				list.addAll(application.getCostArguments());
+				list.addAll(applicationPlatform.getCostArguments());
+				parametersList.addAll(application.getAbstractComponent().getCostParameters());
+				parametersList.addAll(applicationPlatform.getAbstractComponent().getCostParameters());
 				break;
 			}
 			if(list.size() > 0){
+				for(CalculatedParameterType c: parametersList){
+				}
 				for(CalculatedArgumentType qat:list){
 					CalculatedParameterType qpt = null;
 					if(qat.getValue()!=null){
 						for(CalculatedParameterType cp : parametersList){
-							if(cp.getCalculatedArgument().getCalcId()==qat.getCalcId()){
+							if(cp.getCalcId()==qat.getCpId()){
 								qpt = cp;
 							}
 						}
-						subtype = subtype && isSubTypeByCalculatedArgument(qat, getCalculatedArgumentValueFromCandidateArgument(qpt,platformCandidate, calculatedArgumentType), qpt.getKindId(), calculatedArgumentType);
+						if(qpt==null||getCalculatedArgumentValueFromCandidateArgument(qat.getCpId(),platformCandidate, calculatedArgumentType) == null){
+							subtype = false;
+						}
+						subtype = subtype && isSubTypeByCalculatedArgument(qat, getCalculatedArgumentValueFromCandidateArgument(qat.getCpId(),platformCandidate, calculatedArgumentType), qpt.getKindId(), calculatedArgumentType);
 					}
 				}
 			}
@@ -639,21 +717,21 @@ public class Resolution{
 	 */
 	public static boolean isSubTypeByCalculatedArgument(CalculatedArgumentType application, CalculatedArgumentType candidate, int kind, int calculatedArgumentType){
 		switch(kind){
-		case 3:
+		case EQUAL:
 			//In this case, if both are equal, return true.
 			if(application.getValue().equals(candidate.getValue())){
 				return true;
 			}
 			break;
-		case 4:
+		case BIGGER:
 			//In this case a bigger or equal number is subtype
 			if(application.getValue() <= candidate.getValue() ){
 				return true;
 			}
 			break;
-		case 5:
+		case SMALLER:
 			//In this case a smaller number is subtype
-			if(application.getValue() <= candidate.getValue()){
+			if(application.getValue() >= candidate.getValue()){
 				return true;
 			}
 			break;
@@ -696,7 +774,7 @@ public class Resolution{
 	}
 
 
-	private static CalculatedArgumentType getCalculatedArgumentValueFromCandidateArgument(CalculatedParameterType qpt, ContextContract candidate, int type) throws ShelfException {
+	private static CalculatedArgumentType getCalculatedArgumentValueFromCandidateArgument(int cp_id, ContextContract candidate, int type) throws ShelfException {
 		List<CalculatedArgumentType> list;
 		switch (type) {
 		case ContextParameterHandler.QUALITY:
@@ -705,15 +783,11 @@ public class Resolution{
 		case ContextParameterHandler.COST:
 			list = candidate.getCostArguments();
 			break;
-		case ContextParameterHandler.RANKING:
-			list = candidate.getRankingArguments();
-			break;
 		default:
 			throw new ShelfException("Type of calculated parameter invalid: "+type);
 		}
-
 		for(CalculatedArgumentType app_cat: list){
-			if(app_cat.getCalcId() == qpt.getCalcId()){
+			if(app_cat.getCpId() == cp_id){
 				return app_cat;
 			}
 		}

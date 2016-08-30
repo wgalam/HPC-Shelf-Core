@@ -259,7 +259,7 @@ public class CalculatedArgumentHandler extends DBHandler{
 						}
 					}
 					CalculatedArgumentType qat = new CalculatedArgumentType();
-					qat.setCalcId(calcpt.getCalcId());
+					qat.setCpId(calcpt.getCalcId());
 					qat.setValue(CalculatedArgumentHandler.calculate(function));
 					argTable.addNewArgument(calcpt.getCalcId(), ""+qat.getValue(), calcpt.getKindId());
 					calcpt.setCalculatedArgument(qat);
@@ -328,13 +328,15 @@ public class CalculatedArgumentHandler extends DBHandler{
 
 									}
 								}
+							}else{
+								cat.getValue().setValue("0");
 							}
 
 							function.getFunctionArguments().add(cat);
 						}
 					}
 					CalculatedArgumentType qat = new CalculatedArgumentType();
-					qat.setCalcId(calcpt.getCalcId());
+					qat.setCpId(calcpt.getCalcId());
 					qat.setValue(CalculatedArgumentHandler.calculate(function));
 					argTable.addNewArgument(calcpt.getCalcId(), ""+qat.getValue(), calcpt.getKindId());
 					calcpt.setCalculatedArgument(qat);

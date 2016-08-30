@@ -216,7 +216,7 @@
 				maxOccurs="1" minOccurs="0">
 			</element>
 		</sequence>
-		<attribute name="calc_id" type="int"></attribute>
+		<attribute name="cp_id" type="int"></attribute>
 		<attribute name="value" type="double"></attribute>
 		<attribute name="kind_id" type="int"></attribute>
 	</complexType>
