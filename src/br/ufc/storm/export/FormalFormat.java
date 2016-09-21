@@ -56,7 +56,11 @@ public class FormalFormat {
 					if(cp.getBound().getCcName().equals("DATA")){
 						str+="\n"+space+cp.getName()+" : "+cp.getBound().getCcName()+",";
 					}else{
-						str+="\n"+space+cp.getName()+" : "+cp.getBound().getCcName()+" ["+exportComponentSignature(AbstractComponentHandler.getAbstractComponentFromContextContractID(cp.getBound().getCcId()), ""+space)+"],";
+						if(AbstractComponentHandler.getAbstractComponentFromContextContractID(cp.getBound().getCcId()).getIdAc() == ac.getIdAc() ){
+							str+="\n"+space+cp.getName()+" : "+cp.getBound().getCcName()+" [],";
+						}else{
+							str+="\n"+space+cp.getName()+" : "+cp.getBound().getCcName()+" ["+exportComponentSignature(AbstractComponentHandler.getAbstractComponentFromContextContractID(cp.getBound().getCcId()), ""+space)+"],";
+						}
 					}
 				} catch (DBHandlerException e) {
 					// TODO Auto-generated catch block
@@ -79,7 +83,52 @@ public class FormalFormat {
 		return str;
 	}
 
-	
+	public static String exportComponentSignatureWithIDs(AbstractComponentType ac, String space){
+		try {
+			ResolutionNode.setup();
+		} catch (ResolveException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		String str = "";
+		if(space == null){
+			space="    ";
+		}else{
+			space+="    ";
+		}
+		str+=ac.getName()+"=[";
+		for(ContextParameterType cp: ac.getContextParameter()){
+			if(cp.getBound()!= null){
+				try {
+					if(cp.getBound().getCcName().equals("DATA")){
+						str+="\n"+space+cp.getName()+"{"+cp.getCpId()+"} : "+cp.getBound().getCcName()+",";
+					}else{
+						if(AbstractComponentHandler.getAbstractComponentFromContextContractID(cp.getBound().getCcId()).getIdAc() == ac.getIdAc() ){
+							str+="\n"+space+cp.getName()+"{"+cp.getCpId()+"} : "+cp.getBound().getCcName()+" [],";
+						}else{
+							str+="\n"+space+cp.getName()+"{"+cp.getCpId()+"} : "+cp.getBound().getCcName()+" ["+exportComponentSignatureWithIDs(AbstractComponentHandler.getAbstractComponentFromContextContractID(cp.getBound().getCcId()), ""+space)+"],";
+						}
+					}
+				} catch (DBHandlerException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}else{
+				str+="\n"+space+cp.getName()+"{"+cp.getCpId()+"} : "+cp.getBoundValue()+",";
+			}
+		}
+		for(CalculatedParameterType cp: ac.getQualityParameters()){
+			str+="\n"+space+cp.getName()+"{"+cp.getCalcId()+"} : DATA(Quality)";
+		}
+		for(CalculatedParameterType cp: ac.getCostParameters()){
+			str+="\n"+space+cp.getName()+"{"+cp.getCalcId()+"} : DATA(Cost)";
+		}
+		for(CalculatedParameterType cp: ac.getRankingParameters()){
+			str+="\n"+space+cp.getName()+"{"+cp.getCalcId()+"} : DATA(Ranking)";
+		}
+		str+="]";
+		return str;
+	}
 	
 	
 	
@@ -109,7 +158,7 @@ public class FormalFormat {
 		str+=cc.getCcName()+"[";
 		for(ContextParameterType cp: ac.getContextParameter()){
 			for(ContextArgumentType ca : cc.getContextArguments()){
-				if(cp.getCpId()==ca.getCpId()){
+				if(cp.getCpId().equals(ca.getCpId())){
 					if(ca.getContextContract()!=null){
 						str+="\n"+space+cp.getName()+" = "+exportContextContract(ca.getContextContract(),space+"")+",";
 					}else{
@@ -155,4 +204,80 @@ public class FormalFormat {
 		str+="]";
 		return str;
 	}
+	
+	
+	public static String exportContextContractWithIDs(ContextContract cc, String space){
+		if(space == null){
+			try {
+				ContextContractHandler.completeContextContract(cc);
+			} catch (DBHandlerException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			space="    ";
+		}else{
+			space+="    ";
+		}
+		String str = "";
+		AbstractComponentType ac = cc.getAbstractComponent();
+		
+		ResolutionNode r = ResolutionNode.resolutionTree.findNode(ac.getIdAc());
+		ac.getQualityParameters().clear();
+		ac.getQualityParameters().addAll(r.getQps());
+		ac.getCostParameters().clear();
+		ac.getCostParameters().addAll(r.getCops());
+		ac.getRankingParameters().clear();
+		ac.getRankingParameters().addAll(r.getRps());
+		str+=cc.getCcName()+"{"+cc.getCcId()+"}"+"[";
+		for(ContextParameterType cp: ac.getContextParameter()){
+			for(ContextArgumentType ca : cc.getContextArguments()){
+				if(cp.getCpId().equals(ca.getCpId())){
+					if(ca.getContextContract()!=null){
+						str+="\n"+space+cp.getName()+"{"+cp.getCpId()+"}"+" = "+exportContextContractWithIDs(ca.getContextContract(),space+"")+",";
+					}else{
+						if(ca.getValue()!= null){
+							
+							str+="\n"+space+cp.getName()+"{"+cp.getCpId()+"}"+" = "+ca.getValue().getValue()+",";
+						}else{
+							if(ca.getCpId()!= null){
+								//Definir comportamento
+								System.out.println("aaaaaaaaaaaaaaaaa");
+							}
+						}
+					}
+				}
+			}
+		}
+		if(cc.getPlatform()!=null){
+			str+="\n"+space+"PLATFORM: = "+exportContextContractWithIDs(cc.getPlatform().getPlatformContract(),space+"")+",";
+		}
+		for(CalculatedParameterType cp: ac.getQualityParameters()){
+//			str+="\n"+space+cp.getName()+" = ";
+			for(CalculatedArgumentType c : cc.getQualityArguments()){
+				if(c.getCpId()==cp.getCalcId()){
+					str+="\n"+space+cp.getName()+"{"+cp.getCalcId()+"}"+" = "+c.getValue();//terminar
+				}
+			}
+		}
+		for(CalculatedParameterType cp: ac.getCostParameters()){
+//			str+="\n"+space+cp.getName()+" = ";
+			for(CalculatedArgumentType c : cc.getCostArguments()){
+				if(c.getCpId()==cp.getCalcId()){
+					str+="\n"+space+cp.getName()+"{"+cp.getCalcId()+"}"+" = "+c.getValue();//terminar
+				}
+			}
+		}
+		for(CalculatedParameterType cp: ac.getRankingParameters()){
+//			str+="\n"+space+cp.getName()+" = ";
+			for(CalculatedArgumentType c : cc.getRankingArguments()){
+				if(c.getCpId()==cp.getCalcId()){
+					str+="\n"+space+cp.getName()+"{"+cp.getCalcId()+"}"+" = "+c.getValue();//terminar
+				}
+			}
+		}
+		
+		str+="]";
+		return str;
+	}
+	
 }

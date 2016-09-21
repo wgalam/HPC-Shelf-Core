@@ -5,14 +5,18 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
 import br.ufc.storm.exception.DBHandlerException;
 import br.ufc.storm.jaxb.CalculatedArgumentType;
 import br.ufc.storm.jaxb.CalculatedParameterType;
+import br.ufc.storm.jaxb.ContextArgumentType;
+import br.ufc.storm.jaxb.ContextArgumentValueType;
 import br.ufc.storm.jaxb.ContextContract;
 import br.ufc.storm.jaxb.ContextParameterType;
 import br.ufc.storm.jaxb.PlatformProfileType;
+import br.ufc.storm.model.ArgumentTable;
 import br.ufc.storm.model.ResolutionNode;
 
 public class ResolutionHandler extends DBHandler {
@@ -57,15 +61,14 @@ public class ResolutionHandler extends DBHandler {
 
 
 					//					--------------------------------------------------------------
-					
-					
-					
-//					Falta completar o componente abstrato com os parametros de qualidade herdados, pois a exportação busca os parametros de qualidade pelo id do pai 
-//					cc.getAbstractComponent().getQualityParameters().addAll(resolutionTree.findNode(aux).getQps());
-//					System.out.println("<Params> "+resolutionTree.findNode(aux).getQps().size());
+
+
+
+					//					Falta completar o componente abstrato com os parametros de qualidade herdados, pois a exportação busca os parametros de qualidade pelo id do pai 
+					//					cc.getAbstractComponent().getQualityParameters().addAll(resolutionTree.findNode(aux).getQps());
+					//					System.out.println("<Params> "+resolutionTree.findNode(aux).getQps().size());
 					cc.setPlatform(new PlatformProfileType());
 					cc.getPlatform().setPlatformContract(PlatformHandler.getPlatform(cc_id));
-					
 					list.add(cc); 
 				}
 				supertype = ResolutionNode.resolutionTree.findNode(list.get(list.size()-1).getAbstractComponent().getIdAc()).getSupertype().getAc_id();
@@ -75,8 +78,7 @@ public class ResolutionHandler extends DBHandler {
 			return list;
 		} catch (SQLException e) { 
 			throw new DBHandlerException("A sql error occurred: ", e);
-		} 
-
+		}
 	}
 
 	/**
@@ -98,7 +100,20 @@ public class ResolutionHandler extends DBHandler {
 			while(resultSet.next()) { 
 				Integer cc_id = resultSet.getInt("platform_cc_id");
 				try {
-					list.add(ContextContractHandler.getContextContract(cc_id));
+					ContextContract candidate = ContextContractHandler.getContextContract(cc_id);
+
+
+
+					//aaaaaaaaaaaaaaaaa					
+					ResolutionHandler.mergeFreeParameters(candidate);
+
+
+
+
+
+
+
+					list.add(candidate);
 				} catch (DBHandlerException e) {
 					throw new RuntimeException("Platform can not be catched with ac_id "+requiredID,e);
 				} 
@@ -111,7 +126,41 @@ public class ResolutionHandler extends DBHandler {
 		} catch (SQLException e) {
 			throw new DBHandlerException("An error occurred while trying to generate a compliant platform", e);
 		}
-		
+
+	}
+
+	private static void mergeFreeParameters(ContextContract candidate) {
+		Hashtable <Integer , ContextArgumentType> tableOfArguments = new Hashtable<Integer , ContextArgumentType>();
+		for(ContextArgumentType arg:candidate.getContextArguments()){
+			tableOfArguments.put(arg.getCpId(), arg);
+		}
+		if(candidate.getAbstractComponent() != null ){
+			for(ContextParameterType cpt:candidate.getAbstractComponent().getContextParameter()){
+				if(tableOfArguments.get(cpt.getCpId())==null){
+					ContextArgumentType cat = new ContextArgumentType();
+					cat.setCpId(cpt.getCpId());
+					cat.setCcId(candidate.getCcId());
+					cat.setKind(cpt.getKind());
+					
+					if(cpt.getKind()==1){
+						try {
+							cat.setContextContract(ContextContractHandler.getContextContract(cpt.getBound().getCcId()));
+						} catch (DBHandlerException e) {
+							e.printStackTrace();
+						}
+					}else{
+						if(cpt.getKind() >= 3){
+							cat.setValue(new ContextArgumentValueType());
+							cat.getValue().setValue(cpt.getBoundValue());
+						}
+					}
+					candidate.getContextArguments().add(cat);
+				}
+			}
+		}
+
+
+
 	}
 
 	/**
@@ -136,17 +185,17 @@ public class ResolutionHandler extends DBHandler {
 				node.setAc_id(resultSet.getInt("ac_id"));
 				node.setCps(ContextParameterHandler.getAllContextParameterFromAbstractComponent(node.getAc_id()));
 				node.getCps().addAll(cps);
-				
+
 				node.setQps(CalculatedArgumentHandler.getCalculatedParameters(node.getAc_id(), ContextParameterHandler.QUALITY));
 				if(qps.size() > 0){
 					node.getQps().addAll(qps);
 				}
-				
+
 				node.setCops(CalculatedArgumentHandler.getCalculatedParameters(node.getAc_id(), ContextParameterHandler.COST));
 				if(cops.size() > 0){
 					node.getCops().addAll(cops);
 				}
-				
+
 				node.setRps(CalculatedArgumentHandler.getCalculatedParameters(node.getAc_id(), ContextParameterHandler.RANKING));
 				if(rps.size() > 0){
 					node.getRps().addAll(rps);
@@ -161,9 +210,9 @@ public class ResolutionHandler extends DBHandler {
 		} catch (SQLException e) { 
 			throw new DBHandlerException("A sql error occurred: ", e);
 		} 	
-		
+
 	}
 
-	
+
 
 }

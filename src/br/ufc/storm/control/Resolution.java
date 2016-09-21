@@ -59,15 +59,15 @@ public class Resolution{
 		cc.getPlatform().getPlatformContract().getAbstractComponent().setIdAc(19);
 		
 		//Testando a filtragem por argumento de contexto (localizado em Fortaleza) (só o micro não passa)
-//		cc.getPlatform().getPlatformContract().getContextArguments().add(new ContextArgumentType());
-//		cc.getPlatform().getPlatformContract().getContextArguments().get(0).setCpId(26);
-//		cc.getPlatform().getPlatformContract().getContextArguments().get(0).setContextContract(new ContextContract());
-//		cc.getPlatform().getPlatformContract().getContextArguments().get(0).getContextContract().setCcId(133);
-
 		cc.getPlatform().getPlatformContract().getContextArguments().add(new ContextArgumentType());
-		cc.getPlatform().getPlatformContract().getContextArguments().get(0).setCpId(35);
+		cc.getPlatform().getPlatformContract().getContextArguments().get(0).setCpId(26);
 		cc.getPlatform().getPlatformContract().getContextArguments().get(0).setContextContract(new ContextContract());
-		cc.getPlatform().getPlatformContract().getContextArguments().get(0).getContextContract().setCcId(175);
+		cc.getPlatform().getPlatformContract().getContextArguments().get(0).getContextContract().setCcId(133);
+
+//		cc.getPlatform().getPlatformContract().getContextArguments().add(new ContextArgumentType());
+//		cc.getPlatform().getPlatformContract().getContextArguments().get(0).setCpId(35);
+//		cc.getPlatform().getPlatformContract().getContextArguments().get(0).setContextContract(new ContextContract());
+//		cc.getPlatform().getPlatformContract().getContextArguments().get(0).getContextContract().setCcId(175);
 		
 		//*******************************************************
 
@@ -233,7 +233,6 @@ public class Resolution{
 						List<ContextContract> componentCandidatePlatformlist = null;
 						LogHandler.getLogger().info("Generating Hardware Candidate List for candidate: "+index);
 						try {
-							//							System.out.println(candidate.getPlatform().getPlatformContract().getCcName());
 							componentCandidatePlatformlist = ResolutionHandler.generateCompliantPlatformCandidates(candidate.getPlatform().getPlatformContract().getAbstractComponent().getIdAc());
 						} catch (DBHandlerException e3) {
 							//Will test the next software contract
@@ -241,7 +240,11 @@ public class Resolution{
 						}
 						LogHandler.getLogger().info(componentCandidatePlatformlist.size()+" platforms were found for software component "+index);
 						if(componentCandidatePlatformlist.size() > 0){
-							candidateList = filterPlatformCandidateList(componentCandidatePlatformlist, application, applicationPlatform, candidate, tableOfSWidArgumentTable);
+							CandidateListType c = filterPlatformCandidateList(componentCandidatePlatformlist, application, applicationPlatform, candidate, tableOfSWidArgumentTable);
+							candidateList.getCandidate().addAll(c.getCandidate());
+							if(candidateList.getUserId()==null){
+								candidateList.setUserId(c.getUserId());
+							}
 						}
 					}
 				} catch (DBHandlerException e) {
@@ -283,7 +286,6 @@ public class Resolution{
 									fit=false;
 								}
 							} catch (ResolveException e) {
-								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 
@@ -392,8 +394,6 @@ public class Resolution{
 			if(requiredPlatform.getCcId()==candidatePlatform.getCcId()){
 				return true;
 			}
-			//Test if a platform is subtype
-			//			if(requiredPlatform != null && candidatePlatform!=null){
 			if(cp_id!=null){
 				int candidateContractIdAc = candidatePlatform.getAbstractComponent().getIdAc(); //ID_ac candidato
 				ResolutionNode supertype = ResolutionNode.resolutionTree.findNode(requiredPlatform.getAbstractComponent().getIdAc());
@@ -401,16 +401,10 @@ public class Resolution{
 					subtype = false;
 				}
 			}
-			//			}else{
-			//				subtype = false;
-			//			}
 			if(subtype){
 				if(requiredPlatform.getContextArguments().size() > 0){
 					for(ContextArgumentType cat:requiredPlatform.getContextArguments()){
 						if(cat.getValue() == null){
-
-							//							System.out.println("Platform has arguments "+cat.getContextContract().getCcName()+"  ....  "+getContextContractFromArgument(cat,candidatePlatform).getCcName()+"    ------    "+cat.getCpId());
-
 							subtype = subtype && isPlatformSubType(cat.getContextContract(), getContextContractFromArgument(cat,candidatePlatform), cat.getCpId());
 						}else{
 							subtype = subtype && isPlatformSubType(cat, getValueFromCandidateArgument(cat,candidatePlatform), cat.getKind());
@@ -649,7 +643,6 @@ public class Resolution{
 			}
 		}
 		if(subtype){
-			//TODO: Validar essa modificação, era provided
 			if(applicationContract.getContextArguments().size() > 0){
 				for(ContextArgumentType cat:applicationContract.getContextArguments()){
 					if(cat.getContextContract()!=null){

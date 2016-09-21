@@ -312,14 +312,15 @@ public class ContextParameterHandler extends DBHandler {
 				cp.setCpId(resultSet.getInt("cp_id"));
 				cp.setName(resultSet.getString("cp_name"));
 				cp.setKind(resultSet.getInt("kind_id"));
-				int bound_id = resultSet.getInt("bound_id");
+				Integer bound_id = resultSet.getInt("bound_id");
+				int parameter_type = resultSet.getInt("parameter_type");
 				try{
-					if(bound_id != ac_id){
+					if(cp.getKind() >= 3){
+						cp.setBoundValue(resultSet.getString("bound_value"));
+					}
+					
+					if(bound_id != ac_id && bound_id!=null){
 						cp.setBound(ContextContractHandler.getContextContractIncomplete(bound_id));
-						
-						//TODO: O Limite não precisa estar completo, basta ter o componente abstrato com id
-						//						cp.setBound(DBHandler.getContextContract(bound_id));
-
 					}else{
 						throw new ResolveException("Context Parameter bound self referenced results in infinite loop");
 					}

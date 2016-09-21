@@ -82,7 +82,6 @@
     	</sequence>
     	<attribute name="cc_id" type="int"></attribute>
     	<attribute name="cp_id" type="int"></attribute>
-    	<attribute name="bound_cc_id" type="int"></attribute>
     	<attribute name="ca_id" type="int"></attribute>
     	<attribute name="kind" type="int"></attribute>
     </complexType>

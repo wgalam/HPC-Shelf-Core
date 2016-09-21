@@ -28,30 +28,58 @@ public class ContextContractHandler extends DBHandler{
 	private final static String SELECT_INNER_COMPONENTS_IDs = "select A.ac_id from inner_components A, abstract_component B where A.parent_id = ? AND A.parent_id = B.ac_id;";
 
 	public static void main(String[] args) {
-		for(int i = 0; i < 0; i++){
+//		for(int i = 0; i < 0; i++){
+//			ContextContract mc = new ContextContract();
+//			ContextContract cc = new ContextContract();
+//			cc.setCcName("PlataformaTesteWagner"+i);
+//			cc.setOwnerId(1);
+//			cc.setAbstractComponent(new AbstractComponentType());
+//			cc.getAbstractComponent().setName("Cluster");
+//			cc.getContextArguments().add(new ContextArgumentType());
+//			cc.getContextArguments().get(0).setCpId(23);
+//			cc.getContextArguments().get(0).setContextContract(new ContextContract());
+//			cc.getContextArguments().get(0).getContextContract().setCcId(128);
+//			cc.getContextArguments().add(new ContextArgumentType());
+//			cc.getContextArguments().get(1).setCpId(24);
+//			cc.getContextArguments().get(1).setContextContract(new ContextContract());
+//			cc.getContextArguments().get(1).getContextContract().setCcId(134);
+//			cc.getContextArguments().add(new ContextArgumentType());
+//			cc.getContextArguments().get(2).setCpId(26);
+//			cc.getContextArguments().get(2).setContextContract(new ContextContract());
+//			cc.getContextArguments().get(2).getContextContract().setCcId(133);
+//			cc.getContextArguments().add(new ContextArgumentType());
+//			cc.getContextArguments().get(3).setCpId(27);
+//			cc.getContextArguments().get(3).setValue(new ContextArgumentValueType());
+//			cc.getContextArguments().get(3).getValue().setValue("8");
+//			cc.getContextArguments().get(3).getValue().setDataType("Double");
+//			mc.setPlatform(new PlatformProfileType());
+//			mc.getPlatform().setPlatformContract(cc);
+//
+//
+//			try {
+//				DBHandler.getConnection().setAutoCommit(false);
+//				addContextContract(mc);
+//				DBHandler.getConnection().commit();
+//				DBHandler.getConnection().setAutoCommit(true);
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
+
 			ContextContract mc = new ContextContract();
 			ContextContract cc = new ContextContract();
-			cc.setCcName("PlataformaTesteWagner"+i);
+			cc.setCcName("PlataformaTesteWagner");
 			cc.setOwnerId(1);
 			cc.setAbstractComponent(new AbstractComponentType());
 			cc.getAbstractComponent().setName("Cluster");
 			cc.getContextArguments().add(new ContextArgumentType());
 			cc.getContextArguments().get(0).setCpId(23);
 			cc.getContextArguments().get(0).setContextContract(new ContextContract());
-			cc.getContextArguments().get(0).getContextContract().setCcId(128);
-			cc.getContextArguments().add(new ContextArgumentType());
-			cc.getContextArguments().get(1).setCpId(24);
-			cc.getContextArguments().get(1).setContextContract(new ContextContract());
-			cc.getContextArguments().get(1).getContextContract().setCcId(134);
-			cc.getContextArguments().add(new ContextArgumentType());
-			cc.getContextArguments().get(2).setCpId(26);
-			cc.getContextArguments().get(2).setContextContract(new ContextContract());
-			cc.getContextArguments().get(2).getContextContract().setCcId(133);
-			cc.getContextArguments().add(new ContextArgumentType());
-			cc.getContextArguments().get(3).setCpId(27);
-			cc.getContextArguments().get(3).setValue(new ContextArgumentValueType());
-			cc.getContextArguments().get(3).getValue().setValue("8");
-			cc.getContextArguments().get(3).getValue().setDataType("Double");
+			cc.getContextArguments().get(0).getContextContract().setCcName("blablabla");
+			cc.getContextArguments().get(0).getContextContract().setAbstractComponent(new AbstractComponentType());
+			cc.getContextArguments().get(0).getContextContract().getAbstractComponent().setIdAc(25);
+			cc.getContextArguments().get(0).getContextContract().setOwnerId(1);
 			mc.setPlatform(new PlatformProfileType());
 			mc.getPlatform().setPlatformContract(cc);
 
@@ -65,18 +93,19 @@ public class ContextContractHandler extends DBHandler{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}
-
+		
+		
+		
 		System.out.println("Finished");
 	}
 
 
 
-	public static void  addContextContract(ContextContract mc) throws DBHandlerException{
-
+	public static Integer  addContextContract(ContextContract mc) throws DBHandlerException{
+		ContextContract cc;
 		try {
 			if(mc.getAbstractComponent()==null){//Context Platform
-				ContextContract cc = mc.getPlatform().getPlatformContract();
+				cc = mc.getPlatform().getPlatformContract();
 				Connection con = getConnection();
 				PreparedStatement prepared = con.prepareStatement(INSERT_CONTEXT_CONTRACT);
 				prepared.setString(1, cc.getAbstractComponent().getName());
@@ -88,6 +117,9 @@ public class ContextContractHandler extends DBHandler{
 					cc.setCcId(result.getInt("cc_id"));
 					//Add context arguments
 					for(ContextArgumentType cat:cc.getContextArguments()){
+						if(cat.getCcId()==null && cat.getContextContract()!=null){
+							addContextContract(cat.getContextContract());
+						}
 						cat.setCcId(cc.getCcId());
 						ContextArgumentHandler.addContextArgument(cat);
 					}
@@ -107,7 +139,7 @@ public class ContextContractHandler extends DBHandler{
 				}
 				PlatformHandler.addPlatformOwner(cc);
 			}else{//Context contract
-				ContextContract cc = mc;
+				cc = mc;
 				Connection con = getConnection();
 				int cc_id = 0;
 				PreparedStatement prepared = con.prepareStatement(INSERT_CONTEXT_CONTRACT);
@@ -120,6 +152,9 @@ public class ContextContractHandler extends DBHandler{
 					cc_id = result.getInt("cc_id");
 					//Add context arguments
 					for(ContextArgumentType cat:cc.getContextArguments()){
+						if(cat.getCcId()==null && cat.getContextContract()!=null){
+							addContextContract(cat.getContextContract());
+						}
 						cat.setCcId(cc_id);
 						ContextArgumentHandler.addContextArgument(cat);
 					}
@@ -138,6 +173,8 @@ public class ContextContractHandler extends DBHandler{
 					}
 				}
 			}
+			System.out.println(cc.getCcId());
+			return cc.getCcId();
 		} catch (SQLException e) {
 			throw new DBHandlerException("A sql error occurred: ", e);
 		}
@@ -220,20 +257,20 @@ public class ContextContractHandler extends DBHandler{
 	}
 
 
-	public static ContextContract getContextContractIncomplete(Integer bound_id) throws DBHandlerException {
+	public static ContextContract getContextContractIncomplete(Integer cc_id) throws DBHandlerException {
 		ContextContract cc = null;
 		try { 
 			int ac_id = 0;
 			String name = null;
 			Connection con = getConnection(); 
 			PreparedStatement prepared = con.prepareStatement(SELECT_CONTEXT_CONTRACT); 
-			prepared.setInt(1, bound_id);
+			prepared.setInt(1, cc_id);
 			ResultSet resultSet = prepared.executeQuery(); 
 			if (resultSet.next()){
 				ac_id = resultSet.getInt("ac_id");
 				name=resultSet.getString("cc_name");
 				cc = new ContextContract();
-				cc.setCcId(bound_id);
+				cc.setCcId(cc_id);
 				cc.setCcName(name);
 				AbstractComponentType ac = new AbstractComponentType();
 				ac.setIdAc(ac_id);
@@ -243,7 +280,7 @@ public class ContextContractHandler extends DBHandler{
 			//			cc.getContextArguments().addAll(DBHandler.getContextArguments(cc_id));
 
 		} catch (SQLException e) {
-			throw new DBHandlerException("Context contract not found with cc_id "+bound_id, e);
+			throw new DBHandlerException("Context contract not found with cc_id "+cc_id, e);
 		} 
 		return cc;
 	}

@@ -261,19 +261,22 @@ public class CalculatedArgumentHandler extends DBHandler{
 					CalculatedArgumentType qat = new CalculatedArgumentType();
 					qat.setCpId(calcpt.getCalcId());
 					qat.setValue(CalculatedArgumentHandler.calculate(function));
-					argTable.addNewArgument(calcpt.getCalcId(), ""+qat.getValue(), calcpt.getKindId());
-					calcpt.setCalculatedArgument(qat);
+					if(qat.getValue()!=null){
+						argTable.addNewArgument(calcpt.getCalcId(), ""+qat.getValue(), calcpt.getKindId());
+						calcpt.setCalculatedArgument(qat);
 
-					switch (type) {
-					case ContextParameterHandler.QUALITY:
-						cc.getQualityArguments().add(qat);
-						count++;
-						break;
-					case ContextParameterHandler.COST:
-						cc.getCostArguments().add(qat);
-						count++;
-						break;
+						switch (type) {
+						case ContextParameterHandler.QUALITY:
+							cc.getQualityArguments().add(qat);
+							count++;
+							break;
+						case ContextParameterHandler.COST:
+							cc.getCostArguments().add(qat);
+							count++;
+							break;
+						}
 					}
+
 				}
 			} catch (Exception e) {
 				LogHandler.getLogger().info("Error while getting function. "+e.getCause());
@@ -365,7 +368,10 @@ public class CalculatedArgumentHandler extends DBHandler{
 		int numOfarguments = qft.getFunctionArguments().size();
 
 		Expression expression = new Expression(qft.getFunctionValue());
-		for(int i = 0; i < numOfarguments; i++){		
+		for(int i = 0; i < numOfarguments; i++){
+						if(qft.getFunctionArguments().get(i).getValue().getValue()==null){
+							return null;
+						}
 			expression.with("v"+i, (qft.getFunctionArguments().get(i).getValue().getValue()));
 		}
 		expression.setPrecision(6);

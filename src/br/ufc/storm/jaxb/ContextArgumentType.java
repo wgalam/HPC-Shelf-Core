@@ -2,7 +2,7 @@
 // Este arquivo foi gerado pela Arquitetura JavaTM para Implementação de Referência (JAXB) de Bind XML, v2.2.8-b130911.1802 
 // Consulte <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Todas as modificações neste arquivo serão perdidas após a recompilação do esquema de origem. 
-// Gerado em: 2016.08.26 às 01:03:07 PM BRT 
+// Gerado em: 2016.09.17 às 02:29:59 PM BRT 
 //
 
 
@@ -33,7 +33,6 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;/sequence>
  *       &lt;attribute name="cc_id" type="{http://www.w3.org/2001/XMLSchema}int" />
  *       &lt;attribute name="cp_id" type="{http://www.w3.org/2001/XMLSchema}int" />
- *       &lt;attribute name="bound_cc_id" type="{http://www.w3.org/2001/XMLSchema}int" />
  *       &lt;attribute name="ca_id" type="{http://www.w3.org/2001/XMLSchema}int" />
  *       &lt;attribute name="kind" type="{http://www.w3.org/2001/XMLSchema}int" />
  *     &lt;/restriction>
@@ -60,8 +59,6 @@ public class ContextArgumentType {
     protected Integer ccId;
     @XmlAttribute(name = "cp_id")
     protected Integer cpId;
-    @XmlAttribute(name = "bound_cc_id")
-    protected Integer boundCcId;
     @XmlAttribute(name = "ca_id")
     protected Integer caId;
     @XmlAttribute(name = "kind")
@@ -185,30 +182,6 @@ public class ContextArgumentType {
      */
     public void setCpId(Integer value) {
         this.cpId = value;
-    }
-
-    /**
-     * Obtém o valor da propriedade boundCcId.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Integer }
-     *     
-     */
-    public Integer getBoundCcId() {
-        return boundCcId;
-    }
-
-    /**
-     * Define o valor da propriedade boundCcId.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Integer }
-     *     
-     */
-    public void setBoundCcId(Integer value) {
-        this.boundCcId = value;
     }
 
     /**
