@@ -9,6 +9,7 @@ import java.util.List;
 
 import br.ufc.storm.exception.DBHandlerException;
 import br.ufc.storm.jaxb.AbstractUnitType;
+import br.ufc.storm.jaxb.ContextArgumentType;
 
 public class AbstractUnitHandler extends DBHandler {
 	private static final String INSERT_ABSTRACT_UNIT = "INSERT INTO abstract_unit ( ac_id, au_name) VALUES ((select ac_id from abstract_component where ac_name = ?), ?) RETURNING abstract_unit_id;";
@@ -44,6 +45,46 @@ public class AbstractUnitHandler extends DBHandler {
 		} 
 	}
 
+	
+//	TODO: Fix this method and all registration process
+	public static boolean exists(String ac_name, String au_name) throws DBHandlerException{
+//		
+//			if(ac_name == null || au_name==null){
+//				throw new DBHandlerException("Abstract Unit incomplete");
+//			}
+//		
+//		try {
+//			Connection con = getConnection(); 
+//			PreparedStatement prepared;
+//			prepared = con.prepareStatement(SELECT_CA_ID_CC_ID);
+//			prepared.setInt(1, ca.getCpId());
+//			prepared.setInt(2, ca.getCcId());
+//			ResultSet resultSet = prepared.executeQuery();
+//			int cont = 0;
+//			int id = 0;
+//			while(resultSet.next()){
+//				id = resultSet.getInt("ca_id");
+//				cont++;
+//			}
+//			if(cont==0){
+//				return false;
+//			}else{
+//				if(cont == 1){
+//					ca.setCaId(id);
+//					return true;
+//				}else{
+//					throw new DBHandlerException("Multiple context arguments where found: ");
+//				}
+//			}
+//		} catch (SQLException e) {
+//			throw new DBHandlerException("A sql error occurred: ", e);
+//		} 
+		return false;
+	}
+	
+	
+	
+	
 	/**
 	 * 
 	 * @param auid

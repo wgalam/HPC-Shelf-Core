@@ -41,9 +41,9 @@ public class Main {
 		
 		
 		try {
-			int ac = 19;
-			int cc = 193;
-			int cc2 = 190;
+			int ac = 161;
+			int cc = 229;
+			int cc2 = 230;
 //			System.out.println(XMLHandler.getContextContract(126));
 			System.out.println(FormalFormat.exportContextContractWithIDs(ContextContractHandler.getContextContract(cc), null));
 			System.out.println();

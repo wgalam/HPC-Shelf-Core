@@ -71,6 +71,18 @@ public class CoreServices {
 		}
 	}
 
+	
+	public boolean addPlatformContextContract(String cmp) throws ParserConfigurationException, SAXException, IOException{
+		LogHandler.getLogger().info("Starting to add a context component...");
+		try {
+			Boolean b = XMLHandler.addPlatformContextContract(cmp);
+			LogHandler.close();
+			return b;
+		} catch (XMLException | DBHandlerException e) {
+			LogHandler.close();
+			return false;
+		}
+	}
 	/**
 	 * This method gets an abstract component and returns its description.
 	 * @param name Abstract component name

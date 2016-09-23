@@ -34,7 +34,9 @@ public class CalculatedArgumentHandler extends DBHandler{
 	private static final String SELECT_CALCULATED_FUNCTION = "select * FROM calculated_function A, context_parameter B WHERE B.cp_id = ? AND A.cc_id = ? AND B.parameter_type = ? AND A.cp_id = B.cp_id;";
 	private static final String SELECT_CALCULATED_FUNCTION_GENERIC = "select * FROM calculated_function A, context_parameter B WHERE B.cp_id = ? AND A.cc_id IS NULL AND B.parameter_type = ? AND A.cp_id = B.cp_id;";
 	private static final String SELECT_CALCULATED_FUNCTION_TERMS = "SELECT cp_id, term_order FROM calculated_function_terms WHERE cf_id = ?;";
-	private static final String SELECT_CALCULATED_PARAMETER = "select * FROM context_parameter WHERE ac_id = ? AND parameter_type = ?;"; 
+	private static final String SELECT_CALCULATED_PARAMETER = "select * FROM context_parameter WHERE ac_id = ? AND parameter_type = ?;";
+	private static final String SELECT_CFT_ID_CC_ID_GENERIC = "SELECT * FROM calculated_function WHERE cp_id = ?;"; 
+	private static final String SELECT_CFT_ID_CC_ID_SPECIFIC = "SELECT * FROM calculated_function WHERE cp_id = ? AND cc_id = ?;"; 
 
 	public static void main(String[] args) {
 		//try {
@@ -67,12 +69,57 @@ public class CalculatedArgumentHandler extends DBHandler{
 		}
 	}
 
+
+	public static boolean exists(CalculatedFunctionType cft) throws DBHandlerException{
+		if(cft==null){
+			throw new DBHandlerException("Context argumente null");
+		}else{
+			if(cft.getCpId() == null || cft.getFunctionValue()==null){
+				throw new DBHandlerException("Calculated function incomplete");
+			}
+		}
+		try {
+			Connection con = getConnection(); 
+			PreparedStatement prepared;
+			if(cft.getCcId()==null){
+				prepared = con.prepareStatement(SELECT_CFT_ID_CC_ID_GENERIC);
+				prepared.setInt(1, cft.getCpId());
+			}else{
+				prepared = con.prepareStatement(SELECT_CFT_ID_CC_ID_SPECIFIC);
+				prepared.setInt(1, cft.getCpId());
+				prepared.setInt(2, cft.getCcId());
+			}
+			ResultSet resultSet = prepared.executeQuery();
+			int cont = 0;
+			int id = 0;
+			while(resultSet.next()){
+				id = resultSet.getInt("cf_id");
+				cont++;
+			}
+			if(cont==0){
+				return false;
+			}else{
+				if(cont == 1){
+					cft.setFunctionId(id);
+					return true;
+				}else{
+					throw new DBHandlerException("Multiple context arguments where found: ");
+				}
+			}
+		} catch (SQLException e) {
+			throw new DBHandlerException("A sql error occurred: ", e);
+		} 
+	}
+
 	/**
 	 * 
 	 * @return
 	 * @throws DBHandlerException 
 	 */
-	public static int addCalculatedFunction(CalculatedFunctionType qf, int type) throws DBHandlerException{
+	public static Integer addCalculatedFunction(CalculatedFunctionType qf, int type) throws DBHandlerException{
+		if(exists(qf)){
+			return qf.getFunctionId();
+		}
 		int function_id = 0;
 		try {
 			Connection con = getConnection(); 
@@ -369,9 +416,9 @@ public class CalculatedArgumentHandler extends DBHandler{
 
 		Expression expression = new Expression(qft.getFunctionValue());
 		for(int i = 0; i < numOfarguments; i++){
-						if(qft.getFunctionArguments().get(i).getValue().getValue()==null){
-							return null;
-						}
+			if(qft.getFunctionArguments().get(i).getValue().getValue()==null){
+				return null;
+			}
 			expression.with("v"+i, (qft.getFunctionArguments().get(i).getValue().getValue()));
 		}
 		expression.setPrecision(6);

@@ -34,7 +34,9 @@ public class AbstractComponentHandler extends DBHandler{
 	private static final String SELECT_ALL_SLICES = "SELECT * FROM slice WHERE ac_id = ?;";
 	private final static String UPDATE_ABSTRACT_COMPONENT = "update abstract_component set enabled=false where ac_name = ?;";
 	private static final String INSERT_INNER_COMPONENT = "INSERT INTO inner_components (parent_id, ac_id) VALUES (?, ?) RETURNING ic_id;" ;
-
+	private static final String SELECT_AC_ID_NAME = "SELECT * FROM abstract_component WHERE ac_id =  ? OR ac_name = ?;";
+	private final static String SELECT_INNER_COMPONENTS_IDs = "select A.ac_id from inner_components A, abstract_component B where A.parent_id = ? AND A.parent_id = B.ac_id;";
+	
 	/**
 	 * This method gets the list of all abstract components in the library
 	 * @return List of components
@@ -82,7 +84,7 @@ public class AbstractComponentHandler extends DBHandler{
 	 * @throws XMLException 
 	 */
 	
-	public static void main(String [] a){
+	public static void main1(String [] a){
 		AbstractComponentType ac = new AbstractComponentType();
 		ac.setName("LSSapp");
 		ac.setSupertype(new AbstractComponentType());
@@ -118,70 +120,75 @@ public class AbstractComponentHandler extends DBHandler{
 	
 	//TODO: Concluir o cadastro de variáveis
 	public static int addAbstractComponent(AbstractComponentType ac, Map<String, Integer> sharedVariables) throws DBHandlerException, ResolveException{
-
-		try {
-			Integer ac_id = null;
-			
-			Connection con = DBHandler.getConnection();
-			con.setAutoCommit(false);
-			PreparedStatement prepared = con.prepareStatement(INSERT_ABSTRACT_COMPONENT);
-			prepared.setString(1, ac.getName()); 
-			prepared.setInt(2, ac.getSupertype().getIdAc());
-			ResultSet result = prepared.executeQuery();
-			if(result.next()){
-				ac.setIdAc(result.getInt("ac_id"));
-				ac_id = ac.getIdAc();
-			}else{
-				throw new DBHandlerException("Abstract component id not returned");
-			}
-			if(ac.getContextParameter().size() > 0){
-				if(sharedVariables == null){
-					sharedVariables = new HashMap<String, Integer>();
-				}
-				for(ContextParameterType cp:ac.getContextParameter()){
-					//TODO: Corrigir a passagem de variáveis
-					//					Se tem variavel compartilhada, adicionar no hashmap
-
-					String boundName = null;
-					if(cp.getBound().getCcName() != null){
-						boundName = cp.getBound().getCcName();
-					}else{
-						boundName = ContextContractHandler.getContextContract(cp.getBound().getCcId()).getCcName();
-						if(boundName == null){
-						//Parameter without bound, must throw an exception
-						throw new DBHandlerException("Parameter without bound");
-						}
-					}
-
-					if(cp.getContextVariableProvided()!=null){
-						sharedVariables.put(cp.getContextVariableProvided(), cp.getCpId());
-					}
-					Integer i = ContextParameterHandler.addContextParameter(cp.getName(), boundName, ac.getName(), null, cp.getBoundValue(), cp.getContextVariableRequired(), sharedVariables, cp.getKind());
-					cp.setCpId(i);
-					
-
-				}
-			}
-			//Add each abstract unit
-			for(AbstractUnitType aut: ac.getAbstractUnit()){
-				aut.setAuId(AbstractUnitHandler.addAbstractUnit(ac.getName(), aut.getAuName()));;
-			}
-			//Register inner components if not registered yet
-			for(AbstractComponentType inner:ac.getInnerComponents()){
-				if(inner.getIdAc()==null){
-					inner.setIdAc(addAbstractComponent(inner, sharedVariables));
-					addInnerComponnet(ac.getIdAc(), inner.getIdAc());
-				}
-			}
-			for(SliceType st:ac.getSlices()){
-					SliceHandler.addSlice(st.getInnerComponentName(), st.getInnerUnitName(), ac.getName());
-			}
-				
-			return ac.getIdAc();
-			
-		} catch (SQLException e) {
-			throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+		if(ac.getIdAc()!=null){
+			throw new DBHandlerException("Abstract Component id must be auto generated, can not be informed");
 		}
+		if(exists(ac)){
+			//Merge
+			//TODO: Finish this part
+		}else{
+			try {
+				Connection con = DBHandler.getConnection();
+				con.setAutoCommit(false);
+				PreparedStatement prepared = con.prepareStatement(INSERT_ABSTRACT_COMPONENT);
+				prepared.setString(1, ac.getName()); 
+				prepared.setInt(2, ac.getSupertype().getIdAc());
+				ResultSet result = prepared.executeQuery();
+				if(result.next()){
+					ac.setIdAc(result.getInt("ac_id"));
+				}else{
+					throw new DBHandlerException("Abstract component id not returned");
+				}
+				if(ac.getContextParameter().size() > 0){
+					if(sharedVariables == null){
+						sharedVariables = new HashMap<String, Integer>();
+					}
+					for(ContextParameterType cp:ac.getContextParameter()){
+						//TODO: Corrigir a passagem de variáveis
+						//					Se tem variavel compartilhada, adicionar no hashmap
+
+						String boundName = null;
+						if(cp.getBound().getCcName() != null){
+							boundName = cp.getBound().getCcName();
+						}else{
+							boundName = ContextContractHandler.getContextContract(cp.getBound().getCcId()).getCcName();
+							if(boundName == null){
+							//Parameter without bound, must throw an exception
+							throw new DBHandlerException("Parameter without bound");
+							}
+						}
+
+						if(cp.getContextVariableProvided()!=null){
+							sharedVariables.put(cp.getContextVariableProvided(), cp.getCpId());
+						}
+						Integer i = ContextParameterHandler.addContextParameter(cp.getName(), boundName, ac.getName(), null, cp.getBoundValue(), cp.getContextVariableRequired(), sharedVariables, cp.getKind());
+						cp.setCpId(i);
+					}
+				}
+//				TODO: Fix this part of process
+				//Add each abstract unit
+//				for(AbstractUnitType aut: ac.getAbstractUnit()){
+//					aut.setAuId(AbstractUnitHandler.addAbstractUnit(ac.getName(), aut.getAuName()));;
+//				}
+				//Register inner components if not registered yet
+				for(AbstractComponentType inner:ac.getInnerComponents()){
+					if(inner.getIdAc()==null){
+						inner.setIdAc(addAbstractComponent(inner, sharedVariables));
+						addInnerComponnet(ac.getIdAc(), inner.getIdAc());
+					}
+				}
+//				TODO: Fix this part of process
+//				for(SliceType st:ac.getSlices()){
+//						SliceHandler.addSlice(st.getInnerComponentName(), st.getInnerUnitName(), ac.getName());
+//				}
+					
+				
+				
+			} catch (SQLException e) {
+				throw new DBHandlerException("A sql error occurred: "+e.getMessage());
+			}
+		}
+		return ac.getIdAc();
 
 	}
 	
@@ -219,7 +226,7 @@ public class AbstractComponentHandler extends DBHandler{
 		}
 		AbstractComponentType ac;
 		ac = getAbstractComponentPartial(ac_id);
-		ac.getInnerComponents().addAll(ContextContractHandler.getInnerComponents(ac_id));
+		ac.getInnerComponents().addAll(AbstractComponentHandler.getInnerComponents(ac_id));
 		ac.getContextParameter().addAll(ResolutionNode.resolutionTree.findNode(ac_id).getCps());
 		ac.getQualityParameters().addAll(ResolutionNode.resolutionTree.findNode(ac_id).getQps());
 		ac.getCostParameters().addAll(ResolutionNode.resolutionTree.findNode(ac_id).getCops());
@@ -324,6 +331,43 @@ public class AbstractComponentHandler extends DBHandler{
 
 	}
 
+	public static boolean exists(AbstractComponentType ac) throws DBHandlerException{
+		if(ac==null){
+			return false;
+		}
+		try {
+			Connection con = getConnection(); 
+			PreparedStatement prepared;
+			prepared = con.prepareStatement(SELECT_AC_ID_NAME);
+			if(ac.getIdAc()==null){
+				prepared.setNull(1, java.sql.Types.INTEGER);
+			}else{
+				prepared.setInt(1, ac.getIdAc());
+			}
+			prepared.setString(2, ac.getName());
+			ResultSet resultSet = prepared.executeQuery();
+			int cont = 0;
+			int id = 0;
+			while(resultSet.next()){
+				id = resultSet.getInt("ac_id");
+				cont++;
+			}
+			if(cont==0){
+				return false;
+			}else{
+				if(cont == 1){
+					ac.setIdAc(id);
+					return true;
+				}else{
+					throw new DBHandlerException("Multiple compoenent contracts where found: ");
+				}
+			}
+		} catch (SQLException e) {
+			throw new DBHandlerException("A sql error occurred: ", e);
+		} 
+	}
+	
+	
 	/**
 	 * This method returns an abstract component id given an name
 	 * @param name
@@ -351,6 +395,29 @@ public class AbstractComponentHandler extends DBHandler{
 		} 
 	}
 
+	/**
+	 * This method gets an inner component ac_id
+	 * @param name Inner component name
+	 * @return Inner component id
+	 * @throws DBHandlerException 
+	 */
+	public static ArrayList<AbstractComponentType> getInnerComponents(int parent_ac_id) throws DBHandlerException {
+		ArrayList<AbstractComponentType> list = new ArrayList<AbstractComponentType>();
+		try { 
+			Connection con = getConnection(); 
+			PreparedStatement prepared = con.prepareStatement(SELECT_INNER_COMPONENTS_IDs); 
+			prepared.setInt(1, parent_ac_id); 
+			ResultSet resultSet = prepared.executeQuery(); 
+			while(resultSet.next()) { 
+				list.add(AbstractComponentHandler.getAbstractComponent(resultSet.getInt("ac_id"))); 
+			}
+			return list;
+		} catch (SQLException e) { 
+			throw new DBHandlerException("A sql error occurred: ", e);
+		}
+	}
+
+	
 	/**
 	 * This method is responsible for set a component as removed, disabling it in the database
 	 * @param name Abstract component name

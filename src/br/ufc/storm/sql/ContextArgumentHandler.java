@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import br.ufc.storm.jaxb.AbstractComponentType;
 import br.ufc.storm.jaxb.ContextArgumentType;
 import br.ufc.storm.jaxb.ContextArgumentValueType;
 import br.ufc.storm.jaxb.ContextContract;
@@ -22,6 +23,7 @@ public class ContextArgumentHandler extends DBHandler {
 	private static final String INSERT_CONTEXT_ARGUMENT_VALUE = "INSERT INTO closed_argument_values (ca_id, data_type, value) VALUES (?,?,?);";
 	private static final String INSERT_CONTEXT_ARGUMENT_REFERENCE = "INSERT INTO shared_context_variables (refers_to_var, cp_id)VALUES (?,?);";
 	private static final String INSERT_CONTEXT_ARGUMENT_CONTEXT_CONTRACT = "INSERT INTO closed_arguments_context_contract (ca_id, cc_id)VALUES (?,?);";
+	private static final String SELECT_CA_ID_CC_ID = "SELECT * FROM context_argument WHERE variable_cp_id = ? AND cc_id = ?;";
 
 	/**
 	 * This method adds a context argument
@@ -33,7 +35,11 @@ public class ContextArgumentHandler extends DBHandler {
 	 */
 
 	public static boolean addContextArgument(ContextArgumentType cat) throws DBHandlerException{
-
+		
+		if(exists(cat)){
+			//in a far future it must update the argument
+			return false;
+		}
 		try {
 			Connection con = getConnection();
 			PreparedStatement prepared = con.prepareStatement(INSERT_CONTEXT_ARGUMENT); 
@@ -51,6 +57,43 @@ public class ContextArgumentHandler extends DBHandler {
 				}
 			}
 			return true;
+		} catch (SQLException e) {
+			throw new DBHandlerException("A sql error occurred: ", e);
+		} 
+	}
+	
+	public static boolean exists(ContextArgumentType ca) throws DBHandlerException{
+		if(ca==null){
+			throw new DBHandlerException("Context argument null");
+		}else{
+			System.out.println(ca.getCcId());
+			if(ca.getCcId() == null || ca.getCpId()==null){
+				throw new DBHandlerException("Context argument incomplete");
+			}
+		}
+		try {
+			Connection con = getConnection(); 
+			PreparedStatement prepared;
+			prepared = con.prepareStatement(SELECT_CA_ID_CC_ID);
+			prepared.setInt(1, ca.getCpId());
+			prepared.setInt(2, ca.getCcId());
+			ResultSet resultSet = prepared.executeQuery();
+			int cont = 0;
+			int id = 0;
+			while(resultSet.next()){
+				id = resultSet.getInt("ca_id");
+				cont++;
+			}
+			if(cont==0){
+				return false;
+			}else{
+				if(cont == 1){
+					ca.setCaId(id);
+					return true;
+				}else{
+					throw new DBHandlerException("Multiple context arguments where found: ");
+				}
+			}
 		} catch (SQLException e) {
 			throw new DBHandlerException("A sql error occurred: ", e);
 		} 

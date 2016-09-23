@@ -59,10 +59,10 @@ public class Resolution{
 		cc.getPlatform().getPlatformContract().getAbstractComponent().setIdAc(19);
 		
 		//Testando a filtragem por argumento de contexto (localizado em Fortaleza) (só o micro não passa)
-		cc.getPlatform().getPlatformContract().getContextArguments().add(new ContextArgumentType());
-		cc.getPlatform().getPlatformContract().getContextArguments().get(0).setCpId(26);
-		cc.getPlatform().getPlatformContract().getContextArguments().get(0).setContextContract(new ContextContract());
-		cc.getPlatform().getPlatformContract().getContextArguments().get(0).getContextContract().setCcId(133);
+//		cc.getPlatform().getPlatformContract().getContextArguments().add(new ContextArgumentType());
+//		cc.getPlatform().getPlatformContract().getContextArguments().get(0).setCpId(26);
+//		cc.getPlatform().getPlatformContract().getContextArguments().get(0).setContextContract(new ContextContract());
+//		cc.getPlatform().getPlatformContract().getContextArguments().get(0).getContextContract().setCcId(144);
 
 //		cc.getPlatform().getPlatformContract().getContextArguments().add(new ContextArgumentType());
 //		cc.getPlatform().getPlatformContract().getContextArguments().get(0).setCpId(35);

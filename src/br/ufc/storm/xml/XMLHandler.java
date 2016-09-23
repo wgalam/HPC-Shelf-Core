@@ -53,6 +53,7 @@ import br.ufc.storm.sql.ConcreteUnitHandler;
 import br.ufc.storm.sql.ContextContractHandler;
 import br.ufc.storm.sql.ContextParameterHandler;
 import br.ufc.storm.sql.DBHandler;
+import br.ufc.storm.sql.PlatformHandler;
 import br.ufc.storm.sql.ResolutionHandler;
 
 
@@ -369,6 +370,44 @@ public class XMLHandler {
 	 * @throws DBHandlerException 
 	 */
 	@SuppressWarnings("unchecked")
+	public static boolean addPlatformContextContract(String cmp) throws XMLException, DBHandlerException{
+		ContextContract cc = null;
+		JAXBContext context;
+		try {
+			DBHandler.getConnection().setAutoCommit(false);
+		} catch (SQLException e) {
+			throw new XMLException("Error commiting changes ",e);
+		}
+		try {
+			context = JAXBContext.newInstance(br.ufc.storm.jaxb.ObjectFactory.class.getPackage().getName(),
+					br.ufc.storm.jaxb.ObjectFactory.class.getClassLoader());
+			Unmarshaller unmarshaller = context.createUnmarshaller();
+			JAXBElement<ContextContract> element = (JAXBElement<ContextContract>) unmarshaller.unmarshal(new InputSource(new java.io.StringReader(cmp)));
+			cc = element.getValue();
+			ContextContractHandler.addPlatformContextContract(cc);
+			PlatformHandler.addPlatformOwner(cc);
+			try {
+				DBHandler.getConnection().commit();
+				DBHandler.getConnection().setAutoCommit(true);
+			} catch (SQLException e) {
+				throw new XMLException("Error commiting changes ",e);
+			}
+			return true;
+		} catch (JAXBException e) {
+			throw new XMLException("Can not add context contract, problem JAXB translator", e);
+		}
+
+	}
+	
+	/**
+	 * 
+	 * @param cmp
+	 * @param con
+	 * @return
+	 * @throws XMLException 
+	 * @throws DBHandlerException 
+	 */
+	@SuppressWarnings("unchecked")
 	public static boolean addContextContract(String cmp) throws XMLException, DBHandlerException{
 		ContextContract cc = null;
 		JAXBContext context;
@@ -539,9 +578,12 @@ public class XMLHandler {
 			return false;
 		}
 		try {
-			ContextContractHandler.addInnerComponent(ac.getInnerComponents().get(0).getName(), ac.getInnerComponents().get(0).getName(), ac.getName());
+			AbstractComponentHandler.addInnerComponnet(ac.getIdAc(), ac.getInnerComponents().get(0).getIdAc());
 		} catch (DBHandlerException e) {
 			throw new XMLException(e);
+		} catch (ResolveException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		return true;
 	}
