@@ -66,8 +66,7 @@ public class ContextArgumentHandler extends DBHandler {
 		if(ca==null){
 			throw new DBHandlerException("Context argument null");
 		}else{
-			System.out.println(ca.getCcId());
-			if(ca.getCcId() == null || ca.getCpId()==null){
+			if(ca.getCpId()==null){
 				throw new DBHandlerException("Context argument incomplete");
 			}
 		}
@@ -172,7 +171,6 @@ public class ContextArgumentHandler extends DBHandler {
 	 * @throws DBHandlerException 
 	 */
 	public static ArrayList<ContextArgumentType> getContextArguments(int cc_id) throws DBHandlerException{
-
 		try {
 			Connection con = getConnection();
 			ArrayList<ContextArgumentType> cpl = new ArrayList<ContextArgumentType>(); 

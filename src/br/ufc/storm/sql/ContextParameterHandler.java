@@ -319,7 +319,7 @@ public class ContextParameterHandler extends DBHandler {
 						cp.setBoundValue(resultSet.getString("bound_value"));
 					}
 					
-					if(bound_id != ac_id && bound_id!=null){
+					if(bound_id != ac_id && bound_id!=0){
 						cp.setBound(ContextContractHandler.getContextContractIncomplete(bound_id));
 					}else{
 						throw new ResolveException("Context Parameter bound self referenced results in infinite loop");
@@ -468,4 +468,15 @@ public class ContextParameterHandler extends DBHandler {
 		}
 		return null;
 	}
+	
+	public static Integer getKindFromContextParameter(int cp_id, AbstractComponentType ac){
+		for(ContextParameterType cp : ac.getContextParameter()){
+			if(cp.getCpId()==cp_id){
+				return cp.getKind();
+			}
+		}
+		return null;
+	}
+	
+	
 }

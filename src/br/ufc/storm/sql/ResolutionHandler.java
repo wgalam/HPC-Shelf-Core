@@ -8,7 +8,9 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+import br.ufc.storm.control.Resolution;
 import br.ufc.storm.exception.DBHandlerException;
+import br.ufc.storm.export.FormalFormat;
 import br.ufc.storm.jaxb.CalculatedArgumentType;
 import br.ufc.storm.jaxb.CalculatedParameterType;
 import br.ufc.storm.jaxb.ContextArgumentType;
@@ -24,6 +26,15 @@ public class ResolutionHandler extends DBHandler {
 	private static final String SELECT_PLATFORM_BY_AC_ID = "select * from context_contract A, platform_owner B where A.cc_id = B.platform_cc_id and A.ac_id = ? and type_id = 1;";
 	private final static String SELECT_ABSTRACT_COMPONENT_BY_SUPERTYPE_ID = "select ac_name, ac_id, supertype_id, enabled from abstract_component WHERE supertype_id = ?;";
 
+	public static void main(String[] args) {
+		try {
+			Resolution.main(args);
+		} catch (DBHandlerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	/**
 	 * This method generates a list os all components candidates to a contract but only in the highest level, it will be refined.
 	 * @param supertypeID
@@ -34,47 +45,33 @@ public class ResolutionHandler extends DBHandler {
 	 */
 
 	public static List<ContextContract> generateCandidates(int supertypeID, int requiredID) throws DBHandlerException{
+		System.out.println("Generate Candidates!");
 		PreparedStatement prepared;
 		ResultSet resultSet;
 		List<ContextContract> list = new ArrayList<ContextContract>();
 		int history;
 		int supertype = 0;
 		int aux = requiredID;
-		try { 
+		try {
 			Connection con = getConnection();
 			do{
 				prepared = con.prepareStatement(SELECT_CONTEXT_CONTRACT_BY_AC_ID);
 				prepared.setInt(1, aux); 
-				resultSet = prepared.executeQuery(); 
-				while(resultSet.next()) { 
+				resultSet = prepared.executeQuery();
+				System.out.println(prepared);
+				while(resultSet.next()){
 					Integer cc_id = resultSet.getInt("cc_id");
 					ContextContract cc = ContextContractHandler.getContextContract(cc_id);
-					//					--------------------------------------------------------------
-					//					for(ContextContract icc: cc.getInnerComponents()){
-					//						List<ContextContract> innerCandidates = DBHandler.generateCandidates(icc.getAbstractComponent().getSupertype().getIdAc(), icc.getAbstractComponent().getIdAc(), resolutionTree);
-					//				//		Criar várias opções
-					//					//	TODO: Concluir com a geração dos comonentes aninhados
-					//					}
-
-
-
-
-
-					//					--------------------------------------------------------------
-
-
-
-					//					Falta completar o componente abstrato com os parametros de qualidade herdados, pois a exportação busca os parametros de qualidade pelo id do pai 
-					//					cc.getAbstractComponent().getQualityParameters().addAll(resolutionTree.findNode(aux).getQps());
-					//					System.out.println("<Params> "+resolutionTree.findNode(aux).getQps().size());
 					cc.setPlatform(new PlatformProfileType());
-					cc.getPlatform().setPlatformContract(PlatformHandler.getPlatform(cc_id));
-					list.add(cc); 
+					cc.getPlatform().setPlatformContract(PlatformHandler.getPlatform(cc_id));	
+//					System.out.println(FormalFormat.exportContextContractWithIDs(cc, null));
+					list.add(cc);
 				}
 				supertype = ResolutionNode.resolutionTree.findNode(list.get(list.size()-1).getAbstractComponent().getIdAc()).getSupertype().getAc_id();
 				history = aux;
 				aux = supertype;
-			}while(resultSet!= null && history != supertypeID );//supertype != supertypeID && supertype != 0
+			}while(resultSet!= null && history != supertypeID );
+//			System.out.println("Generate Candidates!"+list.size());
 			return list;
 		} catch (SQLException e) { 
 			throw new DBHandlerException("A sql error occurred: ", e);
@@ -141,7 +138,7 @@ public class ResolutionHandler extends DBHandler {
 					cat.setCpId(cpt.getCpId());
 					cat.setCcId(candidate.getCcId());
 					cat.setKind(cpt.getKind());
-					
+
 					if(cpt.getKind()==1){
 						try {
 							cat.setContextContract(ContextContractHandler.getContextContract(cpt.getBound().getCcId()));

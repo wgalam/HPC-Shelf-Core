@@ -14,7 +14,7 @@ public class PlatformHandler extends DBHandler {
 
 	private static final String SELECT_PLATFORM_BY_CC_ID = "select * from context_contract A, component_platform B, maintainer C where A.cc_id = B.platform_cc_id and B.cc_id = ?;";
 	private static final String SELECT_IP_BY_CC_ID = "select maintainer_url from platform_owner A, maintainer B where A.platform_cc_id = ?;";
-	private static final String INSERT_PLATFORM_OWNER = "INSERT INTO platform_owner (platform_cc_id, maintainer_id) VALUES (?,?);";
+	private static final String INSERT_PLATFORM_OWNER = "INSERT INTO platform_owner (platform_cc_id, maintainer_id) VALUES (?,(SELECT B.maintainer_id FROM maintainer B, public.user A, maintainer_manager C WHERE A.user_id = C.user_id AND B.maintainer_id = C.maintainer_id AND A.user_id = ?));";
 
 
 	/**

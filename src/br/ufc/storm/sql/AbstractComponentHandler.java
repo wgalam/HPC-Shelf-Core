@@ -120,13 +120,7 @@ public class AbstractComponentHandler extends DBHandler{
 	
 	//TODO: Concluir o cadastro de variáveis
 	public static int addAbstractComponent(AbstractComponentType ac, Map<String, Integer> sharedVariables) throws DBHandlerException, ResolveException{
-		if(ac.getIdAc()!=null){
-			throw new DBHandlerException("Abstract Component id must be auto generated, can not be informed");
-		}
-		if(exists(ac)){
-			//Merge
-			//TODO: Finish this part
-		}else{
+		if(!exists(ac)){
 			try {
 				Connection con = DBHandler.getConnection();
 				con.setAutoCommit(false);

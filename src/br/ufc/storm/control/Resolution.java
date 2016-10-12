@@ -3,12 +3,9 @@ package br.ufc.storm.control;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
-
-import com.sun.org.apache.xerces.internal.util.SynchronizedSymbolTable;
 
 import br.ufc.storm.exception.DBHandlerException;
 import br.ufc.storm.exception.FunctionException;
@@ -18,7 +15,6 @@ import br.ufc.storm.export.FormalFormat;
 import br.ufc.storm.io.LogHandler;
 import br.ufc.storm.jaxb.AbstractComponentType;
 import br.ufc.storm.jaxb.CalculatedArgumentType;
-import br.ufc.storm.jaxb.CalculatedFunctionTermType;
 import br.ufc.storm.jaxb.CalculatedParameterType;
 import br.ufc.storm.jaxb.CandidateListType;
 import br.ufc.storm.jaxb.ContextArgumentType;
@@ -57,18 +53,25 @@ public class Resolution{
 		cc.getPlatform().setPlatformContract(new ContextContract());
 		cc.getPlatform().getPlatformContract().setAbstractComponent(new AbstractComponentType());
 		cc.getPlatform().getPlatformContract().getAbstractComponent().setIdAc(19);
-		
-		//Testando a filtragem por argumento de contexto (localizado em Fortaleza) (só o micro não passa)
-//		cc.getPlatform().getPlatformContract().getContextArguments().add(new ContextArgumentType());
-//		cc.getPlatform().getPlatformContract().getContextArguments().get(0).setCpId(26);
-//		cc.getPlatform().getPlatformContract().getContextArguments().get(0).setContextContract(new ContextContract());
-//		cc.getPlatform().getPlatformContract().getContextArguments().get(0).getContextContract().setCcId(144);
 
-//		cc.getPlatform().getPlatformContract().getContextArguments().add(new ContextArgumentType());
-//		cc.getPlatform().getPlatformContract().getContextArguments().get(0).setCpId(35);
-//		cc.getPlatform().getPlatformContract().getContextArguments().get(0).setContextContract(new ContextContract());
-//		cc.getPlatform().getPlatformContract().getContextArguments().get(0).getContextContract().setCcId(175);
-		
+		//Testando a filtragem por argumento de contexto (localizado em Fortaleza) (só o micro não passa)
+		//		cc.getPlatform().getPlatformContract().getContextArguments().add(new ContextArgumentType());
+		//		cc.getPlatform().getPlatformContract().getContextArguments().get(0).setCpId(26);
+		//		cc.getPlatform().getPlatformContract().getContextArguments().get(0).setContextContract(new ContextContract());
+		//		cc.getPlatform().getPlatformContract().getContextArguments().get(0).getContextContract().setCcId(144);
+
+		//		cc.getPlatform().getPlatformContract().getContextArguments().add(new ContextArgumentType());
+		//		cc.getPlatform().getPlatformContract().getContextArguments().get(0).setCpId(35);
+		//		cc.getPlatform().getPlatformContract().getContextArguments().get(0).setContextContract(new ContextContract());
+		//		cc.getPlatform().getPlatformContract().getContextArguments().get(0).getContextContract().setCcId(175);
+
+		//Restringe a quantidade de nós
+		cc.getPlatform().getPlatformContract().getContextArguments().add(new ContextArgumentType());
+		cc.getPlatform().getPlatformContract().getContextArguments().get(0).setCpId(27);
+		cc.getPlatform().getPlatformContract().getContextArguments().get(0).setValue(new ContextArgumentValueType());
+		cc.getPlatform().getPlatformContract().getContextArguments().get(0).getValue().setDataType("Integer");
+		cc.getPlatform().getPlatformContract().getContextArguments().get(0).getValue().setValue("1");
+
 		//*******************************************************
 
 		ContextArgumentType arg0 = new ContextArgumentType();
@@ -79,16 +82,16 @@ public class Resolution{
 		cc.getContextArguments().add(arg0);
 
 		//Testando a filtragem por parametro de qualidade (total de núcleos superior a este valor)
-//		CalculatedArgumentType cat = new CalculatedArgumentType();
-//		cat.setCpId(1);
-//		cat.setValue(1.0);
-//		cc.getPlatform().getPlatformContract().getQualityArguments().add(cat);
+		//		CalculatedArgumentType cat = new CalculatedArgumentType();
+		//		cat.setCpId(1);
+		//		cat.setValue(1.0);
+		//		cc.getPlatform().getPlatformContract().getQualityArguments().add(cat);
 
 		//Testando a filtragem por parametro de custo (só o gpu passa)
-//				cat = new CalculatedArgumentType();
-//				cat.setCpId(112);
-//				cat.setValue(100.0);
-//				cc.getPlatform().getPlatformContract().getCostArguments().add(cat);
+		//				cat = new CalculatedArgumentType();
+		//				cat.setCpId(112);
+		//				cat.setValue(100.0);
+		//				cc.getPlatform().getPlatformContract().getCostArguments().add(cat);
 
 
 		//*******************************************************
@@ -104,8 +107,7 @@ public class Resolution{
 		System.out.println("Aguarde buscando componentes...");
 		CandidateListType resolve = null;
 		try {
-			resolve = resolve(cc, cc.getPlatform().getPlatformContract());
-			System.out.println("Size of resolve: "+resolve.getCandidate().size());
+			resolve = resolve(cc);
 			//Reordena conforme o preset 3
 			//			resolve = sortCandidateList(resolve, 3);
 			int cont = 0;
@@ -119,9 +121,11 @@ public class Resolution{
 				 */
 				//			System.out.println("Candidato compatível ("+ cont++ +"): "+XMLHandler.getContextContract(a));
 
-
+				if(a.getCcId()==229){
+					System.out.println(XMLHandler.getContextContract(a));;
+				}
 				//				###########18/07/2016
-				System.out.println(FormalFormat.exportContextContract(a, null));
+//				System.out.println(FormalFormat.exportContextContract(a, null));
 				//				###########
 			}
 			//						System.out.println("Último Candidato Compatível\n"+XMLHandler.getContextContract(resolve.getCandidate().get(resolve.getCandidate().size()-1)));
@@ -130,6 +134,7 @@ public class Resolution{
 			System.out.println("Erro enquanto estava resolvendo um contrato");
 			e.printStackTrace();
 		}
+		System.out.println("\n\n\nSize of resolve: "+resolve.getCandidate().size());
 
 		//		System.out.println("################### Start Deploy #####################");
 		//		LogHandler.getLogger().info("Starting to deploy an application...");
@@ -175,8 +180,6 @@ public class Resolution{
 		innerAbstractComponent1.setIdAc(123);
 		inner1.setAbstractComponent(innerAbstractComponent1);
 		cc.getInnerComponents().add(inner1);
-
-
 		System.out.println("Aguarde buscando componentes...");
 		CandidateListType resolve;
 		try {
@@ -199,7 +202,7 @@ public class Resolution{
 	 * @return
 	 * @throws ResolveException 
 	 */
-	public static CandidateListType resolve(ContextContract application, ContextContract applicationPlatform) throws ResolveException{
+	public static CandidateListType resolve(ContextContract application) throws ResolveException{
 		long start = System.currentTimeMillis();
 		LogHandler.getLogger().info("Resolution Class: Starting to resolve a component!");
 		ResolutionNode.setup();
@@ -219,91 +222,192 @@ public class Resolution{
 			return new CandidateListType();
 		}
 		LogHandler.getLogger().info(concreteComponentCandidatesList.size()+" components were found, now it will be filtered");
-		int index = 0;
-		if(concreteComponentCandidatesList.size() > 0){
-			for(ContextContract candidate:concreteComponentCandidatesList){
-				try {
-					if(componentSubTypeRecursiveTest(application, candidate, null, application.getAbstractComponent())){
-						if(candidate.getPlatform() == null){
-							//Will test the next software contract
-							continue;
-						}
-						Resolution.mergeContract(application, candidate);						
+		ContextContract candidate;	
+		for(int i = 0; i < concreteComponentCandidatesList.size(); i++){
+			candidate = concreteComponentCandidatesList.get(i);
+			try {
+				if(componentSubTypeRecursiveTest(application, candidate, null, application.getAbstractComponent())){
+					if(candidate.getPlatform() == null){
+						//Will test the next software contract
+						continue;
+					}
+					Resolution.mergeContract(application, candidate);						
 
-						List<ContextContract> componentCandidatePlatformlist = null;
-						LogHandler.getLogger().info("Generating Hardware Candidate List for candidate: "+index);
-						try {
-							componentCandidatePlatformlist = ResolutionHandler.generateCompliantPlatformCandidates(candidate.getPlatform().getPlatformContract().getAbstractComponent().getIdAc());
-						} catch (DBHandlerException e3) {
-							//Will test the next software contract
-							continue;
-						}
-						LogHandler.getLogger().info(componentCandidatePlatformlist.size()+" platforms were found for software component "+index);
-						if(componentCandidatePlatformlist.size() > 0){
-							CandidateListType c = filterPlatformCandidateList(componentCandidatePlatformlist, application, applicationPlatform, candidate, tableOfSWidArgumentTable);
-							candidateList.getCandidate().addAll(c.getCandidate());
-							if(candidateList.getUserId()==null){
-								candidateList.setUserId(c.getUserId());
-							}
+					List<ContextContract> componentCandidatePlatformlist = null;
+					LogHandler.getLogger().info("Generating Hardware Candidate List for candidate: "+i);
+					try {
+						componentCandidatePlatformlist = ResolutionHandler.generateCompliantPlatformCandidates(candidate.getPlatform().getPlatformContract().getAbstractComponent().getIdAc());
+					} catch (DBHandlerException e3) {
+						//Will test the next software contract
+						continue;
+					}
+					LogHandler.getLogger().info(componentCandidatePlatformlist.size()+" platforms were found for software component "+i);
+					if(componentCandidatePlatformlist.size() > 0){
+						CandidateListType c = filterPlatformCandidateList(componentCandidatePlatformlist, application, candidate, tableOfSWidArgumentTable);
+						candidateList.getCandidate().addAll(c.getCandidate());
+						if(candidateList.getUserId()==null){
+							candidateList.setUserId(c.getUserId());
 						}
 					}
-				} catch (DBHandlerException e) {
-					//Will test the next software contract
-					continue;
 				}
-				index++;
+			} catch (DBHandlerException e) {
+				//Will test the next software contract
+				continue;
 			}
 		}
 		candidateList.setUserId(application.getOwnerId());
 		Resolution.rankCandidates(candidateList, tableOfSWidArgumentTable); //Rank all candidates
 		Resolution.sortCandidateList(candidateList, 0);//Primeira função de ranqueamento
 		long elapsed = System.currentTimeMillis() - start;
-		System.out.println("Resolution Time: "+elapsed+"ms");
+		elapsed/=1000;
+		System.out.println("Resolution Time: "+(int)(elapsed/60)+" minutos e "+elapsed % 60+" segundos");
 		return candidateList;
 	}
 
-	private static CandidateListType filterPlatformCandidateList( List<ContextContract> componentCandidatePlatformlist, ContextContract application, ContextContract applicationPlatform, ContextContract candidate, Hashtable <Integer , Hashtable <Integer , ArgumentTable>> tableOfSWidArgumentTable) {
+	/**
+	 * This method resolves inner componentes. 
+	 * The main difference in relation to resolve method is in the fact that only one platform subtype test is required, and than acquiring performance
+	 * @param application
+	 * @return
+	 * @throws ResolveException
+	 */
+	public static CandidateListType resolveInner(ContextContract application) throws ResolveException{
+		
+		Hashtable <Integer , Hashtable <Integer , ArgumentTable>> tableOfSWidArgumentTable = new Hashtable<Integer, Hashtable <Integer , ArgumentTable>>();
+//				try {
+//					ContextContractHandler.completeContextContract(application);
+//				} catch (DBHandlerException e1) {
+//					throw new ResolveException("Can not complete context contract data: ",e1);
+//				}
+
 		CandidateListType candidateList = new CandidateListType();
-		CandidateListType newCandidateList = new CandidateListType();
-		int calculated;
+		List<ContextContract> concreteComponentCandidatesList;
+		
+		try {
+			System.out.println("Resolve Inner");
+			concreteComponentCandidatesList = ResolutionHandler.generateCandidates(application.getAbstractComponent().getSupertype().getIdAc(), application.getAbstractComponent().getIdAc());
+			System.out.println("ComputationInnersCandidates: "+concreteComponentCandidatesList.size());
+		} catch (DBHandlerException e1) {
+			return new CandidateListType();
+		}
+		ContextContract candidate;	
+		for(int i = 0; i < concreteComponentCandidatesList.size(); i++){
+			candidate = concreteComponentCandidatesList.get(i);
+			try {
+				if(componentSubTypeRecursiveTest(application, candidate, null, application.getAbstractComponent())){
+					if(candidate.getPlatform() == null){
+						//Will test the next software contract
+						continue;
+					}
+					Resolution.mergeContract(application, candidate);						
+
+					if(isPlatformSubType(candidate.getPlatform().getPlatformContract(), application.getPlatform().getPlatformContract(), null)){
+						ContextContract cct = XMLHandler.cloneContextContract(candidate);//Cloning component
+						cct.getPlatform().setPlatformContract(XMLHandler.cloneContextContract(application.getPlatform().getPlatformContract()));
+						ContextContract cc = resolveInnerComponents(candidate, candidateList, cct);
+						if(cc!=null){
+							candidateList.getCandidate().add(cc);
+						}
+
+					}
+
+					
+					CandidateListType c = filterInnerPlatformCandidateList(application.getPlatform().getPlatformContract(), application, candidate, tableOfSWidArgumentTable);
+					candidateList.getCandidate().addAll(c.getCandidate());
+
+					if(candidateList.getUserId()==null){
+						candidateList.setUserId(c.getUserId());
+					}
+
+				}
+			} catch (DBHandlerException e) {
+				//Will test the next software contract
+				continue;
+			}
+		}
+		candidateList.setUserId(application.getOwnerId());
+		Resolution.rankCandidates(candidateList, tableOfSWidArgumentTable); //Rank all candidates
+		Resolution.sortCandidateList(candidateList, 0);//Primeira função de ranqueamento
+		return candidateList;
+	}
+
+	private static CandidateListType filterPlatformCandidateList( List<ContextContract> componentCandidatePlatformlist, ContextContract application, ContextContract candidate, Hashtable <Integer , Hashtable <Integer , ArgumentTable>> tableOfSWidArgumentTable) {
+		CandidateListType candidateList = new CandidateListType();
 		for(int i = 0; i < componentCandidatePlatformlist.size(); i++){
 			ContextContract platform = componentCandidatePlatformlist.get(i);
 			if(isPlatformSubType(candidate.getPlatform().getPlatformContract(), platform, null)){
 				if(isPlatformSubType(application.getPlatform().getPlatformContract(), platform, null)){
 					ContextContract cct = XMLHandler.cloneContextContract(candidate);//Cloning component
 					cct.getPlatform().setPlatformContract(XMLHandler.cloneContextContract(platform));
-					if(application.getInnerComponents().size() > 0){
-						boolean fit = true;
-						for(int x = 0; x < application.getInnerComponents().size(); x++ ){
-							ContextContract applicationInner = XMLHandler.cloneContextContract(application.getInnerComponents().get(x));
-							applicationInner.getPlatform().setPlatformContract(XMLHandler.cloneContextContract(platform));
-							CandidateListType inners;
-							try {
-								inners = Resolution.resolve(applicationInner.getPlatform().getPlatformContract(), XMLHandler.cloneContextContract(platform));
-								if(inners.getCandidate().size()>0 ){
-									cct.getInnerComponentsResolved().add(inners);
-								}else{
-									fit=false;
-								}
-							} catch (ResolveException e) {
-								e.printStackTrace();
-							}
-
-						}
-						if(fit){
-							candidateList.getCandidate().add(cct);
-						}
-					}else{
-						candidateList.getCandidate().add(cct);
+					ContextContract cc = resolveInnerComponents(candidate, candidateList, cct);
+					if(cc!=null){
+						candidateList.getCandidate().add(cc);
 					}
-					//				}
 				}
 			}
 		}
 		LogHandler.getLogger().info("Calculating arguments...");
-		Iterator i = candidateList.getCandidate().iterator();
-		int size = candidateList.getCandidate().size();
-		//		for(int i = 0; i < size; i++){
+		calculateCalculatedArguments(candidateList, application, tableOfSWidArgumentTable);
+		return candidateList;
+	}
+	
+	private static CandidateListType filterInnerPlatformCandidateList( ContextContract componentCandidatePlatform, ContextContract application, ContextContract candidate, Hashtable <Integer , Hashtable <Integer , ArgumentTable>> tableOfSWidArgumentTable) {
+		System.out.println("Entrou no filter inner");
+		CandidateListType candidateList = new CandidateListType();
+			ContextContract platform = componentCandidatePlatform;
+			if(isPlatformSubType(candidate.getPlatform().getPlatformContract(), platform, null)){
+				if(isPlatformSubType(application.getPlatform().getPlatformContract(), platform, null)){
+					ContextContract cct = XMLHandler.cloneContextContract(candidate);//Cloning component
+					cct.getPlatform().setPlatformContract(XMLHandler.cloneContextContract(platform));
+					ContextContract cc = resolveInnerComponents(candidate, candidateList, cct);
+					if(cc!=null){
+						candidateList.getCandidate().add(cc);
+					}
+				}
+			}
+		LogHandler.getLogger().info("Calculating arguments...");
+		calculateCalculatedArguments(candidateList, application, tableOfSWidArgumentTable);
+		return candidateList;
+	}
+
+	private static ContextContract resolveInnerComponents(ContextContract candidate, CandidateListType candidateList, ContextContract cct){
+		if(candidate.getInnerComponents().size() > 0){
+			boolean fit = true;
+			try{
+				for(ContextContract cc: candidate.getInnerComponents()){//Para cada componente aninhado
+					ContextContract applicationInner = XMLHandler.cloneContextContract(cc); //application inner o contrato do aninhado a ser resolvido
+
+					if(applicationInner.getPlatform()==null){
+						applicationInner.setPlatform(new PlatformProfileType());
+					}
+					//Define como perfil o perfil que já está sendo avaliado
+					applicationInner.getPlatform().setPlatformContract(XMLHandler.cloneContextContract(cct.getPlatform().getPlatformContract()));//define-se como contrato da plataforma, a plataforma do candidato
+					CandidateListType inners;
+					try {
+						inners = Resolution.resolveInner(applicationInner);
+						if(inners.getCandidate().size()>0 ){
+							cct.getInnerComponentsResolved().add(inners);
+						}else{
+							fit=false;
+						}
+					} catch (ResolveException e) {
+						e.printStackTrace();
+					}
+				}
+				if(fit){
+					return cct;
+				}
+			}catch (Exception e) {
+				e.printStackTrace();
+			}
+		}else{
+			return cct;
+		}
+		return null;
+	}
+
+	public static void calculateCalculatedArguments(CandidateListType candidateList, ContextContract application, Hashtable <Integer , Hashtable <Integer , ArgumentTable>> tableOfSWidArgumentTable){
+		Iterator<ContextContract> i = candidateList.getCandidate().iterator();
 		while(i.hasNext()){
 			ContextContract cc = (ContextContract) i.next();
 
@@ -312,21 +416,19 @@ public class Resolution{
 				tableOfSWidArgumentTable.put(cc.getCcId(), new Hashtable<>());
 			}
 			tableOfSWidArgumentTable.get(cc.getCcId()).put(cc.getPlatform().getPlatformContract().getCcId(), argumentTable);
-			//								.tableOfHWidArgumentTable.put(cc.getPlatform().getPlatformContract().getCcId(), argumentTable);
 			//calcula parametros de qualidade
 			try {
-				calculated = CalculatedArgumentHandler.calulateContextContractArguments(cc, argumentTable, ContextParameterHandler.QUALITY);
-			} catch (FunctionException e2) {
+				CalculatedArgumentHandler.calulateContextContractArguments(cc, argumentTable, ContextParameterHandler.QUALITY);
+			} catch (FunctionException e1) {
 				//do nothing
 			}
 			try {
 				if(Resolution.isSubTypeByCalculatedArgument(application, cc, ContextParameterHandler.QUALITY)){
 					//calcula parametros de custo
 					try {
-						int x = CalculatedArgumentHandler.calulateContextContractArguments(cc, argumentTable, ContextParameterHandler.COST);
+						CalculatedArgumentHandler.calulateContextContractArguments(cc, argumentTable, ContextParameterHandler.COST);
 					} catch (FunctionException e1) {
 						//do nothing
-						e1.printStackTrace();
 					} 
 					if(Resolution.isSubTypeByCalculatedArgument(application, cc, ContextParameterHandler.COST)){
 						LogHandler.getLogger().info("Candidate "+cc.getCcName()+" added");
@@ -340,8 +442,10 @@ public class Resolution{
 				e.printStackTrace();
 			}
 		}
-		return candidateList;
 	}
+
+
+
 
 	/**
 	 * This method tests recursively subtyping relation between platforms.
@@ -352,41 +456,6 @@ public class Resolution{
 	 * @param applicationPlatformRequired
 	 * @return
 	 */
-
-	//	public static boolean isPlatformSubType(ContextContract componentRequiredPlatform, ContextContract platformCandidate, Integer cp_id, ContextContract applicationPlatformRequired){
-	//		try {
-	//			boolean subtype = true;
-	//			if(applicationPlatformRequired.getCcId()==platformCandidate.getCcId()){
-	//				return true;
-	//			}
-	//			//Test if a platform is subtype
-	//			if(componentRequiredPlatform != null && platformCandidate!=null){
-	//				if(cp_id!=null){
-	//					int candidateContractIdAc = platformCandidate.getAbstractComponent().getIdAc(); //ID_ac candidato
-	//					ResolutionNode supertype = ResolutionNode.resolutionTree.findNode(componentRequiredPlatform.getAbstractComponent().getIdAc());
-	//					if(supertype.findNode(candidateContractIdAc)== null){
-	//						subtype = false;
-	//					}
-	//				}
-	//			}else{
-	//				subtype = false;
-	//			}
-	//			if(subtype){
-	//				if(componentRequiredPlatform.getContextArguments().size() > 0){
-	//					for(ContextArgumentType cat:componentRequiredPlatform.getContextArguments()){
-	//						if(cat.getValue()==null){
-	//							subtype = subtype && isPlatformSubType(cat.getContextContract(), getContextContractFromArgument(cat,platformCandidate), cat.getCpId(), applicationPlatformRequired);
-	//						}else{
-	//							subtype = subtype && isPlatformSubType(cat, getValueFromCandidateArgument(cat,platformCandidate), cat.getKind());
-	//						}
-	//					}
-	//				}
-	//			}
-	//			return subtype;
-	//		} catch (Exception e) {
-	//			return false;
-	//		}
-	//	}
 
 	public static boolean isPlatformSubType(ContextContract requiredPlatform, ContextContract candidatePlatform, Integer cp_id){
 		try {
@@ -404,10 +473,12 @@ public class Resolution{
 			if(subtype){
 				if(requiredPlatform.getContextArguments().size() > 0){
 					for(ContextArgumentType cat:requiredPlatform.getContextArguments()){
+
 						if(cat.getValue() == null){
 							subtype = subtype && isPlatformSubType(cat.getContextContract(), getContextContractFromArgument(cat,candidatePlatform), cat.getCpId());
 						}else{
-							subtype = subtype && isPlatformSubType(cat, getValueFromCandidateArgument(cat,candidatePlatform), cat.getKind());
+							int kind = ContextParameterHandler.getKindFromContextParameter(cat.getCpId(), requiredPlatform.getAbstractComponent());
+							subtype = subtype && isPlatformSubTypeNumeric(cat, getValueFromCandidateArgument(cat,candidatePlatform), kind);
 						}
 					}
 				}
@@ -425,7 +496,8 @@ public class Resolution{
 	 * @param kind
 	 * @return
 	 */
-	public static boolean isPlatformSubType(ContextArgumentType contract, ContextArgumentType candidate, int kind){
+	public static boolean isPlatformSubTypeNumeric(ContextArgumentType contract, ContextArgumentType candidate, int kind){
+
 		switch(kind){
 		case EQUAL:
 			//In this case, if both are equal, return true.
@@ -642,8 +714,10 @@ public class Resolution{
 				subtype = false;
 			}
 		}
+
 		if(subtype){
 			if(applicationContract.getContextArguments().size() > 0){
+
 				for(ContextArgumentType cat:applicationContract.getContextArguments()){
 					if(cat.getContextContract()!=null){
 						subtype = subtype && componentSubTypeRecursiveTest(cat.getContextContract(), getContextContractFromArgument(cat,candidate), cat.getCpId(), applicationContract.getAbstractComponent());

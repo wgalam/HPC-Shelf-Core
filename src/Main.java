@@ -31,28 +31,20 @@ import br.ufc.storm.xml.XMLHandler;
 public class Main {
 	public static void main(String[] args) throws IOException {
 	
-//		try {
-//			List<ConcreteUnitType> cut = ConcreteUnitHandler.getConcreteUnits(50);
-//			System.out.println(cut.get(0).getUId());
-//		} catch (DBHandlerException e) {
-//			// TODO Auto-generated block
-//			e.printStackTrace();
-//		}
-		
-		
 		try {
-			int ac = 161;
+			int ac = 1;
 			int cc = 229;
-			int cc2 = 230;
-//			System.out.println(XMLHandler.getContextContract(126));
-			System.out.println(FormalFormat.exportContextContractWithIDs(ContextContractHandler.getContextContract(cc), null));
-			System.out.println();
-			System.out.println(FormalFormat.exportContextContractWithIDs(ContextContractHandler.getContextContract(cc2), null));
+			int cc2 = 126;
+//			System.out.println(FormalFormat.exportContextContractWithIDs(ContextContractHandler.getContextContract(cc), null));
+//			System.out.println();
+//			System.out.println(FormalFormat.exportContextContractWithIDs(ContextContractHandler.getContextContract(cc2), null));
+//			System.out.println();
+//			System.out.println(FormalFormat.exportComponentSignatureWithIDs(AbstractComponentHandler.getAbstractComponent(ac), null));
 			
-//			System.out.println(XMLHandler.getContextContract(ContextContractHandler.getContextContract(cc))+"\n");
+			System.out.println(XMLHandler.getContextContract(ContextContractHandler.getContextContract(cc))+"\n");
 			
-			System.out.println(FormalFormat.exportComponentSignatureWithIDs(AbstractComponentHandler.getAbstractComponent(ac), null));
-//			System.out.println(XMLHandler.getAbstractComponent("MatrixMultiplication"));
+			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -64,25 +56,6 @@ public class Main {
 //			e.printStackTrace();
 //		}
 		
-		
-		
-//		List<UnitFileType> list;
-//		try {
-//			list = ConcreteUnitHandler.getUnitFiles(17);
-//			System.out.println(list.size());
-////			for(UnitFileType uf : list){
-////				System.out.println(new String(FileHandler.getUnitFile(uf.getFileId())));
-////			}
-//		} catch (DBHandlerException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		try {
-//			System.out.println(ContextContractHandler.listContract(1));
-//		} catch (DBHandlerException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-		
+
 	}
 }

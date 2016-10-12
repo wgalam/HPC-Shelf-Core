@@ -138,7 +138,7 @@ public class XMLHandler {
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 			JAXBElement<CandidateListType> element1;
 			try {
-				element1 = new ObjectFactory().createCandidateList(Resolution.resolve(cc,null));
+				element1 = new ObjectFactory().createCandidateList(Resolution.resolve(cc));
 			} catch (ResolveException e) {
 				throw new XMLException(e);
 			}
@@ -385,7 +385,6 @@ public class XMLHandler {
 			JAXBElement<ContextContract> element = (JAXBElement<ContextContract>) unmarshaller.unmarshal(new InputSource(new java.io.StringReader(cmp)));
 			cc = element.getValue();
 			ContextContractHandler.addPlatformContextContract(cc);
-			PlatformHandler.addPlatformOwner(cc);
 			try {
 				DBHandler.getConnection().commit();
 				DBHandler.getConnection().setAutoCommit(true);
