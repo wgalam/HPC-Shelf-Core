@@ -12,9 +12,9 @@ import br.ufc.storm.jaxb.PlatformProfileType;
 
 public class PlatformHandler extends DBHandler {
 
-	private static final String SELECT_PLATFORM_BY_CC_ID = "select * from context_contract A, component_platform B, maintainer C where A.cc_id = B.platform_cc_id and B.cc_id = ?;";
-	private static final String SELECT_IP_BY_CC_ID = "select maintainer_url from platform_owner A, maintainer B where A.platform_cc_id = ?;";
-	private static final String INSERT_PLATFORM_OWNER = "INSERT INTO platform_owner (platform_cc_id, maintainer_id) VALUES (?,(SELECT B.maintainer_id FROM maintainer B, public.user A, maintainer_manager C WHERE A.user_id = C.user_id AND B.maintainer_id = C.maintainer_id AND A.user_id = ?));";
+	private static final String SELECT_PLATFORM_BY_CC_ID = "select * from context_contract A, component_platform B, maintainer C where A.cc_id = B.component_platform_cc_id and B.profile_cc_id = ?;";
+	private static final String SELECT_IP_BY_CC_ID = "select maintainer_url from platform_owner A, maintainer B where A.component_platform_cc_id = ?;";
+	private static final String INSERT_PLATFORM_OWNER = "INSERT INTO platform_owner (component_platform_cc_id, maintainer_id) VALUES (?,(SELECT B.maintainer_id FROM maintainer B, public.user A, maintainer_manager C WHERE A.user_id = C.user_id AND B.maintainer_id = C.maintainer_id AND A.user_id = ?));";
 
 
 	/**
@@ -30,13 +30,14 @@ public class PlatformHandler extends DBHandler {
 			PreparedStatement prepared = con.prepareStatement(SELECT_PLATFORM_BY_CC_ID); 
 			prepared.setInt(1, cc_id);
 			ResultSet resultSet = prepared.executeQuery(); 
-
+			
 			if(resultSet.next()) { 
 				AbstractComponentType act = new AbstractComponentType();
 				cc.setAbstractComponent(act);
 				cc.setCcId(resultSet.getInt("cc_id")); 
 				cc.getAbstractComponent().setIdAc(resultSet.getInt("ac_id")); 
 				cc.setCcName(resultSet.getString("cc_name"));
+				cc.setKindId(resultSet.getInt("kind_id")); 
 				cc.setAbstractComponent(AbstractComponentHandler.getAbstractComponent(cc.getAbstractComponent().getIdAc()));
 				cc.getContextArguments().addAll(ContextArgumentHandler.getContextArguments(cc.getCcId()));
 				return cc;
@@ -78,6 +79,7 @@ public class PlatformHandler extends DBHandler {
 				cc.setAbstractComponent(act);
 				cc.setCcId(resultSet.getInt("cc_id")); 
 				cc.getAbstractComponent().setIdAc(resultSet.getInt("ac_id")); 
+				cc.setKindId(resultSet.getInt("kind_id")); 
 				cc.setCcName(resultSet.getString("cc_name"));
 				cc.setAbstractComponent(AbstractComponentHandler.getAbstractComponent(cc.getAbstractComponent().getIdAc()));
 				cc.getContextArguments().addAll(ContextArgumentHandler.getContextArguments(cc.getCcId()));

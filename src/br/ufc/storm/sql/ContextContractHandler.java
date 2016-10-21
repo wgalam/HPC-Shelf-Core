@@ -20,7 +20,7 @@ import br.ufc.storm.jaxb.PlatformProfileType;
 import br.ufc.storm.xml.XMLHandler;
 
 public class ContextContractHandler extends DBHandler{
-	private final static String INSERT_CONTEXT_CONTRACT = "INSERT INTO context_contract (ac_id, cc_name, type_id, owner_id) VALUES ((select ac_id from abstract_component where ac_name = ?), ?, ?, ?) RETURNING cc_id;";
+	private final static String INSERT_CONTEXT_CONTRACT = "INSERT INTO context_contract (ac_id, cc_name, kind_id, owner_id) VALUES ((select ac_id from abstract_component where ac_name = ?), ?, ?, ?) RETURNING cc_id;";
 	private final static String SELECT_CONTEXT_CONTRACT_ID = "select cc_id from context_contract where cc_name = ?;";
 	private static final String SELECT_CONTEXT_CONTRACT_NAME = "select cc_name from context_contract where cc_id = ?;";
 	private static final String SELECT_CONTEXT_CONTRACT = "select * from context_contract where cc_id = ?;";
@@ -29,8 +29,17 @@ public class ContextContractHandler extends DBHandler{
 	private static final String INSERT_PLATFORM_LINKAGE = "INSERT INTO component_platform  (cc_id, platform_cc_id) VALUES (?,?);";
 	private static final String INSERT_INNER_COMPONENT = "INSERT INTO concrete_inner_contract  (parent_cc_id, inner_cc_id) VALUES (?,?) RETURNING id;";
 	private static final String SELECT_INNER_COMPONENT = "SELECT * FROM concrete_inner_contract  WHERE parent_cc_id = ?;";
+	
+	private static final int QUALIFIER = 1;
+	private static final int PLATFORM = 2;
+	private static final int DATASTRUCTURE = 3;
+	private static final int COMPUTATION = 4;
+	private static final int CONNECTOR = 5;
+	private static final int DATASOURCE = 6;
+	
 
 	private static Integer owner = null;
+	
 
 	public static void main(String[] args) {
 		for(int i = 0; i < 0; i++){
@@ -225,7 +234,7 @@ public class ContextContractHandler extends DBHandler{
 			PreparedStatement prepared = con.prepareStatement(INSERT_CONTEXT_CONTRACT);
 			prepared.setString(1, cc.getAbstractComponent().getName());
 			prepared.setString(2, cc.getCcName());
-			prepared.setInt(3, 0);
+			prepared.setInt(3, cc.getKindId());
 			prepared.setInt(4, cc.getOwnerId());
 			ResultSet result = prepared.executeQuery();
 			if(result.next()){
@@ -250,7 +259,7 @@ public class ContextContractHandler extends DBHandler{
 			PreparedStatement prepared = con.prepareStatement(INSERT_CONTEXT_CONTRACT);
 			prepared.setString(1, cc.getAbstractComponent().getName());
 			prepared.setString(2, cc.getCcName());
-			prepared.setInt(3, 1);
+			prepared.setInt(3, ContextContractHandler.PLATFORM);
 			prepared.setInt(4, cc.getOwnerId());
 			ResultSet result = prepared.executeQuery();
 			if(result.next()){
@@ -432,30 +441,6 @@ public class ContextContractHandler extends DBHandler{
 	}
 
 	/**
-	 * This method adds an instantiation type 
-	 * @param name Instantiation type name
-	 * @param ac_name Abstract component name 
-	 * @return instantiation type id
-	 * @throws SQLException 
-	 * @throws DBHandlerException 
-	 */
-
-	public static int addContextContract(String name, String ac_name) throws DBHandlerException{
-		try {
-			Connection con = getConnection();
-			PreparedStatement prepared = con.prepareStatement(INSERT_CONTEXT_CONTRACT); 
-			prepared.setString(1, ac_name); 
-			prepared.setString(2,  name); 
-			prepared.executeQuery(); 	
-			return getContextContractID(name);
-		} catch (SQLException e) {
-			throw new DBHandlerException("An error occured while trying to add a context contract with name: "+name+" and abstract component name "+ac_name+". Error: ", e);
-		} 
-
-	}
-
-
-	/**
 	 * This method returns a context contract
 	 * @param cc_id his id
 	 * @return
@@ -479,6 +464,7 @@ public class ContextContractHandler extends DBHandler{
 				cc = new ContextContract();
 				cc.setCcId(cc_id);
 				cc.setCcName(name);
+				cc.setKindId(resultSet.getInt("kind_id"));
 				cc.setOwnerId(Integer.parseInt(owner));
 				cc.setAbstractComponent(AbstractComponentHandler.getAbstractComponent(ac_id));
 				cc.getContextArguments().addAll(ContextArgumentHandler.getContextArguments(cc_id));
@@ -512,6 +498,7 @@ public class ContextContractHandler extends DBHandler{
 		try { 
 			Integer ac_id = null;
 			String name = null;
+			Integer kind_id;
 			Connection con = getConnection(); 
 			PreparedStatement prepared = con.prepareStatement(SELECT_CONTEXT_CONTRACT);
 			prepared.setInt(1, cc_id);
@@ -519,9 +506,12 @@ public class ContextContractHandler extends DBHandler{
 			if (resultSet.next()){
 				ac_id = resultSet.getInt("ac_id");
 				name=resultSet.getString("cc_name");
+				kind_id = resultSet.getInt("kind_id");
 				cc = new ContextContract();
 				cc.setCcId(cc_id);
 				cc.setCcName(name);
+				cc.setKindId(kind_id);
+				
 			}
 			if(ac_id != null){
 				cc.setAbstractComponent(AbstractComponentHandler.getAbstractComponentPartial(ac_id));

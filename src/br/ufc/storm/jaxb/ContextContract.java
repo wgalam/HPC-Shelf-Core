@@ -2,7 +2,7 @@
 // Este arquivo foi gerado pela Arquitetura JavaTM para Implementação de Referência (JAXB) de Bind XML, v2.2.8-b130911.1802 
 // Consulte <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Todas as modificações neste arquivo serão perdidas após a recompilação do esquema de origem. 
-// Gerado em: 2016.09.17 às 02:29:59 PM BRT 
+// Gerado em: 2016.10.11 às 11:01:54 PM BRT 
 //
 
 
@@ -42,6 +42,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;attribute name="cc_name" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="cc_id" type="{http://www.w3.org/2001/XMLSchema}int" />
  *       &lt;attribute name="owner_id" type="{http://www.w3.org/2001/XMLSchema}int" />
+ *       &lt;attribute name="kind_id" type="{http://www.w3.org/2001/XMLSchema}int" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -86,6 +87,8 @@ public class ContextContract {
     protected Integer ccId;
     @XmlAttribute(name = "owner_id")
     protected Integer ownerId;
+    @XmlAttribute(name = "kind_id")
+    protected Integer kindId;
 
     /**
      * Gets the value of the contextArguments property.
@@ -408,6 +411,30 @@ public class ContextContract {
      */
     public void setOwnerId(Integer value) {
         this.ownerId = value;
+    }
+
+    /**
+     * Obtém o valor da propriedade kindId.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Integer }
+     *     
+     */
+    public Integer getKindId() {
+        return kindId;
+    }
+
+    /**
+     * Define o valor da propriedade kindId.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Integer }
+     *     
+     */
+    public void setKindId(Integer value) {
+        this.kindId = value;
     }
 
 }

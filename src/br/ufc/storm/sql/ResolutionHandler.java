@@ -23,7 +23,7 @@ import br.ufc.storm.model.ResolutionNode;
 
 public class ResolutionHandler extends DBHandler {
 	private static final String SELECT_CONTEXT_CONTRACT_BY_AC_ID = "select cc_id from context_contract where ac_id = ?;";
-	private static final String SELECT_PLATFORM_BY_AC_ID = "select * from context_contract A, platform_owner B where A.cc_id = B.platform_cc_id and A.ac_id = ? and type_id = 1;";
+	private static final String SELECT_PLATFORM_BY_AC_ID = "select * from context_contract A, platform_owner B where A.cc_id = B.platform_cc_id and A.ac_id = ? and kind_id = 2;";
 	private final static String SELECT_ABSTRACT_COMPONENT_BY_SUPERTYPE_ID = "select ac_name, ac_id, supertype_id, enabled from abstract_component WHERE supertype_id = ?;";
 
 	public static void main(String[] args) {
@@ -34,7 +34,7 @@ public class ResolutionHandler extends DBHandler {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * This method generates a list os all components candidates to a contract but only in the highest level, it will be refined.
 	 * @param supertypeID
@@ -45,7 +45,7 @@ public class ResolutionHandler extends DBHandler {
 	 */
 
 	public static List<ContextContract> generateCandidates(int supertypeID, int requiredID) throws DBHandlerException{
-		System.out.println("Generate Candidates!");
+		//		System.out.println("Generate Candidates!");
 		PreparedStatement prepared;
 		ResultSet resultSet;
 		List<ContextContract> list = new ArrayList<ContextContract>();
@@ -58,22 +58,22 @@ public class ResolutionHandler extends DBHandler {
 				prepared = con.prepareStatement(SELECT_CONTEXT_CONTRACT_BY_AC_ID);
 				prepared.setInt(1, aux); 
 				resultSet = prepared.executeQuery();
-				System.out.println(prepared);
 				while(resultSet.next()){
 					Integer cc_id = resultSet.getInt("cc_id");
 					ContextContract cc = ContextContractHandler.getContextContract(cc_id);
 					cc.setPlatform(new PlatformProfileType());
 					cc.getPlatform().setPlatformContract(PlatformHandler.getPlatform(cc_id));	
-//					System.out.println(FormalFormat.exportContextContractWithIDs(cc, null));
 					list.add(cc);
 				}
+
 				supertype = ResolutionNode.resolutionTree.findNode(list.get(list.size()-1).getAbstractComponent().getIdAc()).getSupertype().getAc_id();
+				
 				history = aux;
 				aux = supertype;
 			}while(resultSet!= null && history != supertypeID );
-//			System.out.println("Generate Candidates!"+list.size());
 			return list;
-		} catch (SQLException e) { 
+		} catch (Exception e) { 
+			e.printStackTrace();
 			throw new DBHandlerException("A sql error occurred: ", e);
 		}
 	}

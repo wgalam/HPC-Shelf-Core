@@ -136,6 +136,7 @@
     	<attribute name="cc_name" type="string"></attribute>
     	<attribute name="cc_id" type="int"></attribute>
     	<attribute name="owner_id" type="int"></attribute>
+    	<attribute name="kind_id" type="int"></attribute>
     </complexType>
 
 

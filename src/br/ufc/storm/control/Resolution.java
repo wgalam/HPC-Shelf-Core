@@ -122,7 +122,8 @@ public class Resolution{
 				//			System.out.println("Candidato compatível ("+ cont++ +"): "+XMLHandler.getContextContract(a));
 
 				if(a.getCcId()==229){
-					System.out.println(XMLHandler.getContextContract(a));;
+//					System.out.println(FormalFormat.exportContextContract(a, null));
+					System.out.println("Candidato compatível ("+ cont++ +"): "+XMLHandler.getContextContract(a));
 				}
 				//				###########18/07/2016
 //				System.out.println(FormalFormat.exportContextContract(a, null));
@@ -212,7 +213,6 @@ public class Resolution{
 		} catch (DBHandlerException e1) {
 			throw new ResolveException("Can not complete context contract data: ",e1);
 		}
-
 		CandidateListType candidateList = new CandidateListType();
 		List<ContextContract> concreteComponentCandidatesList;
 		LogHandler.getLogger().info("Generating Software Component Candidate List...");
@@ -271,28 +271,20 @@ public class Resolution{
 	 * @return
 	 * @throws ResolveException
 	 */
-	public static CandidateListType resolveInner(ContextContract application) throws ResolveException{
-		
-		Hashtable <Integer , Hashtable <Integer , ArgumentTable>> tableOfSWidArgumentTable = new Hashtable<Integer, Hashtable <Integer , ArgumentTable>>();
-//				try {
-//					ContextContractHandler.completeContextContract(application);
-//				} catch (DBHandlerException e1) {
-//					throw new ResolveException("Can not complete context contract data: ",e1);
-//				}
-
+	
+	public static CandidateListType resolveInner(ContextContract application, Hashtable<Integer, Hashtable <Integer,ArgumentTable>> tableOfSWidArgumentTable ) throws ResolveException{
+				
 		CandidateListType candidateList = new CandidateListType();
-		List<ContextContract> concreteComponentCandidatesList;
+		List<ContextContract> electedComponentList;
 		
 		try {
-			System.out.println("Resolve Inner");
-			concreteComponentCandidatesList = ResolutionHandler.generateCandidates(application.getAbstractComponent().getSupertype().getIdAc(), application.getAbstractComponent().getIdAc());
-			System.out.println("ComputationInnersCandidates: "+concreteComponentCandidatesList.size());
+			electedComponentList = ResolutionHandler.generateCandidates(application.getAbstractComponent().getSupertype().getIdAc(), application.getAbstractComponent().getIdAc());
 		} catch (DBHandlerException e1) {
 			return new CandidateListType();
 		}
 		ContextContract candidate;	
-		for(int i = 0; i < concreteComponentCandidatesList.size(); i++){
-			candidate = concreteComponentCandidatesList.get(i);
+		for(int i = 0; i < electedComponentList.size(); i++){
+			candidate = electedComponentList.get(i);
 			try {
 				if(componentSubTypeRecursiveTest(application, candidate, null, application.getAbstractComponent())){
 					if(candidate.getPlatform() == null){
@@ -304,21 +296,11 @@ public class Resolution{
 					if(isPlatformSubType(candidate.getPlatform().getPlatformContract(), application.getPlatform().getPlatformContract(), null)){
 						ContextContract cct = XMLHandler.cloneContextContract(candidate);//Cloning component
 						cct.getPlatform().setPlatformContract(XMLHandler.cloneContextContract(application.getPlatform().getPlatformContract()));
-						ContextContract cc = resolveInnerComponents(candidate, candidateList, cct);
+						ContextContract cc = resolveInnerComponents(candidate, candidateList, cct, tableOfSWidArgumentTable);
 						if(cc!=null){
 							candidateList.getCandidate().add(cc);
 						}
-
 					}
-
-					
-					CandidateListType c = filterInnerPlatformCandidateList(application.getPlatform().getPlatformContract(), application, candidate, tableOfSWidArgumentTable);
-					candidateList.getCandidate().addAll(c.getCandidate());
-
-					if(candidateList.getUserId()==null){
-						candidateList.setUserId(c.getUserId());
-					}
-
 				}
 			} catch (DBHandlerException e) {
 				//Will test the next software contract
@@ -326,8 +308,8 @@ public class Resolution{
 			}
 		}
 		candidateList.setUserId(application.getOwnerId());
-		Resolution.rankCandidates(candidateList, tableOfSWidArgumentTable); //Rank all candidates
-		Resolution.sortCandidateList(candidateList, 0);//Primeira função de ranqueamento
+//		Resolution.rankCandidates(candidateList, tableOfSWidArgumentTable); //Rank all candidates
+//		Resolution.sortCandidateList(candidateList, 0);//Primeira função de ranqueamento
 		return candidateList;
 	}
 
@@ -339,7 +321,7 @@ public class Resolution{
 				if(isPlatformSubType(application.getPlatform().getPlatformContract(), platform, null)){
 					ContextContract cct = XMLHandler.cloneContextContract(candidate);//Cloning component
 					cct.getPlatform().setPlatformContract(XMLHandler.cloneContextContract(platform));
-					ContextContract cc = resolveInnerComponents(candidate, candidateList, cct);
+					ContextContract cc = resolveInnerComponents(candidate, candidateList, cct, tableOfSWidArgumentTable);
 					if(cc!=null){
 						candidateList.getCandidate().add(cc);
 					}
@@ -350,27 +332,8 @@ public class Resolution{
 		calculateCalculatedArguments(candidateList, application, tableOfSWidArgumentTable);
 		return candidateList;
 	}
-	
-	private static CandidateListType filterInnerPlatformCandidateList( ContextContract componentCandidatePlatform, ContextContract application, ContextContract candidate, Hashtable <Integer , Hashtable <Integer , ArgumentTable>> tableOfSWidArgumentTable) {
-		System.out.println("Entrou no filter inner");
-		CandidateListType candidateList = new CandidateListType();
-			ContextContract platform = componentCandidatePlatform;
-			if(isPlatformSubType(candidate.getPlatform().getPlatformContract(), platform, null)){
-				if(isPlatformSubType(application.getPlatform().getPlatformContract(), platform, null)){
-					ContextContract cct = XMLHandler.cloneContextContract(candidate);//Cloning component
-					cct.getPlatform().setPlatformContract(XMLHandler.cloneContextContract(platform));
-					ContextContract cc = resolveInnerComponents(candidate, candidateList, cct);
-					if(cc!=null){
-						candidateList.getCandidate().add(cc);
-					}
-				}
-			}
-		LogHandler.getLogger().info("Calculating arguments...");
-		calculateCalculatedArguments(candidateList, application, tableOfSWidArgumentTable);
-		return candidateList;
-	}
 
-	private static ContextContract resolveInnerComponents(ContextContract candidate, CandidateListType candidateList, ContextContract cct){
+	private static ContextContract resolveInnerComponents(ContextContract candidate, CandidateListType candidateList, ContextContract cct, Hashtable<Integer, Hashtable <Integer , ArgumentTable>> tableOfSWidArgumentTable){
 		if(candidate.getInnerComponents().size() > 0){
 			boolean fit = true;
 			try{
@@ -384,7 +347,7 @@ public class Resolution{
 					applicationInner.getPlatform().setPlatformContract(XMLHandler.cloneContextContract(cct.getPlatform().getPlatformContract()));//define-se como contrato da plataforma, a plataforma do candidato
 					CandidateListType inners;
 					try {
-						inners = Resolution.resolveInner(applicationInner);
+						inners = Resolution.resolveInner(applicationInner, tableOfSWidArgumentTable);
 						if(inners.getCandidate().size()>0 ){
 							cct.getInnerComponentsResolved().add(inners);
 						}else{
@@ -614,12 +577,11 @@ public class Resolution{
 
 	public static CandidateListType rankCandidates(CandidateListType cl, Hashtable <Integer , Hashtable <Integer , ArgumentTable>> tableOfSWidArgumentTable){
 		Hashtable <Integer , MaxElement> maximum = Resolution.getMaximumValues(cl);
-
 		for(ContextContract cc:cl.getCandidate()){
 			try {
 				CalculatedArgumentHandler.calulateRankArguments(cc, tableOfSWidArgumentTable.get(cc.getCcId()).get(cc.getPlatform().getPlatformContract().getCcId()), maximum);
 			} catch (FunctionException e) {
-				// TODO Auto-generated catch block
+				// This occurs when the result of method get from hashtable is null
 				e.printStackTrace();
 			}
 
