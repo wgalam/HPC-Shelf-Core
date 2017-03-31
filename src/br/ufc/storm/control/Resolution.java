@@ -38,7 +38,6 @@ public class Resolution{
 	 * @param args
 	 * @throws DBHandlerException
 	 */
-
 	public static final int EQUAL = 3;
 	public static final int BIGGER = 4;
 	public static final int SMALLER = 5;
@@ -48,39 +47,63 @@ public class Resolution{
 		cc.setCcName("Multiplicação de Matrizes do Wagner");
 		cc.setOwnerId(1);
 		cc.setAbstractComponent(new AbstractComponentType());
-		cc.getAbstractComponent().setIdAc(161);
+		cc.getAbstractComponent().setIdAc(218);
 		cc.setPlatform(new PlatformProfileType());
 		cc.getPlatform().setPlatformContract(new ContextContract());
 		cc.getPlatform().getPlatformContract().setAbstractComponent(new AbstractComponentType());
 		cc.getPlatform().getPlatformContract().getAbstractComponent().setIdAc(19);
+		
+		int x = 0; //Indice do argumento de plataforma
+		int y = 0; //Indice do argumento de contexto
+		
+//[Argumento de Plataforma]Testando a filtragem por argumento de contexto (localizado em Fortaleza) (só a plataforma Sasquatch passa)
+//		cc.getPlatform().getPlatformContract().getContextArguments().add(new ContextArgumentType());
+//		cc.getPlatform().getPlatformContract().getContextArguments().get(x).setCpId(26);
+//		cc.getPlatform().getPlatformContract().getContextArguments().get(x).setContextContract(new ContextContract());
+//		cc.getPlatform().getPlatformContract().getContextArguments().get(x).getContextContract().setCcId(322);
+//		x++;
+		
+				//[Argumento de Contexto] Definir o tipo de dado da matriz L
+				cc.getContextArguments().add(new ContextArgumentType());
+				cc.getContextArguments().get(y).setCpId(151);
+				cc.getContextArguments().get(y).setContextContract(new ContextContract());
+				cc.getContextArguments().get(y).getContextContract().setCcId(44);
+				y++;
 
-		//Testando a filtragem por argumento de contexto (localizado em Fortaleza) (só o micro não passa)
+		// Restringe GPU
+//				cc.getPlatform().getPlatformContract().getContextArguments().add(new ContextArgumentType());
+//				cc.getPlatform().getPlatformContract().getContextArguments().get(x).setCpId(101);
+//				cc.getPlatform().getPlatformContract().getContextArguments().get(x).setContextContract(new ContextContract());
+//				cc.getPlatform().getPlatformContract().getContextArguments().get(x).getContextContract().setCcId(184);
+//				x++;
+
+		
+		// Restringe virtualização 
 		//		cc.getPlatform().getPlatformContract().getContextArguments().add(new ContextArgumentType());
-		//		cc.getPlatform().getPlatformContract().getContextArguments().get(0).setCpId(26);
-		//		cc.getPlatform().getPlatformContract().getContextArguments().get(0).setContextContract(new ContextContract());
-		//		cc.getPlatform().getPlatformContract().getContextArguments().get(0).getContextContract().setCcId(144);
-
-		//		cc.getPlatform().getPlatformContract().getContextArguments().add(new ContextArgumentType());
-		//		cc.getPlatform().getPlatformContract().getContextArguments().get(0).setCpId(35);
-		//		cc.getPlatform().getPlatformContract().getContextArguments().get(0).setContextContract(new ContextContract());
-		//		cc.getPlatform().getPlatformContract().getContextArguments().get(0).getContextContract().setCcId(175);
-
+		//		cc.getPlatform().getPlatformContract().getContextArguments().get(x).setCpId(35);
+		//		cc.getPlatform().getPlatformContract().getContextArguments().get(x).setContextContract(new ContextContract());
+		//		cc.getPlatform().getPlatformContract().getContextArguments().get(x).getContextContract().setCcId(175);
+		//		x++;
+		
 		//Restringe a quantidade de nós
-		cc.getPlatform().getPlatformContract().getContextArguments().add(new ContextArgumentType());
-		cc.getPlatform().getPlatformContract().getContextArguments().get(0).setCpId(27);
-		cc.getPlatform().getPlatformContract().getContextArguments().get(0).setValue(new ContextArgumentValueType());
-		cc.getPlatform().getPlatformContract().getContextArguments().get(0).getValue().setDataType("Integer");
-		cc.getPlatform().getPlatformContract().getContextArguments().get(0).getValue().setValue("1");
+//		cc.getPlatform().getPlatformContract().getContextArguments().add(new ContextArgumentType());
+//		cc.getPlatform().getPlatformContract().getContextArguments().get(x).setCpId(27);
+//		cc.getPlatform().getPlatformContract().getContextArguments().get(x).setValue(new ContextArgumentValueType());
+//		cc.getPlatform().getPlatformContract().getContextArguments().get(x).getValue().setDataType("Integer");
+//		cc.getPlatform().getPlatformContract().getContextArguments().get(x).getValue().setValue("10");
+//		x++;
+//		//*******************************************************
+//
+//		ContextArgumentType arg0 = new ContextArgumentType();
+//		arg0.setCpId(107);
+//		ContextArgumentValueType cav = new ContextArgumentValueType();
+//		cav.setValue("10");
+//		arg0.setValue(cav);
+//		cc.getContextArguments().add(arg0);
+//		x++;
 
-		//*******************************************************
-
-		ContextArgumentType arg0 = new ContextArgumentType();
-		arg0.setCpId(107);
-		ContextArgumentValueType cav = new ContextArgumentValueType();
-		cav.setValue("10");
-		arg0.setValue(cav);
-		cc.getContextArguments().add(arg0);
-
+		System.out.println(XMLHandler.getContextContract(cc));
+//		System.out.println(FormalFormat.exportContextContract(cc, null));
 		//Testando a filtragem por parametro de qualidade (total de núcleos superior a este valor)
 		//		CalculatedArgumentType cat = new CalculatedArgumentType();
 		//		cat.setCpId(1);
@@ -121,12 +144,12 @@ public class Resolution{
 				 */
 				//			System.out.println("Candidato compatível ("+ cont++ +"): "+XMLHandler.getContextContract(a));
 
-				if(a.getCcId()==229){
-//					System.out.println(FormalFormat.exportContextContract(a, null));
-					System.out.println("Candidato compatível ("+ cont++ +"): "+XMLHandler.getContextContract(a));
-				}
+//				if(a.getCcId()==229){
+////					System.out.println(FormalFormat.exportContextContract(a, null));
+//					System.out.println("Candidato compatível ("+ cont++ +"): "+XMLHandler.getContextContract(a));
+//				}
 				//				###########18/07/2016
-//				System.out.println(FormalFormat.exportContextContract(a, null));
+				System.out.println(FormalFormat.exportContextContract(a, null));
 				//				###########
 			}
 			//						System.out.println("Último Candidato Compatível\n"+XMLHandler.getContextContract(resolve.getCandidate().get(resolve.getCandidate().size()-1)));
@@ -241,9 +264,11 @@ public class Resolution{
 						//Will test the next software contract
 						continue;
 					}
+					
 					LogHandler.getLogger().info(componentCandidatePlatformlist.size()+" platforms were found for software component "+i);
 					if(componentCandidatePlatformlist.size() > 0){
 						CandidateListType c = filterPlatformCandidateList(componentCandidatePlatformlist, application, candidate, tableOfSWidArgumentTable);
+						
 						candidateList.getCandidate().addAll(c.getCandidate());
 						if(candidateList.getUserId()==null){
 							candidateList.setUserId(c.getUserId());
@@ -255,6 +280,7 @@ public class Resolution{
 				continue;
 			}
 		}
+
 		candidateList.setUserId(application.getOwnerId());
 		Resolution.rankCandidates(candidateList, tableOfSWidArgumentTable); //Rank all candidates
 		Resolution.sortCandidateList(candidateList, 0);//Primeira função de ranqueamento
@@ -314,6 +340,7 @@ public class Resolution{
 	}
 
 	private static CandidateListType filterPlatformCandidateList( List<ContextContract> componentCandidatePlatformlist, ContextContract application, ContextContract candidate, Hashtable <Integer , Hashtable <Integer , ArgumentTable>> tableOfSWidArgumentTable) {
+		//TODO: Error filtering location
 		CandidateListType candidateList = new CandidateListType();
 		for(int i = 0; i < componentCandidatePlatformlist.size(); i++){
 			ContextContract platform = componentCandidatePlatformlist.get(i);
@@ -328,6 +355,7 @@ public class Resolution{
 				}
 			}
 		}
+//		System.out.println(candidateList.getCandidate().size());
 		LogHandler.getLogger().info("Calculating arguments...");
 		calculateCalculatedArguments(candidateList, application, tableOfSWidArgumentTable);
 		return candidateList;
@@ -436,7 +464,6 @@ public class Resolution{
 			if(subtype){
 				if(requiredPlatform.getContextArguments().size() > 0){
 					for(ContextArgumentType cat:requiredPlatform.getContextArguments()){
-
 						if(cat.getValue() == null){
 							subtype = subtype && isPlatformSubType(cat.getContextContract(), getContextContractFromArgument(cat,candidatePlatform), cat.getCpId());
 						}else{
@@ -679,10 +706,15 @@ public class Resolution{
 
 		if(subtype){
 			if(applicationContract.getContextArguments().size() > 0){
-
 				for(ContextArgumentType cat:applicationContract.getContextArguments()){
 					if(cat.getContextContract()!=null){
-						subtype = subtype && componentSubTypeRecursiveTest(cat.getContextContract(), getContextContractFromArgument(cat,candidate), cat.getCpId(), applicationContract.getAbstractComponent());
+//						if(getContextContractFromArgument(cat,candidate)!=null){ //Tentando corrigir erro cp 151
+							subtype = subtype && componentSubTypeRecursiveTest(cat.getContextContract(), getContextContractFromArgument(cat,candidate), cat.getCpId(), applicationContract.getAbstractComponent());
+//						}else{
+//							System.out.println(cat.getCpId()+"  >>> "+cat.getContextContract().getCcName());
+//							throw new DBHandlerException("Error in validating resolving contract constrain with cp_id = "+cat.getCpId());
+//						}
+						
 					}
 				}
 			}
@@ -785,7 +817,7 @@ public class Resolution{
 	public static ContextContract getContextContractFromArgument(ContextArgumentType cat_from_app_var, ContextContract candidate){
 		if(candidate.getContextArguments()!= null){
 			for(ContextArgumentType cat: candidate.getContextArguments()){
-				if(cat_from_app_var.getCpId()==cat.getCpId()){
+				if(cat_from_app_var.getCpId().equals(cat.getCpId())){
 					return cat.getContextContract();
 				}
 			}

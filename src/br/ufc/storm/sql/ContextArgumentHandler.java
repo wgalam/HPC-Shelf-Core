@@ -18,11 +18,11 @@ public class ContextArgumentHandler extends DBHandler {
 	private final static String SELECT_CONTEXT_ARGUMENT_BY_ID = "select * from context_argument A, context_parameter B where cc_id = ? and A.variable_cp_id = B.cp_id;";
 	private static final String SELECT_VARIABLE_VALUE = "select * from context_argument A, closed_argument_values B WHERE A.variable_cp_id = ? AND A.cc_id = ? AND A.ca_id = B.ca_id;";
 	private static final String SELECT_SHARED_VARIABLE_CP = "select refers_to_var from context_parameter A, shared_context_variables B  WHERE A.cp_id = B.cp_id AND A.cp_id = ?;";
-	private static final String SELECT_CLOSED_ARGUMENT_CC = "select B.cc_id from context_argument A, closed_arguments_context_contract B WHERE A.variable_cp_id = ? AND A.cc_id = ? AND A.ca_id = B.ca_id;";
+	private static final String SELECT_CLOSED_ARGUMENT_CC = "select target_cc_id from context_argument A, closed_arguments_context_contract B WHERE A.variable_cp_id = ? AND A.cc_id = ? AND A.ca_id = B.ca_id;";
 	private static final String SELECT_VARIABLE_SHARED = "select * from context_parameter A, context_variable_required B	WHERE A.cp_id = ? AND A.cp_id = B.cp_id;";
 	private static final String INSERT_CONTEXT_ARGUMENT_VALUE = "INSERT INTO closed_argument_values (ca_id, data_type, value) VALUES (?,?,?);";
 	private static final String INSERT_CONTEXT_ARGUMENT_REFERENCE = "INSERT INTO shared_context_variables (refers_to_var, cp_id)VALUES (?,?);";
-	private static final String INSERT_CONTEXT_ARGUMENT_CONTEXT_CONTRACT = "INSERT INTO closed_arguments_context_contract (ca_id, cc_id)VALUES (?,?);";
+	private static final String INSERT_CONTEXT_ARGUMENT_CONTEXT_CONTRACT = "INSERT INTO closed_arguments_context_contract (ca_id, target_cc_id)VALUES (?,?);";
 	private static final String SELECT_CA_ID_CC_ID = "SELECT * FROM context_argument WHERE variable_cp_id = ? AND cc_id = ?;";
 
 	/**
@@ -229,7 +229,6 @@ public class ContextArgumentHandler extends DBHandler {
 	//TODO: Grade chance de estar errado o último teste, revisar e testar
 	@SuppressWarnings("resource")
 	public static Object getContextArgumentValue(int cp_id, int cc_id) throws DBHandlerException{
-
 		try {
 //			boolean hasValue = false;
 			boolean shared = false;
@@ -281,7 +280,7 @@ public class ContextArgumentHandler extends DBHandler {
 					prepared.setInt(2, cc_id);
 					resultSet = prepared.executeQuery();
 					if(resultSet.next()){
-						return ContextContractHandler.getContextContract(resultSet.getInt("cc_id"));
+						return ContextContractHandler.getContextContract(resultSet.getInt("target_cc_id"));
 					}else{
 						throw new DBHandlerException("Can not get closed argument with cpId equals to "+cp_id+"and context contract id equals to "+cc_id);
 					}

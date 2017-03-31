@@ -128,6 +128,8 @@ public class XMLHandler {
 			e.printStackTrace();
 		}
 		
+		
+		
 		java.io.StringWriter sw = new StringWriter();
 		context = null;
 		try {

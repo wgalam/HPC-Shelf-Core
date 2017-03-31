@@ -322,7 +322,7 @@ public class ContextParameterHandler extends DBHandler {
 					if(bound_id != ac_id && bound_id!=0){
 						cp.setBound(ContextContractHandler.getContextContractIncomplete(bound_id));
 					}else{
-						throw new ResolveException("Context Parameter bound self referenced results in infinite loop");
+						throw new ResolveException("Context Parameter ("+cp.getName()+") bound self referenced results in infinite loop");
 					}
 				}catch (ResolveException e) {
 					ContextContract cc = new ContextContract();

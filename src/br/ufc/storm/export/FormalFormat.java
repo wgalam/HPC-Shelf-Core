@@ -14,26 +14,30 @@ import br.ufc.storm.sql.AbstractComponentHandler;
 import br.ufc.storm.sql.ContextContractHandler;
 import br.ufc.storm.xml.XMLHandler;
 
+
+
 public class FormalFormat {
+	
+public static final String PROVIDED = " :> ";
+public static final String REQUIRED = " <: ";
 
 	public static void main(String[] args) {
-//		try {
-//			/*
-//			ContextContract cc = ContextContractHandler.getContextContract(21);
+		try {
+			
+//			ContextContract cc = ContextContractHandler.getContextContract(318);
 //			System.out.println(FormalFormat.exportContextContract(cc, null));
-//			*/
-//			System.out.println(FormalFormat.exportComponentSignature(AbstractComponentHandler.getAbstractComponent(5), null));
-//					//System.out.println(XMLHandler.getAbstractComponent("Cluster"));
-//		} catch (Exception e) {
+			
+//			System.out.println(FormalFormat.exportCandyComponentSignature(AbstractComponentHandler.getAbstractComponent(19), null));
+			System.out.println(FormalFormat.exportContextContractWithIDs(ContextContractHandler.getContextContract(177), null));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+//		try {
+//			Resolution.main(args);
+//		} catch (DBHandlerException e) {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
-		try {
-			Resolution.main(args);
-		} catch (DBHandlerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 	public static String exportComponentSignature(AbstractComponentType ac, String space){
@@ -49,19 +53,78 @@ public class FormalFormat {
 		}else{
 			space+="    ";
 		}
-		str+=ac.getName()+"=[";
+		str+="[name :> "+ac.getName()+",";
+//		str+="\n concern :> "+ac.getSupertype().getName()+",";
 		for(ContextParameterType cp: ac.getContextParameter()){
 			if(cp.getBound()!= null){
 				try {
-					if(cp.getBound().getCcName().equals("DATA")){
-						str+="\n"+space+cp.getName()+" : "+cp.getBound().getCcName()+",";
-					}else{
-						if(AbstractComponentHandler.getAbstractComponentFromContextContractID(cp.getBound().getCcId()).getIdAc() == ac.getIdAc() ){
-							str+="\n"+space+cp.getName()+" : "+cp.getBound().getCcName()+" [],";
+					if(cp.getBoundValue()==null){
+						if(cp.getBound().getCcName().equals("DATA")){
+							str+="\n"+space+cp.getName()+REQUIRED+cp.getBound().getCcName()+",";
 						}else{
-							str+="\n"+space+cp.getName()+" : "+cp.getBound().getCcName()+" ["+exportComponentSignature(AbstractComponentHandler.getAbstractComponentFromContextContractID(cp.getBound().getCcId()), ""+space)+"],";
+							if(AbstractComponentHandler.getAbstractComponentFromContextContractID(cp.getBound().getCcId()).getIdAc() == ac.getIdAc() ){
+								str+="\n"+space+cp.getName()+REQUIRED+cp.getBound().getCcName()+" [],";
+							}else{
+								str+="\n"+space+cp.getName()+REQUIRED+cp.getBound().getCcName()+" ["+exportComponentSignature(AbstractComponentHandler.getAbstractComponentFromContextContractID(cp.getBound().getCcId()), ""+space)+"],";
+							}
 						}
+					}else{
+						str+="\n"+space+cp.getName()+REQUIRED+cp.getBoundValue()+",";
 					}
+					
+				} catch (DBHandlerException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}else{
+				str+="\n"+space+cp.getName()+" : "+cp.getBoundValue()+",";
+			}
+		}
+		for(CalculatedParameterType cp: ac.getQualityParameters()){
+			str+="\n"+space+cp.getName()+" : DATA(Quality)";
+		}
+		for(CalculatedParameterType cp: ac.getCostParameters()){
+			str+="\n"+space+cp.getName()+" : DATA(Cost)";
+		}
+		for(CalculatedParameterType cp: ac.getRankingParameters()){
+			str+="\n"+space+cp.getName()+" : DATA(Ranking)";
+		}
+		str+="]";
+		return str;
+	}
+	
+	public static String exportCandyComponentSignature(AbstractComponentType ac, String space){
+		try {
+			ResolutionNode.setup();
+		} catch (ResolveException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		String str = "";
+		if(space == null){
+			space="    ";
+		}else{
+			space+="    ";
+		}
+		str+=ac.getName()+"[";
+//		str+="\n concern :> "+ac.getSupertype().getName()+",";
+		for(ContextParameterType cp: ac.getContextParameter()){
+			if(cp.getBound()!= null){
+				try {
+					if(cp.getBoundValue()==null){
+						if(cp.getBound().getCcName().equals("DATA")){
+							str+="\n"+space+cp.getName()+REQUIRED+cp.getBound().getCcName()+",";
+						}else{
+							if(AbstractComponentHandler.getAbstractComponentFromContextContractID(cp.getBound().getCcId()).getIdAc() == ac.getIdAc() ){
+								str+="\n"+space+cp.getName()+REQUIRED+cp.getBound().getCcName()+" [],";
+							}else{
+								str+="\n"+space+cp.getName()+REQUIRED+cp.getBound().getCcName()+" ["+exportCandyComponentSignature(AbstractComponentHandler.getAbstractComponentFromContextContractID(cp.getBound().getCcId()), ""+space)+"],";
+							}
+						}
+					}else{
+						str+="\n"+space+cp.getName()+REQUIRED+cp.getBoundValue()+",";
+					}
+					
 				} catch (DBHandlerException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

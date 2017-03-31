@@ -2,19 +2,27 @@ package br.ufc.storm.backend;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import javax.swing.plaf.synth.SynthSeparatorUI;
+
 import org.apache.axis2.AxisFault;
 import org.apache.ws.axis2.FakeEndServicesStub;
 import org.apache.ws.axis2.FakeEndServicesStub.AddFileResponse;
+import org.apache.ws.axis2.FakeEndServicesStub.DeploycallBackResponse;
 import org.apache.ws.axis2.FakeEndServicesStub.GetStatusResponse;
 import org.apache.ws.axis2.FakeEndServicesStub.RemoveFileResponse;
 import org.apache.ws.axis2.FakeEndServicesStub.RunFileResponse;
 import org.apache.ws.axis2.FakeEndServicesStub.SetRunnableResponse;
 
+import br.ufc.mdcc.hpcshelf.backendservices.proxy.BackEndServicesImplServiceStub;
+import br.ufc.mdcc.hpcshelf.backendservices.proxy.BackEndServicesImplServiceStub.DeployContractCallback;
+import br.ufc.mdcc.hpcshelf.backendservices.proxy.BackEndServicesImplServiceStub.DestroyPlatform;
 import br.ufc.storm.exception.DBHandlerException;
 import br.ufc.storm.exception.ShelfRuntimeException;
 import br.ufc.storm.io.LogHandler;
@@ -41,43 +49,53 @@ public class BackendHandler {
 		this.list = list;
 		candidate = 0;
 	}
-	
-	public static void main(String[] args) {
-		String server = "200.19.177.93";
-		String sourceFile = "/tmp/teste.sh";
-		String targetFile = "/tmp/shelf-dir/hos.sh";
-		System.out.println(BackendHandler.getStatus(server));
-//		System.out.println(sendFile(sourceFile, server, targetFile));
-//		System.out.println(setRunnable(server, "chmod +x "+targetFile));
-//		System.out.println(setRunnable(server, targetFile));
-//		System.out.println(deleteFile(server, targetFile));
-		
+public static void main(String[] args) throws IOException {
+		try {
+//			System.out.println(BackendHandler.requestPlatformAxis("127.0.0.1", 1234,8000, 321+""));
+			System.out.println(BackendHandler.requestPlatform("200.19.177.89", 1235,8000, 321+""));//200.19.177.89
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
-	/**
-	 * This method tries to insttantiate an platform in respective backend
-	 * 
-	 * @return ComputationalSystem instantiated
-	 * @throws ShelfRuntimeException 
-	 */
-	public static boolean instantiatePlatftorm(PlatformProfileType platform) throws ShelfRuntimeException{
-		try {
-			platform.setNetworkIpAddress(PlatformHandler.getPlatformIP(platform.getPlatformContract().getCcId()));
-		} catch (DBHandlerException e1) {
-			throw new ShelfRuntimeException(platform.getPlatformContract().getCcId()+" > No ip valid ip address", e1);
-		}
-		try{
-			if (getStatus(platform.getNetworkIpAddress()).equals("This is ok")) {
-				LogHandler.getLogger().warning("Platform Instantiated with ip: "+platform.getNetworkIpAddress());
-				return true;
-				
-			} else {
-				throw new ShelfRuntimeException("Can not instantiate platform");
-			}
-		}catch(Exception e){
-			throw new ShelfRuntimeException("Can not instantiate platform at this moment", e);
-		}
-	}
+
+
+//	public static void main(String[] args) {
+//		String server = "200.19.177.94";
+//		String sourceFile = "/tmp/teste.sh";
+//		String targetFile = "/tmp/shelf-dir/hos.sh";
+//		System.out.println(BackendHandler.getStatus(server));
+////		System.out.println(sendFile(sourceFile, server, targetFile));
+////		System.out.println(setRunnable(server, "chmod +x "+targetFile));
+////		System.out.println(setRunnable(server, targetFile));
+////		System.out.println(deleteFile(server, targetFile));
+//		
+//	}
+
+
+
+	
+	
+//	public static boolean instantiatePlatftormOld(PlatformProfileType platform) throws ShelfRuntimeException{
+//		try {
+//			platform.setNetworkIpAddress(PlatformHandler.getPlatformIP(platform.getPlatformContract().getCcId()));
+//		} catch (DBHandlerException e1) {
+//			throw new ShelfRuntimeException(platform.getPlatformContract().getCcId()+" > No ip valid ip address", e1);
+//		}
+//		try{
+//			if (getStatus(platform.getNetworkIpAddress()).equals("This is ok")) {
+//				LogHandler.getLogger().warning("Platform Instantiated with ip: "+platform.getNetworkIpAddress());
+//				return true;
+//				
+//			} else {
+//				throw new ShelfRuntimeException("Can not instantiate platform");
+//			}
+//		}catch(Exception e){
+//			throw new ShelfRuntimeException("Can not instantiate platform at this moment", e);
+//		}
+//	}
 
 //	Método recursivo
 	public static List<UnitFileType> getFiles(ContextContract cc) throws ShelfRuntimeException{
@@ -126,27 +144,69 @@ public class BackendHandler {
 		
 		return listOfFiles;
 	}
+	
 
-	public static ComputationalSystemType deployComponent(CandidateListType clist) throws ShelfRuntimeException{
+
+	//	public static void main(String[] args) {
+	//		String server = "200.19.177.94";
+	//		String sourceFile = "/tmp/teste.sh";
+	//		String targetFile = "/tmp/shelf-dir/hos.sh";
+	//		System.out.println(BackendHandler.getStatus(server));
+	////		System.out.println(sendFile(sourceFile, server, targetFile));
+	////		System.out.println(setRunnable(server, "chmod +x "+targetFile));
+	////		System.out.println(setRunnable(server, targetFile));
+	////		System.out.println(deleteFile(server, targetFile));
+	//		
+	//	}
+	
+	
+	/**
+		 * This method tries to instantiate an platform in respective BackEnd
+		 * Create VMs or reserve nodes
+		 * Call Core back with URI of head node of parallel platform
+		 * 
+		 * @return ComputationalSystem instantiated
+		 * @throws ShelfRuntimeException 
+		 */
+		
+		public static boolean deployPlatftorm(ContextContract cc, int sessionID) throws ShelfRuntimeException{
+			try {
+				System.out.println("Entrou no instantiate");
+				cc.getPlatform().setNetworkIpAddress(requestPlatform(PlatformHandler.getPlatformIP(cc.getPlatform().getPlatformContract().getCcId()), sessionID, PlatformHandler.getPlatformPort(cc.getPlatform().getPlatformContract().getCcId()), cc.getPlatform().getPlatformContract().getCcId()+""));
+				ComputationalSystemType cst = new ComputationalSystemType();
+				cst.setContextContract(cc);
+				SessionHandler.setCst(sessionID, cst);
+				System.out.println("----------------------------");
+				System.out.println(cc.getPlatform().getNetworkIpAddress());
+				LogHandler.getLogger().warning("Platform Instantiated with ip: "+cc.getPlatform().getNetworkIpAddress());
+				return true;
+			} catch (DBHandlerException e1) {
+				throw new ShelfRuntimeException(cc.getPlatform().getPlatformContract().getCcId()+" > No ip valid ip address", e1);
+			}
+		}
+	public static ComputationalSystemType deploy(CandidateListType clist) throws ShelfRuntimeException{
 		ComputationalSystemType platform = null;
 		try {
 //			Find 1º available platform
 			for(ContextContract cc : clist.getCandidate()){
-				if (instantiatePlatftorm(cc.getPlatform())){//try instantiate platform
-					//Create session
-					int sessionID = SessionHandler.createSession(cc.getOwnerId());//Get client id
+				//Create session
+				int sessionID = SessionHandler.createSession(cc.getOwnerId());//Get client id
+				System.out.println("Component: "+cc.getCcName()+" Platform: "+cc.getPlatform().getPlatformContract().getCcName());
+				if (deployPlatftorm(cc, sessionID)){//try instantiate platform
+					
+					
 					//Create computational system and set network info
 					ComputationalSystemType cst = new ComputationalSystemType();
-					cst.setContextContract(cc);
-					cst.setNetworkAddress(cc.getPlatform().getNetworkIpAddress());
-//					erro no id do usuario
-					cst.setSession(sessionID);
-					//copiar arquivos das unidades
-//					Create unit files list from computational system
-					List<UnitFileType> listOfFile = getFiles(cst.getContextContract());//Recursive method that generates a list of files to send to platform
-					cst.getFiles().addAll(listOfFile); 
-					//Send unit files to platform
-					BackendHandler.sendFiles(cst, listOfFile);
+//					cst.setContextContract(cc);
+//					cst.setNetworkAddress(cc.getPlatform().getNetworkIpAddress());
+////					erro no id do usuario
+//					cst.setSession(sessionID);
+//					//copiar arquivos das unidades
+////					Create unit files list from computational system
+//					List<UnitFileType> listOfFile = getFiles(cst.getContextContract());//Recursive method that generates a list of files to send to platform
+//					cst.getFiles().addAll(listOfFile); 
+//					//Send unit files to platform
+//					BackendHandler.sendFiles(cst, listOfFile);
 					return cst;
 				}
 			}			
@@ -157,7 +217,39 @@ public class BackendHandler {
 		}
 	}
 
+	public static ComputationalSystemType deploySoftwareComponent(ComputationalSystemType cst) throws ShelfRuntimeException{
+		ComputationalSystemType platform = null;
+		try {
+					List<UnitFileType> listOfFile = getFiles(cst.getContextContract());//Recursive method that generates a list of files to send to platform
+					cst.getFiles().addAll(listOfFile); 
+					//Send unit files to platform
+					BackendHandler.sendFiles(cst, listOfFile);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ShelfRuntimeException("Can not instantiate component files", e);
+		}
+		return null;
+	}
 
+		public static boolean deployCallback(String sessionID, String uri) throws ShelfRuntimeException{
+			try {
+				SessionHandler.setUri(sessionID, uri);
+//				Guardar em XML o CST
+				
+//				deploySoftwareComponent(cst);
+	//			platform.setNetworkIpAddress(PlatformHandler.getPlatformIP(platform.getPlatformContract().getCcId()));
+				LogHandler.getLogger().severe("Plataforma Instanciada - Sessão "+sessionID+" uri: "+uri);
+				System.out.println("<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>");
+				System.out.println("Sessão "+sessionID+" uri: "+uri);
+				System.out.println("<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>");
+				return true;
+			} catch (Exception e) {
+	//			throw new ShelfRuntimeException(platform.getPlatformContract().getCcId()+" > No ip valid ip address", e1);
+			}
+	
+			
+			return false;
+		}
 	public static String instantiateComponent(ComputationalSystemType cst) throws ShelfRuntimeException{
 //		Instantiate component
 		try{
@@ -185,16 +277,23 @@ public class BackendHandler {
 		}
 	}
 	
-	public static boolean releasePlatform(ComputationalSystemType uri) {
-		// TODO Auto-generated method stub
-		try {
-			finishSession(uri.getSession());
-			return true;
-		} catch (ShelfRuntimeException e) {
-			// TODO Auto-generated catch block
-			return false;
-		}
+	public static String releasePlatform(ComputationalSystemType uri) {
 		
+		BackEndServicesImplServiceStub service;
+		try {
+			System.out.println("http://"+uri.getNetworkAddress()+":"+uri.getPort()+"/BackEndServices/");
+			service = new BackEndServicesImplServiceStub("http://"+uri.getNetworkAddress()+":"+uri.getPort()+"/BackEndServices/");
+			BackEndServicesImplServiceStub.DestroyPlatform request = new DestroyPlatform();
+			request.setArg0(uri.getSession()+"");
+//			request.setArg0(profile);
+//			request.setArg1(session+"");
+			BackEndServicesImplServiceStub.DestroyPlatformResponse response = service.destroyPlatform(request);
+			finishSession(uri.getSession());
+			return response.get_return();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 
@@ -264,7 +363,68 @@ public class BackendHandler {
 		return response.get_return();
 	}
 
+	public static String requestPlatform(String target, int session, int port, String profile) {
+		BackEndServicesImplServiceStub service;
+		try {
+			System.out.println("http://"+target+":"+port+"/BackEndServices/");
+			service = new BackEndServicesImplServiceStub("http://"+target+":"+port+"/BackEndServices/");
+			BackEndServicesImplServiceStub.DeployContractCallback request = new DeployContractCallback();
+			request.setArg0(profile);
+			request.setArg1(session+"");
+			BackEndServicesImplServiceStub.DeployContractCallbackResponse response = service.deployContractCallback(request);
+			return response.get_return();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+		
+		
+		
+//		
+//		BackEndServiceStub stub = null;
+//		try {
+//			stub = new BackEndServiceStub(target);//
+//			System.out.println(stub.toString());
+//		} catch (AxisFault e1) {
+//			e1.printStackTrace();
+//		}
+//		Deploy_contract_callback request;
+//		request = new Deploy_contract_callback();
+//		request.setCore_session_id(session+"");
+//		request.setProfile_id(profile);
+//		Deploy_contract_callback_result response = null;
+//		try {
+//			response = stub.deploy_contract_callback(request);
+//		} catch (RemoteException | Error e) {
+//			e.printStackTrace();
+//		}
+//		return response.getResult();
+	}
 
+//	public static String requestPlatformAxis(String target, int session, int port, String profile) {
+//		BackEndServiceStub stub = null;
+//		try {
+//			stub = new BackEndServiceStub("http://"+target+":"+port+"/backendservices/");
+//			System.out.println(stub.toString());
+//		} catch (AxisFault e1) {
+//			e1.printStackTrace();
+//		}
+//		Deploy_contract_callback request;
+//		request = new Deploy_contract_callback();
+//		request.setCore_session_id(session+"");
+//		request.setProfile_id(profile);
+//		Deploy_contract_callback_result response = null;
+//		try {
+//			response = stub.deploy_contract_callback(request);
+//		} catch (RemoteException | Error e) {
+//			e.printStackTrace();
+//		} catch (br.ufc.mdcc.www.hpcshelf.backend.Error e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		return response.getResult();
+//	}
+	
 	//Validate this method
 	private static void sendFiles(ComputationalSystemType cst, List<UnitFileType> listOfFile) {
 		String target = "http://"+cst.getNetworkAddress()+":8080/HPC-Shelf-FakeEnd/services/FakeEndServices.FakeEndServicesHttpSoap12Endpoint/";

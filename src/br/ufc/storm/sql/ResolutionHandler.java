@@ -45,7 +45,6 @@ public class ResolutionHandler extends DBHandler {
 	 */
 
 	public static List<ContextContract> generateCandidates(int supertypeID, int requiredID) throws DBHandlerException{
-		//		System.out.println("Generate Candidates!");
 		PreparedStatement prepared;
 		ResultSet resultSet;
 		List<ContextContract> list = new ArrayList<ContextContract>();
@@ -56,23 +55,21 @@ public class ResolutionHandler extends DBHandler {
 			Connection con = getConnection();
 			do{
 				prepared = con.prepareStatement(SELECT_CONTEXT_CONTRACT_BY_AC_ID);
-				prepared.setInt(1, aux); 
+				prepared.setInt(1, aux);
 				resultSet = prepared.executeQuery();
 				while(resultSet.next()){
 					Integer cc_id = resultSet.getInt("cc_id");
 					ContextContract cc = ContextContractHandler.getContextContract(cc_id);
 					cc.setPlatform(new PlatformProfileType());
-					cc.getPlatform().setPlatformContract(PlatformHandler.getPlatform(cc_id));	
+					cc.getPlatform().setPlatformContract(PlatformHandler.getPlatform(cc_id));
 					list.add(cc);
 				}
-
 				supertype = ResolutionNode.resolutionTree.findNode(list.get(list.size()-1).getAbstractComponent().getIdAc()).getSupertype().getAc_id();
-				
 				history = aux;
 				aux = supertype;
 			}while(resultSet!= null && history != supertypeID );
 			return list;
-		} catch (Exception e) { 
+		} catch (Exception e) {
 			e.printStackTrace();
 			throw new DBHandlerException("A sql error occurred: ", e);
 		}

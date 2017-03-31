@@ -113,6 +113,7 @@ public class ResolutionNode {
 		}
 		return str;
 	}
+	
 	/**
 	 * Control null return 
 	 * @param id

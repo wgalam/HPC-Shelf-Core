@@ -23,6 +23,7 @@ import br.ufc.storm.xml.XMLHandler;
 import br.ufc.storm.exception.DBHandlerException;
 import br.ufc.storm.exception.ResolveException;
 import br.ufc.storm.exception.XMLException;
+import br.ufc.storm.export.FormalFormat;
 
 public class AbstractComponentHandler extends DBHandler{
 	private final static String SELECT_ALL_ABSTRACTCOMPONENT = "select ac_name,ac_id,supertype_id from abstract_component;";
@@ -72,7 +73,6 @@ public class AbstractComponentHandler extends DBHandler{
 		} catch (SQLException e1) {
 			throw new DBHandlerException("A sql error occurred: ", e1);
 		}
-
 	}
 
 	/**
@@ -83,6 +83,18 @@ public class AbstractComponentHandler extends DBHandler{
 	 * @throws SQLException 
 	 * @throws XMLException 
 	 */
+	
+	public static void main(String [] a){
+		try {
+			AbstractComponentType act = AbstractComponentHandler.getAbstractComponent(218);
+			System.out.println(FormalFormat.exportComponentSignature(act, null));
+//			System.out.println(XMLHandler.getAbstractComponent(AbstractComponentHandler.getAbstractComponent(19)));
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	
 	public static void main1(String [] a){
 		AbstractComponentType ac = new AbstractComponentType();
@@ -281,6 +293,7 @@ public class AbstractComponentHandler extends DBHandler{
 	public static AbstractComponentType getAbstractComponentFromContextContractID(int cc_id) throws DBHandlerException{
 		try {
 			Connection con = getConnection();
+//			System.out.println(cc_id);
 			PreparedStatement prepared = con.prepareStatement(SELECT_ABSTRACT_COMPONENT_BY_CC_ID); 
 			prepared.setInt(1, cc_id);
 			ResultSet resultSet = prepared.executeQuery(); 

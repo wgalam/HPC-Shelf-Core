@@ -13,7 +13,9 @@ import br.ufc.storm.jaxb.ContextContract;
 import br.ufc.storm.jaxb.PlatformProfileType;
 import br.ufc.storm.jaxb.UnitFileType;
 import br.ufc.storm.sql.AbstractComponentHandler;
+import br.ufc.storm.sql.AbstractComponentTreeHandler;
 import br.ufc.storm.sql.ContextContractHandler;
+import br.ufc.storm.sql.ContextParameterTreeHandler;
 import br.ufc.storm.sql.SessionHandler;
 import br.ufc.storm.xml.XMLHandler;
 import br.ufc.storm.backend.BackendHandler;
@@ -370,18 +372,18 @@ public class CoreServices {
 	 * @return True if no exception occurs
 	 */
 
-	public boolean releasePlatform(String cst){
+	public String releasePlatform(String cst){
 		LogHandler.getLogger().info("Starting to reease a platform...");
 		ComputationalSystemType clt = null;
 		try {
 			clt = XMLHandler.getComputationalSystemType(cst);
-			boolean b = BackendHandler.releasePlatform(clt);
+			String b = BackendHandler.releasePlatform(clt);
 			LogHandler.close();
 			return b;
 		} catch (XMLException e) {
 			cancelSession(clt.getSession());
 			LogHandler.close();
-			return false;
+			return null;
 		}
 	}
 
@@ -395,7 +397,7 @@ public class CoreServices {
 		try {
 			clt = XMLHandler.getCandidateList(candidateList);
 			LogHandler.getLogger().info("Starting to deploy an application...");
-			ComputationalSystemType ppt = BackendHandler.deployComponent(clt);
+			ComputationalSystemType ppt = BackendHandler.deploy(clt);
 			LogHandler.close();
 			return XMLHandler.getComputationalSystem(ppt);
 		} catch (XMLException | ShelfRuntimeException e) {
@@ -476,4 +478,31 @@ public class CoreServices {
 			return -1;
 		}
 	}
+	
+	public boolean deployCallback(String sessionID, String uri){
+		LogHandler.getLogger().info("Received return of deploy from Backend for session "+sessionID+"!");
+		try {
+			boolean bool = BackendHandler.deployCallback(sessionID, uri);
+			LogHandler.close();
+			return bool;
+		} catch (Exception e) {
+			LogHandler.close();
+			return false;
+		}
+	}
+	
+	public static String getDerivationTree(int ac_id){
+		LogHandler.getLogger().info("Getting derivarion Tree...");
+		String str = AbstractComponentTreeHandler.getTree(ac_id);
+		LogHandler.close();
+		return str;
+	}
+	
+	public static String getContextParameterTree(int ac_id){
+		LogHandler.getLogger().info("Getting derivarion Tree...");
+		String str = ContextParameterTreeHandler.getComponentParameterTree(ac_id);
+		LogHandler.close();
+		return str;
+	}
+	
 }

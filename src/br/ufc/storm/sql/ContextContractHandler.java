@@ -29,6 +29,7 @@ public class ContextContractHandler extends DBHandler{
 	private static final String INSERT_PLATFORM_LINKAGE = "INSERT INTO component_platform  (cc_id, platform_cc_id) VALUES (?,?);";
 	private static final String INSERT_INNER_COMPONENT = "INSERT INTO concrete_inner_contract  (parent_cc_id, inner_cc_id) VALUES (?,?) RETURNING id;";
 	private static final String SELECT_INNER_COMPONENT = "SELECT * FROM concrete_inner_contract  WHERE parent_cc_id = ?;";
+	private final static String SELECT_CONTEXT_CONTRACT_AC_ID = "select ac_id from context_contract where cc_id = ?;";
 	
 	private static final int QUALIFIER = 1;
 	private static final int PLATFORM = 2;
@@ -573,7 +574,23 @@ public class ContextContractHandler extends DBHandler{
 
 	}
 
+	public static int getContextContractAC_ID(Integer cc_id) throws DBHandlerException{
 
+		try {
+			Connection con = getConnection(); 
+			PreparedStatement prepared = con.prepareStatement(SELECT_CONTEXT_CONTRACT_AC_ID); 
+			prepared.setInt(1, cc_id);
+			ResultSet resultSet = prepared.executeQuery(); 
+			if(resultSet.next()) { 
+				return resultSet.getInt("ac_id"); 
+			}else{
+				throw new DBHandlerException("Context contract with cc_id = "+cc_id+" was not fount");
+			}
+		} catch (SQLException e) {
+			throw new DBHandlerException("A sql error occurred: ", e);
+		} 
+
+	}
 	/**
 	 * This method gets an instantiation type id
 	 * @param name Instantiation type name

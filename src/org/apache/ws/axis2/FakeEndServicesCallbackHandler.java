@@ -77,6 +77,38 @@
             }
                 
            /**
+            * auto generated Axis2 call back method for deploycallBack method
+            * override this method for handling normal response from deploycallBack operation
+            */
+           public void receiveResultdeploycallBack(
+                    org.apache.ws.axis2.FakeEndServicesStub.DeploycallBackResponse result
+                        ) {
+           }
+
+          /**
+           * auto generated Axis2 Error handler
+           * override this method for handling error response from deploycallBack operation
+           */
+            public void receiveErrordeploycallBack(java.lang.Exception e) {
+            }
+                
+           /**
+            * auto generated Axis2 call back method for deployPlatform method
+            * override this method for handling normal response from deployPlatform operation
+            */
+           public void receiveResultdeployPlatform(
+                    org.apache.ws.axis2.FakeEndServicesStub.DeployPlatformResponse result
+                        ) {
+           }
+
+          /**
+           * auto generated Axis2 Error handler
+           * override this method for handling error response from deployPlatform operation
+           */
+            public void receiveErrordeployPlatform(java.lang.Exception e) {
+            }
+                
+           /**
             * auto generated Axis2 call back method for renameFile method
             * override this method for handling normal response from renameFile operation
             */
