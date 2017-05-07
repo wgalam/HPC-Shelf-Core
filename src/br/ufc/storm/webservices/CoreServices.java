@@ -1,6 +1,7 @@
 package br.ufc.storm.webservices;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -17,6 +18,7 @@ import br.ufc.storm.sql.AbstractComponentTreeHandler;
 import br.ufc.storm.sql.ContextContractHandler;
 import br.ufc.storm.sql.ContextParameterTreeHandler;
 import br.ufc.storm.sql.SessionHandler;
+import br.ufc.storm.sql.UserHandler;
 import br.ufc.storm.xml.XMLHandler;
 import br.ufc.storm.backend.BackendHandler;
 import br.ufc.storm.control.Resolution;
@@ -504,5 +506,47 @@ public class CoreServices {
 		LogHandler.close();
 		return str;
 	}
+	
+	//USER CONTROL
+	public static boolean AuthenticateUser(String username, String password){
+		boolean access = UserHandler.AuthenticateUser(username, password);//ContextParameterTreeHandler.getComponentParameterTree(ac_id);
+		if(access){
+			LogHandler.getLogger().info("Autenticating user "+username+" =>success!");
+		}else{
+			LogHandler.getLogger().info("Autenticating user "+username+" =>failed!");
+		}
+		LogHandler.close();
+		return access;
+	}
+	
+	public static boolean AuthenticateUserToGroup(String username, String groupname){
+		boolean access = UserHandler.AuthenticateUserToGroup(username, groupname);//ContextParameterTreeHandler.getComponentParameterTree(ac_id);
+		return access;
+	}
+	
+	public static List<String> GetUserGroupMembership(String username){
+		List <String> access = UserHandler.GetUserGroupMembership( username);//ContextParameterTreeHandler.getComponentParameterTree(ac_id);
+		return access;
+	}
+	
+	public static boolean GetUserFullName(String username){
+		boolean access = UserHandler.GetUserFullName( username);//ContextParameterTreeHandler.getComponentParameterTree(ac_id);
+		return access;
+	}
+	
+	public static boolean ResetUserPassword(String username, String old_password, String new_password){
+		boolean access = UserHandler.ResetUserPassword( username,  old_password,  new_password);//ContextParameterTreeHandler.getComponentParameterTree(ac_id);
+		if(access){
+			LogHandler.getLogger().info("Reset Password user "+username+" =>success!");
+		}else{
+			LogHandler.getLogger().info("Reset Password user "+username+" =>failed!");
+		}
+		LogHandler.close();
+		return access;
+	}
+	
+	
+	
+	
 	
 }

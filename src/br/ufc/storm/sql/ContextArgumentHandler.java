@@ -182,7 +182,7 @@ public class ContextArgumentHandler extends DBHandler {
 				ca.setCcId(cc_id);
 				ca.setCpId(resultSet.getInt("variable_cp_id"));
 				ca.setCaId(resultSet.getInt("ca_id"));
-				ca.setKind(resultSet.getInt("kind_id"));
+				ca.setKind(resultSet.getInt("variance_id"));
 				Object o;
 				o = getContextArgumentValue(ca.getCpId(), ca.getCcId());
 				if(o instanceof ContextContract){

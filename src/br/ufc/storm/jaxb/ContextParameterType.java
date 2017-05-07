@@ -2,7 +2,7 @@
 // Este arquivo foi gerado pela Arquitetura JavaTM para Implementação de Referência (JAXB) de Bind XML, v2.2.8-b130911.1802 
 // Consulte <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Todas as modificações neste arquivo serão perdidas após a recompilação do esquema de origem. 
-// Gerado em: 2016.12.20 às 03:43:14 PM BRT 
+// Gerado em: 2017.04.06 às 02:34:33 PM BRT 
 //
 
 
@@ -33,10 +33,12 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="context_argument" type="{http://storm.lia.ufc.br}context_argument_type" minOccurs="0"/>
  *         &lt;element name="context_variable_provided" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="context_variable_required_id" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
+ *         &lt;element name="numeric_domain" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *       &lt;/sequence>
  *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="cp_id" type="{http://www.w3.org/2001/XMLSchema}int" />
  *       &lt;attribute name="kind" type="{http://www.w3.org/2001/XMLSchema}int" />
+ *       &lt;attribute name="variance" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -51,7 +53,8 @@ import javax.xml.bind.annotation.XmlType;
     "contextVariableRequired",
     "contextArgument",
     "contextVariableProvided",
-    "contextVariableRequiredId"
+    "contextVariableRequiredId",
+    "numericDomain"
 })
 public class ContextParameterType {
 
@@ -66,12 +69,16 @@ public class ContextParameterType {
     protected String contextVariableProvided;
     @XmlElement(name = "context_variable_required_id")
     protected Integer contextVariableRequiredId;
+    @XmlElement(name = "numeric_domain", required = true)
+    protected String numericDomain;
     @XmlAttribute(name = "name")
     protected String name;
     @XmlAttribute(name = "cp_id")
     protected Integer cpId;
     @XmlAttribute(name = "kind")
     protected Integer kind;
+    @XmlAttribute(name = "variance")
+    protected String variance;
 
     /**
      * Obtém o valor da propriedade bound.
@@ -218,6 +225,30 @@ public class ContextParameterType {
     }
 
     /**
+     * Obtém o valor da propriedade numericDomain.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getNumericDomain() {
+        return numericDomain;
+    }
+
+    /**
+     * Define o valor da propriedade numericDomain.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setNumericDomain(String value) {
+        this.numericDomain = value;
+    }
+
+    /**
      * Obtém o valor da propriedade name.
      * 
      * @return
@@ -287,6 +318,30 @@ public class ContextParameterType {
      */
     public void setKind(Integer value) {
         this.kind = value;
+    }
+
+    /**
+     * Obtém o valor da propriedade variance.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getVariance() {
+        return variance;
+    }
+
+    /**
+     * Define o valor da propriedade variance.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setVariance(String value) {
+        this.variance = value;
     }
 
 }

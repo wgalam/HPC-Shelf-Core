@@ -172,7 +172,7 @@ public class CalculatedArgumentHandler extends DBHandler{
 				CalculatedParameterType calcp = new CalculatedParameterType();
 				calcp.setCalcId(resultSet.getInt("cp_id"));
 				calcp.setName(resultSet.getString("cp_name"));
-				calcp.setKindId(resultSet.getInt("kind_id"));
+				calcp.setKindId(resultSet.getInt("variance_id"));
 				cps.add(calcp);
 			}
 			return cps;

@@ -16,7 +16,7 @@ import br.ufc.storm.exception.ResolveException;
 
 public class ContextParameterHandler extends DBHandler {
 
-	private final static String INSERT_CONTEXT_PARAMETER ="INSERT INTO context_parameter (bound_id, cp_name, ac_id, kind_id) VALUES ((select cc_id from context_contract where cc_name=?), ? ,(select ac_id from abstract_component where ac_name=?), ?) RETURNING cp_id;";
+	private final static String INSERT_CONTEXT_PARAMETER ="INSERT INTO context_parameter (bound_id, cp_name, ac_id, variance_id) VALUES ((select cc_id from context_contract where cc_name=?), ? ,(select ac_id from abstract_component where ac_name=?), ?) RETURNING cp_id;";
 	private final static String SELECT_COMPONENT_PARAMETER = "select * from context_parameter where ac_id = ? AND parameter_type = ?;";
 	private static final String SELECT_BOUND = "SELECT bound_id FROM context_parameter WHERE cp_id = ?;";
 	private static final String INSERT_BOUND_VALUE = "INSERT INTO bound_value (cp_id, bound_value) VALUES (?,?);";
@@ -28,6 +28,7 @@ public class ContextParameterHandler extends DBHandler {
 	private final static String INSERT_CONTEXT_VARIABLE_PROVIDED ="INSERT INTO context_variable_provided (cp_id, variable_name) VALUES (?,?);";
 	private final static String SELECT_CONTEXT_VARIABLE_REQUIRED ="SELECT * FROM context_variable_required WHERE cp_id = ?;";
 	private final static String SELECT_CONTEXT_VARIABLE_PROVIDED ="SELECT * FROM context_variable_provided WHERE cp_id = ?;";
+	private static final String SELECT_CONTEXT_PARAMETER_SPECIALIZED_ID = "select * from context_parameter A, context_parameter_bound_specialization B where A.cp_id = ? AND A.cp_id = B.cp_id;";
 	
 	public final static int CONTEXT = 1;
 	public final static int QUALITY = 2;
@@ -35,6 +36,7 @@ public class ContextParameterHandler extends DBHandler {
 	public final static int RANKING = 4;
 	public static final int INCREASEKIND = 4;
 	public static final int DECREASEKIND = 5;
+	
 	
 	/**
 	 * This method should test if a component do not generate infinite loops in composition walk
@@ -264,7 +266,7 @@ public class ContextParameterHandler extends DBHandler {
 			if(resultSet.next()) { 
 				cp.setCpId(cp_id);
 				cp.setName(resultSet.getString("cp_name"));
-				cp.setKind(resultSet.getInt("kind_id"));
+				cp.setKind(resultSet.getInt("variance_id"));
 			}
 
 			try {
@@ -285,6 +287,13 @@ public class ContextParameterHandler extends DBHandler {
 				// Do nothing
 			}
 			
+				prepared = con.prepareStatement(SELECT_CONTEXT_PARAMETER_SPECIALIZED_ID); 
+				prepared.setInt(1, cp_id); 
+				resultSet = prepared.executeQuery(); 
+				if(resultSet.next()) { 
+					cp.setCpId(resultSet.getInt("refers_to_cpid"));
+					cp.setName(resultSet.getString("cp_name"));
+				}
 			return cp;
 		} catch (SQLException e) { 
 			throw new DBHandlerException("A sql error occurred: ", e);
@@ -303,7 +312,7 @@ public class ContextParameterHandler extends DBHandler {
 		//		TODO: Validar se não vai fechar um ciclo entre limites e componentes. Criar uma tabela para validar esta possibilidade, se fechar ciclo, disparar uma exception.
 		List<ContextParameterType> cpl = new ArrayList<ContextParameterType>();
 		try {  
-			PreparedStatement prepared = getConnection().prepareStatement(SELECT_COMPONENT_PARAMETER); 
+			PreparedStatement prepared = getConnection().prepareStatement(SELECT_COMPONENT_PARAMETER);
 			prepared.setInt(1, ac_id);
 			prepared.setInt(2, ContextParameterHandler.CONTEXT);
 			ResultSet resultSet = prepared.executeQuery();
@@ -311,7 +320,8 @@ public class ContextParameterHandler extends DBHandler {
 				ContextParameterType cp = new ContextParameterType();
 				cp.setCpId(resultSet.getInt("cp_id"));
 				cp.setName(resultSet.getString("cp_name"));
-				cp.setKind(resultSet.getInt("kind_id"));
+				cp.setKind(resultSet.getInt("variance_id"));
+//				cp.setNumericDomain(resultSet.getString("bound_value_domain"));
 				Integer bound_id = resultSet.getInt("bound_id");
 				int parameter_type = resultSet.getInt("parameter_type");
 				try{

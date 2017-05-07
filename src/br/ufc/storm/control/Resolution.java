@@ -47,7 +47,7 @@ public class Resolution{
 		cc.setCcName("Multiplicação de Matrizes do Wagner");
 		cc.setOwnerId(1);
 		cc.setAbstractComponent(new AbstractComponentType());
-		cc.getAbstractComponent().setIdAc(218);
+		cc.getAbstractComponent().setIdAc(313);//218
 		cc.setPlatform(new PlatformProfileType());
 		cc.getPlatform().setPlatformContract(new ContextContract());
 		cc.getPlatform().getPlatformContract().setAbstractComponent(new AbstractComponentType());
@@ -64,11 +64,11 @@ public class Resolution{
 //		x++;
 		
 				//[Argumento de Contexto] Definir o tipo de dado da matriz L
-				cc.getContextArguments().add(new ContextArgumentType());
-				cc.getContextArguments().get(y).setCpId(151);
-				cc.getContextArguments().get(y).setContextContract(new ContextContract());
-				cc.getContextArguments().get(y).getContextContract().setCcId(44);
-				y++;
+//				cc.getContextArguments().add(new ContextArgumentType());
+//				cc.getContextArguments().get(y).setCpId(151);
+//				cc.getContextArguments().get(y).setContextContract(new ContextContract());
+//				cc.getContextArguments().get(y).getContextContract().setCcId(44);
+//				y++;
 
 		// Restringe GPU
 //				cc.getPlatform().getPlatformContract().getContextArguments().add(new ContextArgumentType());
