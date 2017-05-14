@@ -5,14 +5,20 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
 import br.ufc.storm.jaxb.AbstractComponentType;
 import br.ufc.storm.jaxb.ContextContract;
 import br.ufc.storm.jaxb.ContextParameterType;
+import br.ufc.storm.model.MaxElement;
+import br.ufc.storm.xml.XMLHandler;
 import br.ufc.storm.exception.DBHandlerException;
 import br.ufc.storm.exception.ResolveException;
+import br.ufc.storm.exception.XMLException;
 
 public class ContextParameterHandler extends DBHandler {
 
@@ -29,15 +35,15 @@ public class ContextParameterHandler extends DBHandler {
 	private final static String SELECT_CONTEXT_VARIABLE_REQUIRED ="SELECT * FROM context_variable_required WHERE cp_id = ?;";
 	private final static String SELECT_CONTEXT_VARIABLE_PROVIDED ="SELECT * FROM context_variable_provided WHERE cp_id = ?;";
 	private static final String SELECT_CONTEXT_PARAMETER_SPECIALIZED_ID = "select * from context_parameter A, context_parameter_bound_specialization B where A.cp_id = ? AND A.cp_id = B.cp_id;";
-	
+
 	public final static int CONTEXT = 1;
 	public final static int QUALITY = 2;
 	public final static int COST = 3;
 	public final static int RANKING = 4;
 	public static final int INCREASEKIND = 4;
 	public static final int DECREASEKIND = 5;
-	
-	
+
+
 	/**
 	 * This method should test if a component do not generate infinite loops in composition walk
 	 * 
@@ -63,38 +69,38 @@ public class ContextParameterHandler extends DBHandler {
 	 * @throws ResolveException 
 	 */
 
-//	public static int addContextParameter(ContextParameterType cp, String ac_name) throws StormException, DBHandlerException{
-//		int cp_id;
-//		try { 
-//			Connection con = getConnection();
-//			if(validateContexParameter(AbstractComponentHandler.getAbstractComponentID(ac_name), AbstractComponentHandler.getAbstractComponentID(cp.getBound().getAbstractComponent().getName()))==false){
-//				throw new StormException("Composition tree violated");
-//			}
-//			PreparedStatement prepared = con.prepareStatement(INSERT_CONTEXT_PARAMETER);
-//			prepared.setString(1, cp.getBound().getCcName());
-//			prepared.setString(2, cp.getName());
-//			prepared.setString(3, ac_name);
-//			ResultSet result = prepared.executeQuery();
-//			if(result.next()){
-//				cp_id = result.getInt("cp_id");
-//				if(cp.getBound().getCcName() == null){
-//					addBoundValue(cp_id, cp.getBoundValue());
-//				}
-//			}else{
-//				throw new DBHandlerException("Something goes wrong while trying insert context paramente: ");
-//			}
-//			
-//			if(cp.getContextVariableProvided() != null){
-//				addSharedVariableProvided(cp.getContextVariableProvided(), cp_id);
-//				
-//			}
-//			return cp_id;
-//		} catch (SQLException e) {
-//			throw new DBHandlerException("An error occurred while trying add context parameter: "+e.getMessage());
-//		} 
-//
-//	}
-	
+	//	public static int addContextParameter(ContextParameterType cp, String ac_name) throws StormException, DBHandlerException{
+	//		int cp_id;
+	//		try { 
+	//			Connection con = getConnection();
+	//			if(validateContexParameter(AbstractComponentHandler.getAbstractComponentID(ac_name), AbstractComponentHandler.getAbstractComponentID(cp.getBound().getAbstractComponent().getName()))==false){
+	//				throw new StormException("Composition tree violated");
+	//			}
+	//			PreparedStatement prepared = con.prepareStatement(INSERT_CONTEXT_PARAMETER);
+	//			prepared.setString(1, cp.getBound().getCcName());
+	//			prepared.setString(2, cp.getName());
+	//			prepared.setString(3, ac_name);
+	//			ResultSet result = prepared.executeQuery();
+	//			if(result.next()){
+	//				cp_id = result.getInt("cp_id");
+	//				if(cp.getBound().getCcName() == null){
+	//					addBoundValue(cp_id, cp.getBoundValue());
+	//				}
+	//			}else{
+	//				throw new DBHandlerException("Something goes wrong while trying insert context paramente: ");
+	//			}
+	//			
+	//			if(cp.getContextVariableProvided() != null){
+	//				addSharedVariableProvided(cp.getContextVariableProvided(), cp_id);
+	//				
+	//			}
+	//			return cp_id;
+	//		} catch (SQLException e) {
+	//			throw new DBHandlerException("An error occurred while trying add context parameter: "+e.getMessage());
+	//		} 
+	//
+	//	}
+
 	public static int addContextParameter(String name, String bound_name, String abstractcomponent_name, String context_variable_name, String boundValue, String required_variable_name, Map<String, Integer> map, Integer kind) throws DBHandlerException, ResolveException{
 		//		TODO: Adicionar variavel compartilhada
 		//		Listar todas variáveis compartilhadas, criar método que a partir de um ac, encontra todas as variáveis compartilhadas com aninhados
@@ -121,10 +127,10 @@ public class ContextParameterHandler extends DBHandler {
 			}else{
 				throw new DBHandlerException("Something goes wrong while trying insert context paramente: ");
 			}
-			
+
 			if(context_variable_name != null){
 				addSharedVariableProvided(context_variable_name, cp_id);
-				
+
 			}else{
 				if(required_variable_name != null){
 					Integer refers_to_var = map.get(required_variable_name);
@@ -135,7 +141,7 @@ public class ContextParameterHandler extends DBHandler {
 					}
 				}
 			}
-			
+
 			return cp_id;
 		} catch (SQLException e) {
 			throw new DBHandlerException("An error occurred while trying add context parameter: ", e);
@@ -153,40 +159,40 @@ public class ContextParameterHandler extends DBHandler {
 	 * @throws StormException
 	 * @throws DBHandlerException
 	 */
-//	public static int addContextParameterUser(String name, String bound_name, String abstractcomponent_name, String required_variable_name, Map<String, Integer> map) throws StormException, DBHandlerException{
-//		//		TODO: Adicionar variavel compartilhada
-//		//		Listar todas variáveis compartilhadas, criar método que a partir de um ac, encontra todas as variáveis compartilhadas com aninhados
-//		int cp_id;
-//		try {
-//			Connection con = getConnection();
-//			if(validateContexParameter(AbstractComponentHandler.getAbstractComponentID(abstractcomponent_name), AbstractComponentHandler.getAbstractComponentID(bound_name))==false){
-//				throw new StormException("Composition tree violated");
-//			}
-//			PreparedStatement prepared = con.prepareStatement(INSERT_CONTEXT_PARAMETER);
-//			prepared.setString(1, bound_name);
-//			prepared.setString(2, name);
-//			prepared.setString(3, abstractcomponent_name);
-//			ResultSet result = prepared.executeQuery();
-//			if(result.next()){
-//				cp_id = result.getInt("cp_id");
-//			}else{
-//				throw new DBHandlerException("Something goes wrong while trying insert context paramente: ");
-//			}
-//			if(required_variable_name != null){
-//				Integer refers_to_var = map.get(required_variable_name);
-//				if(refers_to_var != null){
-//					addRequiredSharedVariable(cp_id, refers_to_var);
-//				}else{
-//					throw new DBHandlerException("Shared variable not found");
-//				}
-//			}
-//			return cp_id;
-//		} catch (SQLException e) {
-//			throw new DBHandlerException("An error occurred while trying add context parameter: "+e.getMessage());
-//		} 
-//
-//	}
-	
+	//	public static int addContextParameterUser(String name, String bound_name, String abstractcomponent_name, String required_variable_name, Map<String, Integer> map) throws StormException, DBHandlerException{
+	//		//		TODO: Adicionar variavel compartilhada
+	//		//		Listar todas variáveis compartilhadas, criar método que a partir de um ac, encontra todas as variáveis compartilhadas com aninhados
+	//		int cp_id;
+	//		try {
+	//			Connection con = getConnection();
+	//			if(validateContexParameter(AbstractComponentHandler.getAbstractComponentID(abstractcomponent_name), AbstractComponentHandler.getAbstractComponentID(bound_name))==false){
+	//				throw new StormException("Composition tree violated");
+	//			}
+	//			PreparedStatement prepared = con.prepareStatement(INSERT_CONTEXT_PARAMETER);
+	//			prepared.setString(1, bound_name);
+	//			prepared.setString(2, name);
+	//			prepared.setString(3, abstractcomponent_name);
+	//			ResultSet result = prepared.executeQuery();
+	//			if(result.next()){
+	//				cp_id = result.getInt("cp_id");
+	//			}else{
+	//				throw new DBHandlerException("Something goes wrong while trying insert context paramente: ");
+	//			}
+	//			if(required_variable_name != null){
+	//				Integer refers_to_var = map.get(required_variable_name);
+	//				if(refers_to_var != null){
+	//					addRequiredSharedVariable(cp_id, refers_to_var);
+	//				}else{
+	//					throw new DBHandlerException("Shared variable not found");
+	//				}
+	//			}
+	//			return cp_id;
+	//		} catch (SQLException e) {
+	//			throw new DBHandlerException("An error occurred while trying add context parameter: "+e.getMessage());
+	//		} 
+	//
+	//	}
+
 	/**
 	 * 
 	 * @param name
@@ -204,7 +210,7 @@ public class ContextParameterHandler extends DBHandler {
 			throw new DBHandlerException("An error occurred while trying add context parameter: ", e);
 		} 
 	}
-	
+
 	/**
 	 * 
 	 * @param cp_id
@@ -274,26 +280,26 @@ public class ContextParameterHandler extends DBHandler {
 			} catch (DBHandlerException e) {
 				cp.setBoundValue(getBoundValue(cp_id));
 			}
-			
+
 			try {
 				cp.setContextVariableProvided(ContextParameterHandler.getProvidedVariable(cp_id));
 			} catch (DBHandlerException e) {
 				// Do nothing
 			}
-			
+
 			try {
 				cp.setContextVariableRequiredId(ContextParameterHandler.getRequiredVariable(cp_id));
 			} catch (DBHandlerException e) {
 				// Do nothing
 			}
-			
-				prepared = con.prepareStatement(SELECT_CONTEXT_PARAMETER_SPECIALIZED_ID); 
-				prepared.setInt(1, cp_id); 
-				resultSet = prepared.executeQuery(); 
-				if(resultSet.next()) { 
-					cp.setCpId(resultSet.getInt("refers_to_cpid"));
-					cp.setName(resultSet.getString("cp_name"));
-				}
+
+			//			prepared = con.prepareStatement(SELECT_CONTEXT_PARAMETER_SPECIALIZED_ID); 
+			//			prepared.setInt(1, cp_id); 
+			//			resultSet = prepared.executeQuery(); 
+			//			if(resultSet.next()) { 
+			//				cp.setCpId(resultSet.getInt("refers_to_cpid"));
+			//				cp.setName(resultSet.getString("cp_name"));
+			//			}
 			return cp;
 		} catch (SQLException e) { 
 			throw new DBHandlerException("A sql error occurred: ", e);
@@ -308,49 +314,103 @@ public class ContextParameterHandler extends DBHandler {
 	 * @throws DBHandlerException 
 	 */
 
-	public static List<ContextParameterType> getAllContextParameterFromAbstractComponent(int ac_id) throws DBHandlerException {
+	public static List<ContextParameterType> getAllContextParameterFromAbstractComponent(int ac_id, List<ContextParameterType> listCPS) throws DBHandlerException {
 		//		TODO: Validar se não vai fechar um ciclo entre limites e componentes. Criar uma tabela para validar esta possibilidade, se fechar ciclo, disparar uma exception.
 		List<ContextParameterType> cpl = new ArrayList<ContextParameterType>();
+		cpl.addAll(listCPS);
 		try {  
 			PreparedStatement prepared = getConnection().prepareStatement(SELECT_COMPONENT_PARAMETER);
 			prepared.setInt(1, ac_id);
 			prepared.setInt(2, ContextParameterHandler.CONTEXT);
 			ResultSet resultSet = prepared.executeQuery();
 			while (resultSet.next()) {
-				ContextParameterType cp = new ContextParameterType();
+				ContextParameterType cp = null;
+				cp = new ContextParameterType();
 				cp.setCpId(resultSet.getInt("cp_id"));
 				cp.setName(resultSet.getString("cp_name"));
 				cp.setKind(resultSet.getInt("variance_id"));
-//				cp.setNumericDomain(resultSet.getString("bound_value_domain"));
+				//				cp.setNumericDomain(resultSet.getString("bound_value_domain"));
 				Integer bound_id = resultSet.getInt("bound_id");
-				int parameter_type = resultSet.getInt("parameter_type");
+//				int parameter_type = resultSet.getInt("parameter_type");
+				
 				try{
 					if(cp.getKind() >= 3){
 						cp.setBoundValue(resultSet.getString("bound_value"));
 					}
-					
 					if(bound_id != ac_id && bound_id!=0){
 						cp.setBound(ContextContractHandler.getContextContractIncomplete(bound_id));
 					}else{
 						throw new ResolveException("Context Parameter ("+cp.getName()+") bound self referenced results in infinite loop");
 					}
+
 				}catch (ResolveException e) {
 					ContextContract cc = new ContextContract();
 					cc.setAbstractComponent(new AbstractComponentType());
 					cc.getAbstractComponent().setIdAc(bound_id);
 					cp.setBound(cc);
 				}
-				//TODO:				cp.setContextVariable(null); 
 				cpl.add(cp);
 			} 
-			return cpl; 
+			return cpl;
 		} catch (SQLException e) { 
 			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
+	}
 
+	public static List<ContextParameterType> mergeContextParameterFromAbstractComponent(List<ContextParameterType> list2) throws DBHandlerException {
+		Hashtable <Integer , ContextParameterType> history = new Hashtable<>();
+		ArrayList<ContextParameterType> list = new ArrayList<>();
+		for(ContextParameterType cp:list2){
+			Integer cpt_id = getParameterGeneralized(cp.getCpId());
+			if(cpt_id==null){
+				history.put(cp.getCpId(), cp);
+			}else{
+				history.put(cp.getCpId(), cp);
+				while(cpt_id!= null){
+					cp.setCpId(cpt_id); 
+					if(history.get(cpt_id)!= null){
+						history.remove(cpt_id); 
+					}
+					cpt_id = getParameterGeneralized(cp.getCpId());
+				}
+			}
+		}
+		Enumeration<ContextParameterType> aux = history.elements();
+			for(int i = 0; i < history.size(); i++){
+				list.add(aux.nextElement());
+			}
+		return list;
 	}
 
 
+	public static void main(String [] args) throws XMLException, DBHandlerException{
+		AbstractComponentType ac = AbstractComponentHandler.getAbstractComponent(299);
+		System.out.println(XMLHandler.getAbstractComponent(ac));;
+	}
+
+	public static Integer getParameterGeneralized(int cp_id){
+
+
+		try {
+			PreparedStatement prepared;
+			prepared = getConnection().prepareStatement(SELECT_CONTEXT_PARAMETER_SPECIALIZED_ID);
+			prepared.setInt(1, cp_id);
+			ResultSet resultSet = prepared.executeQuery();
+			if(resultSet.next()) {
+				ContextParameterType cpt = new ContextParameterType();
+				cpt.setCpId(resultSet.getInt("refers_to_cpid"));
+				cpt.setName(resultSet.getString("cp_name"));
+				return cpt.getCpId();
+			}
+		}catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+
+	}
+
+	
 	/**
 	 * This method gets a Variable Contract from its context parameter and context contract id
 	 * @param cp_id
@@ -453,7 +513,7 @@ public class ContextParameterHandler extends DBHandler {
 			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
 	}
-	
+
 	public static Integer getRequiredVariable(int cp_id) throws DBHandlerException{
 		try { 
 			PreparedStatement prepared = DBHandler.getConnection().prepareStatement(SELECT_CONTEXT_VARIABLE_REQUIRED); 
@@ -468,8 +528,8 @@ public class ContextParameterHandler extends DBHandler {
 			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
 	}
-	
-	
+
+
 	public static ContextParameterType findCp(AbstractComponentType ac, int cp_id){
 		for(ContextParameterType cpt: ac.getContextParameter()){
 			if(cpt.getCpId()==cp_id){
@@ -478,7 +538,7 @@ public class ContextParameterHandler extends DBHandler {
 		}
 		return null;
 	}
-	
+
 	public static Integer getKindFromContextParameter(int cp_id, AbstractComponentType ac){
 		for(ContextParameterType cp : ac.getContextParameter()){
 			if(cp.getCpId()==cp_id){
@@ -487,6 +547,6 @@ public class ContextParameterHandler extends DBHandler {
 		}
 		return null;
 	}
-	
-	
+
+
 }

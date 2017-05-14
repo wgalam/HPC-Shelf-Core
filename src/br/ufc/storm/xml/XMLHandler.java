@@ -534,7 +534,7 @@ public class XMLHandler {
 			throw new XMLException(e2);
 		}
 			try {
-				ac.getContextParameter().addAll(ContextParameterHandler.getAllContextParameterFromAbstractComponent(ac.getIdAc()));
+				ac.getContextParameter().addAll(ContextParameterHandler.getAllContextParameterFromAbstractComponent(ac.getIdAc(),null));
 			} catch (DBHandlerException e1) {
 				throw new XMLException(e1);
 			}

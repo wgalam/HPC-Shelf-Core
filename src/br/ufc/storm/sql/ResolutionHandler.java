@@ -163,11 +163,11 @@ public class ResolutionHandler extends DBHandler {
 	 * @return
 	 * @throws DBHandlerException 
 	 */
-	public static ResolutionNode generateResolutionTree(Integer i, ResolutionNode tree, List<ContextParameterType> cps, List<CalculatedParameterType> qps, List<CalculatedParameterType> cops, List<CalculatedParameterType> rps, String parentPath) throws DBHandlerException{
+	public static ResolutionNode generateResolutionTree(Integer supertype_id, ResolutionNode tree, List<ContextParameterType> cps, List<CalculatedParameterType> qps, List<CalculatedParameterType> cops, List<CalculatedParameterType> rps, String parentPath) throws DBHandlerException{
 		try {
 			Connection con = DBHandler.getConnection();
 			PreparedStatement prepared = con.prepareStatement(SELECT_ABSTRACT_COMPONENT_BY_SUPERTYPE_ID); 
-			prepared.setInt(1, i);
+			prepared.setInt(1, supertype_id);
 			ResultSet resultSet = prepared.executeQuery(); 
 			while (resultSet.next()) {
 				if(resultSet.getBoolean("enabled") == false){
@@ -177,8 +177,9 @@ public class ResolutionHandler extends DBHandler {
 				node.setName(resultSet.getString("ac_name"));
 				node.setPath(parentPath);
 				node.setAc_id(resultSet.getInt("ac_id"));
-				node.setCps(ContextParameterHandler.getAllContextParameterFromAbstractComponent(node.getAc_id()));
-				node.getCps().addAll(cps);
+				node.setCps(ContextParameterHandler.getAllContextParameterFromAbstractComponent(node.getAc_id(),cps));
+				//Fix parameter specialization
+				node.setCps(ContextParameterHandler.mergeContextParameterFromAbstractComponent(node.getCps()));
 
 				node.setQps(CalculatedArgumentHandler.getCalculatedParameters(node.getAc_id(), ContextParameterHandler.QUALITY));
 				if(qps.size() > 0){
@@ -198,7 +199,6 @@ public class ResolutionHandler extends DBHandler {
 				tree.addSubtype(node);
 				ResolutionNode.addTable(node.getAc_id(), node);
 				generateResolutionTree(node.getAc_id(), node, node.getCps(), node.getQps(), node.getCops(), node.getRps(), node.getPath()+"."+node.getName());
-
 			} 
 			return tree;
 		} catch (SQLException e) { 

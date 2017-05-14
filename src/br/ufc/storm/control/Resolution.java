@@ -520,7 +520,7 @@ public class Resolution{
 			}else{
 				candidate.getContextArguments().add(acat);
 			}	
-		}		
+		}
 	}
 
 	private static Integer findArgument(ContextArgumentType acat, List <ContextArgumentType> list){
