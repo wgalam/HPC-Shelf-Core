@@ -337,6 +337,7 @@ public class CalculatedArgumentHandler extends DBHandler{
 	}
 
 
+	
 	public static int calulateRankArguments(ContextContract cc, ArgumentTable argTable, Hashtable <Integer , MaxElement> maximum) throws FunctionException{
 		int count = 0;
 		List<CalculatedParameterType> calcps = ResolutionNode.resolutionTree.findNode(cc.getAbstractComponent().getIdAc()).getRps();
