@@ -57,11 +57,13 @@ public class Resolution{
 		int y = 0; //Indice do argumento de contexto
 		
 //[Argumento de Plataforma]Testando a filtragem por argumento de contexto (localizado em Fortaleza) (só a plataforma Sasquatch passa)
-//		cc.getPlatform().getPlatformContract().getContextArguments().add(new ContextArgumentType());
-//		cc.getPlatform().getPlatformContract().getContextArguments().get(x).setCpId(26);
-//		cc.getPlatform().getPlatformContract().getContextArguments().get(x).setContextContract(new ContextContract());
-//		cc.getPlatform().getPlatformContract().getContextArguments().get(x).getContextContract().setCcId(322);
-//		x++;
+		/*
+		cc.getPlatform().getPlatformContract().getContextArguments().add(new ContextArgumentType());
+		cc.getPlatform().getPlatformContract().getContextArguments().get(x).setCpId(26);
+		cc.getPlatform().getPlatformContract().getContextArguments().get(x).setContextContract(new ContextContract());
+		cc.getPlatform().getPlatformContract().getContextArguments().get(x).getContextContract().setCcId(322);
+		x++;
+		*/
 		
 				//[Argumento de Contexto] Definir o tipo de dado da matriz L
 //				cc.getContextArguments().add(new ContextArgumentType());

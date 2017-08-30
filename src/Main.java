@@ -42,14 +42,14 @@ public class Main {
 
 		try {
 			int ac = 1;
-			int cc = 229;
+			int cc = 315;
 			int cc2 = 126;
-//			System.out.println(FormalFormat.exportContextContractWithIDs(ContextContractHandler.getContextContract(cc), null));
+			System.out.println(FormalFormat.exportContextContractWithIDs(ContextContractHandler.getContextContract(cc), null));
 //			System.out.println();
 //			System.out.println(FormalFormat.exportContextContractWithIDs(ContextContractHandler.getContextContract(cc2), null));
 //			System.out.println();
 //			System.out.println(FormalFormat.exportComponentSignatureWithIDs(AbstractComponentHandler.getAbstractComponent(ac), null));
-			
+			//System.out.println(FormalFormat.exportCandyComponentSignature(AbstractComponentHandler.getAbstractComponent(19), ""));;
 //			System.out.println(XMLHandler.getContextContract(ContextContractHandler.getContextContract(cc))+"\n");
 			
 			//200.19.177.89

@@ -26,7 +26,7 @@ public class ContextParameterHandler extends DBHandler {
 	private final static String SELECT_COMPONENT_PARAMETER = "select * from context_parameter where ac_id = ? AND parameter_type = ?;";
 	private static final String SELECT_BOUND = "SELECT bound_id FROM context_parameter WHERE cp_id = ?;";
 	private static final String INSERT_BOUND_VALUE = "INSERT INTO bound_value (cp_id, bound_value) VALUES (?,?);";
-	private static final String SELECT_BOUND_VALUE = "SELECT bound_value FROM bound_value WHERE cp_id=?;";
+	private static final String SELECT_BOUND_VALUE = "SELECT bound_value FROM context_parameter WHERE cp_id=?;";
 	private final static String SELECT_CONTEXT_PARAMETER = " select * from context_parameter where cp_id = ?;";
 	private final static String SELECT_CONTEXT_PARAMETER_ID = " select cp_id from context_parameter where cp_name = ?;";
 	private static final String SELECT_VARIABLE_CONTEXT_CONTRACT = "select A.cc_id from closed_arguments_context_contract A, context_argument B WHERE A.ca_id = B.ca_id AND B.variable_cp_id = ? AND B.cc_id = ?;";

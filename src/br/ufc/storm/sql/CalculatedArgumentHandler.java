@@ -64,7 +64,6 @@ public class CalculatedArgumentHandler extends DBHandler{
 		try {
 			Resolution.main(args);
 		} catch (DBHandlerException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -292,7 +291,6 @@ public class CalculatedArgumentHandler extends DBHandler{
 		//Begin of calculus
 		for(CalculatedParameterType calcpt:calcps){//calcula cada parametro
 
-
 			CalculatedFunctionType function = null;
 			try {
 				function = CalculatedArgumentHandler.getCalculatedFunction(calcpt.getCalcId(), cc.getCcId(), type);
@@ -339,6 +337,7 @@ public class CalculatedArgumentHandler extends DBHandler{
 
 	
 	public static int calulateRankArguments(ContextContract cc, ArgumentTable argTable, Hashtable <Integer , MaxElement> maximum) throws FunctionException{
+		
 		int count = 0;
 		List<CalculatedParameterType> calcps = ResolutionNode.resolutionTree.findNode(cc.getAbstractComponent().getIdAc()).getRps();
 		//Begin of calculus
