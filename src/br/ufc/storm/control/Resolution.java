@@ -104,7 +104,7 @@ public class Resolution{
 //		cc.getContextArguments().add(arg0);
 //		x++;
 
-		System.out.println(XMLHandler.getContextContract(cc));
+//		System.out.println(XMLHandler.getContextContract(cc));
 //		System.out.println(FormalFormat.exportContextContract(cc, null));
 		//Testando a filtragem por parametro de qualidade (total de núcleos superior a este valor)
 		//		CalculatedArgumentType cat = new CalculatedArgumentType();
@@ -226,7 +226,7 @@ public class Resolution{
 	 * @param resolutionTree
 	 * @param applicationPlatform
 	 * @return
-	 * @throws ResolveException 
+	 * @throws ResolveException
 	 */
 	public static CandidateListType resolve(ContextContract application) throws ResolveException{
 		long start = System.currentTimeMillis();
@@ -287,8 +287,8 @@ public class Resolution{
 		Resolution.rankCandidates(candidateList, tableOfSWidArgumentTable); //Rank all candidates
 		Resolution.sortCandidateList(candidateList, 0);//Primeira função de ranqueamento
 		long elapsed = System.currentTimeMillis() - start;
-		elapsed/=1000;
-		System.out.println("Resolution Time: "+(int)(elapsed/60)+" minutos e "+elapsed % 60+" segundos");
+//		elapsed/=1000;
+		System.out.println("Resolution Time: "+(int)((elapsed/1000)/60)+" minutos e "+(elapsed/1000) % 60+" segundos. Time millis: "+elapsed+" ms");
 		return candidateList;
 	}
 

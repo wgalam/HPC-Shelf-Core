@@ -64,6 +64,7 @@ public class ArgumentTable {
 		x.setValue(value);
 		cat.setValue(x);
 		cat.setKind(kind);
+		cat.setCpId(cp_id);
 		argumentTable.put(cp_id, cat);
 	}
 
@@ -120,7 +121,7 @@ public class ArgumentTable {
 			}
 			cavt.setDataType("Double"); //Default data type
 			copy.setValue(cavt); 
-
+			copy.setCpId(cp_id);
 		}
 
 		return copy;

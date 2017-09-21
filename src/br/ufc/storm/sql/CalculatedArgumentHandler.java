@@ -33,7 +33,7 @@ public class CalculatedArgumentHandler extends DBHandler{
 	private static final String INSERT_CALCULATED_PARAMETER = "INSERT INTO calculated_function_terms(cf_id,term_order,cp_id) VALUES (?,?,?);";
 	private static final String SELECT_CALCULATED_FUNCTION = "select * FROM calculated_function A, context_parameter B WHERE B.cp_id = ? AND A.cc_id = ? AND B.parameter_type = ? AND A.cp_id = B.cp_id;";
 	private static final String SELECT_CALCULATED_FUNCTION_GENERIC = "select * FROM calculated_function A, context_parameter B WHERE B.cp_id = ? AND A.cc_id IS NULL AND B.parameter_type = ? AND A.cp_id = B.cp_id;";
-	private static final String SELECT_CALCULATED_FUNCTION_TERMS = "SELECT cp_id, term_order FROM calculated_function_terms WHERE cf_id = ?;";
+	private static final String SELECT_CALCULATED_FUNCTION_TERMS = "SELECT * FROM calculated_function_terms WHERE cf_id = ?;";
 	private static final String SELECT_CALCULATED_PARAMETER = "select * FROM context_parameter WHERE ac_id = ? AND parameter_type = ?;";
 	private static final String SELECT_CFT_ID_CC_ID_GENERIC = "SELECT * FROM calculated_function WHERE cp_id = ?;"; 
 	private static final String SELECT_CFT_ID_CC_ID_SPECIFIC = "SELECT * FROM calculated_function WHERE cp_id = ? AND cc_id = ?;"; 
@@ -125,7 +125,7 @@ public class CalculatedArgumentHandler extends DBHandler{
 			con.setAutoCommit(false);
 			PreparedStatement prepared = con.prepareStatement(INSERT_CALCULATED_FUNCTION); 
 			prepared.setInt(1, qf.getCcId());
-			prepared.setString(2, qf.getFunctionValue()); 
+			prepared.setString(2, qf.getFunctionValue());
 			prepared.setInt(3, qf.getCpId());
 			prepared.setInt(4, type);
 			ResultSet resultSet = prepared.executeQuery();
@@ -305,7 +305,7 @@ public class CalculatedArgumentHandler extends DBHandler{
 					}
 					CalculatedArgumentType qat = new CalculatedArgumentType();
 					qat.setCpId(calcpt.getCalcId());
-					qat.setValue(CalculatedArgumentHandler.calculate(function));
+					qat.setValue(CalculatedArgumentHandler.calculate(function, null));
 					if(qat.getValue()!=null){
 						argTable.addNewArgument(calcpt.getCalcId(), ""+qat.getValue(), calcpt.getKindId());
 						calcpt.setCalculatedArgument(qat);
@@ -346,6 +346,7 @@ public class CalculatedArgumentHandler extends DBHandler{
 			try {
 				function = CalculatedArgumentHandler.getCalculatedFunction(calcpt.getCalcId(), cc.getCcId(), ContextParameterHandler.RANKING);
 				if(function != null){
+					Hashtable<Integer, Float> weight = new Hashtable<>();
 					ArrayList<CalculatedFunctionTermType> terms = CalculatedArgumentHandler.getCalculatedFunctionParameter(function.getFunctionId());
 					for(CalculatedFunctionTermType qftt: terms){//busca cada argumento de cada termo da função
 						ContextArgumentType cat = argTable.getArgument(qftt.getCpId());
@@ -387,7 +388,7 @@ public class CalculatedArgumentHandler extends DBHandler{
 					}
 					CalculatedArgumentType qat = new CalculatedArgumentType();
 					qat.setCpId(calcpt.getCalcId());
-					qat.setValue(CalculatedArgumentHandler.calculate(function));
+					qat.setValue(CalculatedArgumentHandler.calculate(function, weight));
 					argTable.addNewArgument(calcpt.getCalcId(), ""+qat.getValue(), calcpt.getKindId());
 					calcpt.setCalculatedArgument(qat);
 
@@ -410,7 +411,7 @@ public class CalculatedArgumentHandler extends DBHandler{
 	 * @param qft
 	 * @return result
 	 */
-	public static Double calculate(CalculatedFunctionType qft){
+	public static Double calculate(CalculatedFunctionType qft, Hashtable<Integer, Float> weight){
 		BigDecimal result = null;
 		int numOfarguments = qft.getFunctionArguments().size();
 
@@ -420,7 +421,21 @@ public class CalculatedArgumentHandler extends DBHandler{
 				return null;
 			}
 			expression.with("v"+i, (qft.getFunctionArguments().get(i).getValue().getValue()));
+			//Modificando os pesos para virem do banco e assim poder gerar a matriz de 
+			//    alternativas e poder usar qualquer biblioteca de MCDM
+			if(true ){
+				if(qft.getFunctionArguments().get(i).getCpId() !=null){
+					//erro, faunções de qualidade e custo nao tem peso entao devem ser bloqueadas no processo de carregar os pesos
+					//incluir aqui a criação da matriz de alternativas e pesos para imprimir ou repassar a outras bibliotecas
+				}
+			}
+			//for(CalculatedFunctionTermType c: qft.getFunctionParameters()){
+				//if(c.getCpId()==qft.getFunctionArguments().get(i).getCpId()){
+					//expression.with("w"+i, (qft.getFunctionParameters().get(i).getWeight()+""));
+				//}
+			//}
 		}
+		//System.out.println(expression.getExpression());
 		expression.setPrecision(6);
 		result = expression.eval();
 		return result.doubleValue();

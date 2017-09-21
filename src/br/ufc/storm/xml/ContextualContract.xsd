@@ -75,13 +75,15 @@
     <complexType name="context_argument_type">
     	<sequence>
     		<choice>
-    			<element name="shared_variable_cp_id" type="int" maxOccurs="1"
-    				minOccurs="0">
+    			<element name="shared_variable_cp_id" type="int"
+    				maxOccurs="1" minOccurs="0">
     			</element>
     			<element name="context_contract"
     				type="tns:context_contract">
     			</element>
-    			<element name="value" type="tns:context_argument_value_type"></element>
+    			<element name="value"
+    				type="tns:context_argument_value_type">
+    			</element>
     		</choice>
     	</sequence>
     	<attribute name="cc_id" type="int"></attribute>
@@ -180,12 +182,12 @@
 
 
 
- <complexType name="calculated_function_term_type">
+    <complexType name="calculated_function_term_type">
     	<attribute name="order" type="int"></attribute>
     	<attribute name="cp_id" type="int"></attribute>
     </complexType>
 
-<complexType name="calculated_function_type">
+    <complexType name="calculated_function_type">
     	<sequence>
     		<element name="function_parameters"
     			type="tns:calculated_function_term_type" maxOccurs="unbounded"
