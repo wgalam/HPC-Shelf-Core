@@ -22,7 +22,7 @@ import br.ufc.storm.exception.XMLException;
 
 public class ContextParameterHandler extends DBHandler {
 
-	private final static String INSERT_CONTEXT_PARAMETER ="INSERT INTO context_parameter (bound_id, cp_name, ac_id, variance_id) VALUES ((select cc_id from context_contract where cc_name=?), ? ,(select ac_id from abstract_component where ac_name=?), ?) RETURNING cp_id;";
+	private final static String INSERT_CONTEXT_PARAMETER ="INSERT INTO context_parameter (bound_id, cp_name, ac_id, parameter_type, variance_id) VALUES ((select cc_id from context_contract where cc_name=?), ? ,(select ac_id from abstract_component where ac_name=?), ?,?) RETURNING cp_id;";
 	private final static String SELECT_COMPONENT_PARAMETER = "select * from context_parameter where ac_id = ? AND parameter_type = ?;";
 	private static final String SELECT_BOUND = "SELECT bound_id FROM context_parameter WHERE cp_id = ?;";
 	private static final String INSERT_BOUND_VALUE = "INSERT INTO bound_value (cp_id, bound_value) VALUES (?,?);";
@@ -101,11 +101,12 @@ public class ContextParameterHandler extends DBHandler {
 	//
 	//	}
 
-	public static int addContextParameter(String name, String bound_name, String abstractcomponent_name, String context_variable_name, String boundValue, String required_variable_name, Map<String, Integer> map, Integer kind) throws DBHandlerException, ResolveException{
+
+	public static int addContextParameter(String name, String bound_name, String abstractcomponent_name, String context_variable_name, String boundValue, String required_variable_name, Map<String, Integer> map, Integer parameter_type, int variance) throws DBHandlerException, ResolveException{
 		//		TODO: Adicionar variavel compartilhada
 		//		Listar todas variáveis compartilhadas, criar método que a partir de um ac, encontra todas as variáveis compartilhadas com aninhados
-		if(kind==null){
-			throw new ResolveException("Context parameter kind can't be null for parameter: "+name);
+		if(parameter_type==null){
+			throw new ResolveException("Context parameter type can't be null for parameter: "+name);
 		}
 		int cp_id;
 		try { 
@@ -117,7 +118,8 @@ public class ContextParameterHandler extends DBHandler {
 			prepared.setString(1, bound_name);
 			prepared.setString(2, name);
 			prepared.setString(3, abstractcomponent_name);
-			prepared.setInt(4, kind);
+			prepared.setInt(4, parameter_type);
+			prepared.setInt(5, variance);
 			ResultSet result = prepared.executeQuery();
 			if(result.next()){
 				cp_id = result.getInt("cp_id");
@@ -382,11 +384,6 @@ public class ContextParameterHandler extends DBHandler {
 		return list;
 	}
 
-
-	public static void main(String [] args) throws XMLException, DBHandlerException{
-		AbstractComponentType ac = AbstractComponentHandler.getAbstractComponent(299);
-		System.out.println(XMLHandler.getAbstractComponent(ac));;
-	}
 
 	public static Integer getParameterGeneralized(int cp_id){
 

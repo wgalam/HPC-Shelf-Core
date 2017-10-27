@@ -9,6 +9,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Formatter;
 import java.util.logging.Handler;
+import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
@@ -38,6 +39,9 @@ public class LogHandler {
 			MyFormatter formatter = new MyFormatter();  
 			
 			fh.setFormatter(formatter);  
+			if(!Boolean.parseBoolean(PropertiesHandler.getProperty("core.log.enable"))){
+				LogHandler.logger.setLevel(Level.OFF);
+			}
 		} catch (SecurityException e) {  
 			e.printStackTrace();  
 		} catch (IOException e) {  

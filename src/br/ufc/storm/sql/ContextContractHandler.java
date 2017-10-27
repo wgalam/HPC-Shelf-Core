@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.ufc.storm.exception.DBHandlerException;
+import br.ufc.storm.io.FileHandler;
 import br.ufc.storm.jaxb.AbstractComponentType;
 import br.ufc.storm.jaxb.AbstractUnitType;
 import br.ufc.storm.jaxb.CalculatedArgumentType;
@@ -43,7 +44,7 @@ public class ContextContractHandler extends DBHandler{
 	
 
 	public static void main(String[] args) {
-		for(int i = 0; i < 0; i++){
+		for(int i = 0; i < 84; i++){
 			//BEGIN PROCESSOR
 			ContextContract processor = new ContextContract();
 			processor.setCcName("E5-2650v3");
@@ -144,7 +145,7 @@ public class ContextContractHandler extends DBHandler{
 
 			//BEGIN CLUSTER
 			ContextContract cc = new ContextContract();
-			cc.setCcName("MDCC-CPU-Large");
+			cc.setCcName("MDCC-CPU-Large"+i);
 			cc.setOwnerId(4);
 			cc.setAbstractComponent(new AbstractComponentType());
 			cc.getAbstractComponent().setName("Cluster");
@@ -175,7 +176,8 @@ public class ContextContractHandler extends DBHandler{
 				DBHandler.getConnection().commit();
 				DBHandler.getConnection().setAutoCommit(true);
 
-				System.out.println(XMLHandler.getContextContract(cc));;
+				System.out.println(XMLHandler.getContextContract(cc));
+				FileHandler.toHardDisk("/home/wagner/log_shelf.log", XMLHandler.getContextContract(cc).getBytes());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

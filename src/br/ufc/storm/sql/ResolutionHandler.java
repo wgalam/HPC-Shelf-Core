@@ -84,7 +84,7 @@ public class ResolutionHandler extends DBHandler {
 	 */
 
 	public static List<ContextContract> generateCompliantPlatformCandidates(int requiredID) throws DBHandlerException{
-		try {	
+		try {
 			List <ResolutionNode> subtype = new ArrayList<ResolutionNode>();
 			List<ContextContract> list = new ArrayList<ContextContract>();
 			Connection con = getConnection();
@@ -94,19 +94,9 @@ public class ResolutionHandler extends DBHandler {
 			while(resultSet.next()) { 
 				Integer cc_id = resultSet.getInt("platform_cc_id");
 				try {
+					// TODO: Erro com tamanho 1000
 					ContextContract candidate = ContextContractHandler.getContextContract(cc_id);
-
-
-
-					//aaaaaaaaaaaaaaaaa					
 					ResolutionHandler.mergeFreeParameters(candidate);
-
-
-
-
-
-
-
 					list.add(candidate);
 				} catch (DBHandlerException e) {
 					throw new RuntimeException("Platform can not be catched with ac_id "+requiredID,e);

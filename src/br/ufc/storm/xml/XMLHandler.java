@@ -8,6 +8,8 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -106,7 +108,28 @@ public class XMLHandler {
 		}
 		return doc;
 	}
-
+	public static ContextContract importContextContract(String file) throws XMLException{
+		String content = "";
+		try {
+			content = new String(Files.readAllBytes(Paths.get(file)));
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		ContextContract cc = new ContextContract();
+		JAXBContext context;
+		try {
+			context = JAXBContext.newInstance(br.ufc.storm.jaxb.ObjectFactory.class.getPackage().getName(),
+					br.ufc.storm.jaxb.ObjectFactory.class.getClassLoader());
+			Unmarshaller unmarshaller = context.createUnmarshaller();
+			@SuppressWarnings("unchecked")
+			JAXBElement<ContextContract> element = (JAXBElement<ContextContract>) unmarshaller.unmarshal(new InputSource(new java.io.StringReader(file)));
+			cc=element.getValue();
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		}
+		return cc;
+	}
 
 	/**
 	 * This method resolves a XML Context Contract
@@ -245,7 +268,7 @@ public class XMLHandler {
 		} catch (JAXBException e) {
 			e.printStackTrace();
 		}
-		return null;		
+		return null;
 	}
 	
 	/*@SuppressWarnings("unchecked")
@@ -511,7 +534,7 @@ public class XMLHandler {
 		}
 		ContextParameterType cp = ac.getContextParameter().get(0);
 		try {
-			ContextParameterHandler.addContextParameter(cp.getName(), cp.getBound().getAbstractComponent().getName(), ac.getName(), cp.getContextVariableProvided(), cp.getBoundValue(), null , null, cp.getKind());
+			ContextParameterHandler.addContextParameter(cp.getName(), cp.getBound().getAbstractComponent().getName(), ac.getName(), cp.getContextVariableProvided(), cp.getBoundValue(), null , null, cp.getKind(),cp.getVariance());
 		} catch (DBHandlerException | ResolveException e) {
 			throw new XMLException(e);
 		}

@@ -2,7 +2,7 @@
 // Este arquivo foi gerado pela Arquitetura JavaTM para Implementação de Referência (JAXB) de Bind XML, v2.2.8-b130911.1802 
 // Consulte <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Todas as modificações neste arquivo serão perdidas após a recompilação do esquema de origem. 
-// Gerado em: 2017.09.01 às 02:33:55 AM BRT 
+// Gerado em: 2017.10.26 às 06:15:29 PM BRT 
 //
 
 
@@ -38,7 +38,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="cp_id" type="{http://www.w3.org/2001/XMLSchema}int" />
  *       &lt;attribute name="kind" type="{http://www.w3.org/2001/XMLSchema}int" />
- *       &lt;attribute name="variance" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="variance" type="{http://www.w3.org/2001/XMLSchema}int" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -78,7 +78,7 @@ public class ContextParameterType {
     @XmlAttribute(name = "kind")
     protected Integer kind;
     @XmlAttribute(name = "variance")
-    protected String variance;
+    protected Integer variance;
 
     /**
      * Obtém o valor da propriedade bound.
@@ -325,10 +325,10 @@ public class ContextParameterType {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link Integer }
      *     
      */
-    public String getVariance() {
+    public Integer getVariance() {
         return variance;
     }
 
@@ -337,10 +337,10 @@ public class ContextParameterType {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link Integer }
      *     
      */
-    public void setVariance(String value) {
+    public void setVariance(Integer value) {
         this.variance = value;
     }
 

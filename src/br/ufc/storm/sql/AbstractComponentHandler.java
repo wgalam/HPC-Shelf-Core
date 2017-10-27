@@ -167,7 +167,7 @@ public class AbstractComponentHandler extends DBHandler{
 						if(cp.getContextVariableProvided()!=null){
 							sharedVariables.put(cp.getContextVariableProvided(), cp.getCpId());
 						}
-						Integer i = ContextParameterHandler.addContextParameter(cp.getName(), boundName, ac.getName(), null, cp.getBoundValue(), cp.getContextVariableRequired(), sharedVariables, cp.getKind());
+						Integer i = ContextParameterHandler.addContextParameter(cp.getName(), boundName, ac.getName(), null, cp.getBoundValue(), cp.getContextVariableRequired(), sharedVariables, cp.getKind(),cp.getVariance());
 						cp.setCpId(i);
 					}
 				}

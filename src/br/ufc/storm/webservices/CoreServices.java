@@ -27,6 +27,7 @@ import br.ufc.storm.exception.ResolveException;
 import br.ufc.storm.exception.ShelfRuntimeException;
 import br.ufc.storm.exception.XMLException;
 import br.ufc.storm.export.FormalFormat;
+import br.ufc.storm.io.Compressor;
 import br.ufc.storm.io.LogHandler;
 
 public class CoreServices {
@@ -362,6 +363,22 @@ public class CoreServices {
 			LogHandler.close();
 			return str;
 		} catch (XMLException e) {
+			LogHandler.close();
+			return null;
+		}
+
+	}
+	
+	public byte [] resolveAndCompress(String cmp){
+		try {
+			LogHandler.getLogger().info("Starting to resolve a context contract...");
+			String str = XMLHandler.resolve(cmp);
+			LogHandler.close();
+			return Compressor.compress(str.getBytes());
+		} catch (XMLException e) {
+			LogHandler.close();
+			return null;
+		} catch (IOException e) {
 			LogHandler.close();
 			return null;
 		}

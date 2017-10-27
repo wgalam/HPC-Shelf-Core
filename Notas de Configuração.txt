@@ -1,0 +1,8 @@
+
+
+https://stackoverflow.com/questions/2718786/how-to-increase-java-heap-space-for-a-tomcat-app
+#Adicionada a seguinte linha ao arquivo /usr/share/Tomcat7/bin/catalina.sh 
+#para aumentar o tamanho da HEAP, necessário para quantidades grandes de componentes 
+#na lista de sistemas computacionais
+#CATALINA_OPTS=-Xms1024m -Xmx1024m
+CATALINA_OPTS="$CATALINA_OPTS -Xms1024m -Xmx3024m"

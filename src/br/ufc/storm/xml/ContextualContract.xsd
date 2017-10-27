@@ -69,7 +69,7 @@
     	<attribute name="name" type="string"></attribute>
     	<attribute name="cp_id" type="int"></attribute>
     	<attribute name="kind" type="int"></attribute>
-    	<attribute name="variance" type="string"></attribute>
+    	<attribute name="variance" type="int"></attribute>
     </complexType>
 
     <complexType name="context_argument_type">
@@ -185,6 +185,8 @@
     <complexType name="calculated_function_term_type">
     	<attribute name="order" type="int"></attribute>
     	<attribute name="cp_id" type="int"></attribute>
+    	<attribute name="weight" type="float"></attribute>
+    	<attribute name="domain" type="int"></attribute>
     </complexType>
 
     <complexType name="calculated_function_type">
