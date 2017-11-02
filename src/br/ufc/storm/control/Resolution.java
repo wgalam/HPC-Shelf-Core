@@ -172,7 +172,20 @@ public class Resolution{
 
 			//			resolve = sortCandidateList(resolve, 3);
 			int cont = 0;
+			
+			
+			
 			for(ContextContract a:resolve.getCandidate()){
+				System.out.print("Elemento "+cont);
+				cont++;
+				for(int i = 0; i < a.getRankingArguments().size(); i++){
+					System.out.print(" "+a.getRankingArguments().get(i).getValue());
+				}
+				System.out.println("");
+//				System.out.println(FormalFormat.exportContextContract(a, null));
+			}
+			
+			
 				/*
 				  	try {
 						System.out.println(BackendHandler.instantiatePlatftorm(a.getPlatform()));
@@ -181,22 +194,22 @@ public class Resolution{
 					}
 				 */
 				//			System.out.println("Candidato compatível ("+ cont++ +"): "+XMLHandler.getContextContract(a));
-
 				//				if(a.getCcId()==229){
 				////					System.out.println(FormalFormat.exportContextContract(a, null));
 				//					System.out.println("Candidato compatível ("+ cont++ +"): "+XMLHandler.getContextContract(a));
 				//				}
 				//				###########18/07/2016
-								System.out.println(FormalFormat.exportContextContract(a, null));
+//								System.out.println(FormalFormat.exportContextContract(a, null));
 				//				###########
-			}
+			
+			System.out.println("\n\n\nSize of resolve: "+resolve.getCandidate().size());
 			//						System.out.println("Último Candidato Compatível\n"+XMLHandler.getContextContract(resolve.getCandidate().get(resolve.getCandidate().size()-1)));
 			//						System.out.println("Último Candidato Compatível\n"+FormalFormat.exportContextContract(resolve.getCandidate().get(resolve.getCandidate().size()-1), null));
 		} catch (ResolveException e) {
 			System.out.println("Erro enquanto estava resolvendo um contrato");
 			e.printStackTrace();
 		}
-		System.out.println("\n\n\nSize of resolve: "+resolve.getCandidate().size());
+		
 
 		//		System.out.println("################### Start Deploy #####################");
 		//		LogHandler.getLogger().info("Starting to deploy an application...");
@@ -321,9 +334,8 @@ public class Resolution{
 
 		candidateList.setUserId(application.getOwnerId());
 		Resolution.rankCandidates(candidateList, tableOfSWidArgumentTable); //Rank all candidates
-		Resolution.sortCandidateList(candidateList, 0);//Primeira função de ranqueamento
+//		Resolution.sortCandidateList(candidateList, 0);//Primeira função de ranqueamento
 		long elapsed = System.currentTimeMillis() - start;
-		//		elapsed/=1000;
 		System.out.println("Resolution Time: "+(int)((elapsed/1000)/60)+" minutos e "+(elapsed/1000) % 60+" segundos. Time millis: "+elapsed+" ms");
 		return candidateList;
 	}
@@ -585,21 +597,51 @@ public class Resolution{
 
 	private static Hashtable <Integer , MaxElement> getMaximumValues(ContextContract cc, Hashtable <Integer , MaxElement> maximum){
 		for(ContextArgumentType cat : cc.getContextArguments()){
-			//se tiver valor faz o que segue
 			if(cat.getValue()!=null){
-				if(maximum.contains(cat.getCpId())){
+//				if(cat.getCpId()==36){
+//					System.out.println("CP 36 -------> "+cat.getValue().getValue());
+//					if(maximum.containsKey(cat.getCpId())){
+//						System.out.println("<> "+maximum.get(cat.getCpId()).getValue());
+//					}
+//				}
+				if(maximum.containsKey(cat.getCpId())){
 					if(maximum.get(cat.getCpId()).getValue() < Double.parseDouble(cat.getValue().getValue())){
 						maximum.get(cat.getCpId()).setValue(Double.parseDouble(cat.getValue().getValue()));
 					}
 				}else{
-					maximum.put(cat.getCpId(), new MaxElement(Double.parseDouble(cat.getValue().getValue())));
+					
+					MaxElement aux = new MaxElement(Double.parseDouble(cat.getValue().getValue()));
+//					if(cat.getCpId()==36){
+//						System.out.println(cat.getCpId()+"---"+aux.getValue());
+//					}
+					MaxElement x = maximum.put(cat.getCpId(), aux);
+					
+					
+//					if(maximum.containsKey(36)){
+//						System.out.println("<> "+maximum.get(36).getValue());
+//					}
 				}
 			}else{
 				if(cat.getContextContract() != null){
-					maximum.putAll(getMaximumValues(cat.getContextContract(), maximum));
+					Hashtable <Integer , MaxElement> aux = getMaximumValues(cat.getContextContract(), maximum);
+					for(Integer i:aux.keySet()){
+						if(maximum.containsKey(i)){
+							if(aux.get(i).getValue() > maximum.get(i).getValue()){
+								maximum.put(i, aux.get(i));
+							}
+						}else{
+							maximum.put(i, aux.get(i));
+						}
+					}
+					
+					
+					
+//					maximum.putAll(getMaximumValues(cat.getContextContract(), maximum));
 					//Variável compartilhada, buscar valor compartilhado
 				}
 			}
+
+			
 		}
 
 		for(CalculatedArgumentType cat : cc.getQualityArguments()){
@@ -621,7 +663,9 @@ public class Resolution{
 			}
 		}
 
-
+//		if(maximum.containsKey(36)){
+//			System.out.println("<> "+maximum.get(36).getValue());
+//		}
 		return maximum;
 	}
 
@@ -630,8 +674,32 @@ public class Resolution{
 	private static Hashtable <Integer , MaxElement> getMaximumValues(CandidateListType cl){
 		Hashtable <Integer , MaxElement> maximum = new Hashtable<Integer, MaxElement>();
 		for(ContextContract cc : cl.getCandidate()){
-			maximum.putAll(getMaximumValues(cc, maximum));
-			maximum.putAll(getMaximumValues(cc.getPlatform().getPlatformContract(), maximum));
+			Hashtable <Integer , MaxElement> aux = getMaximumValues(cc, maximum);
+			for(Integer i:aux.keySet()){
+				if(maximum.containsKey(i)){
+					if(aux.get(i).getValue() > maximum.get(i).getValue()){
+						maximum.put(i, aux.get(i));
+					}
+				}else{
+					maximum.put(i, aux.get(i));
+				}
+			}
+			
+			Hashtable <Integer , MaxElement> aux2 = getMaximumValues(cc.getPlatform().getPlatformContract(), maximum);
+			for(Integer i:aux2.keySet()){
+				if(maximum.containsKey(i)){
+					if(aux2.get(i).getValue() > maximum.get(i).getValue()){
+						maximum.put(i, aux2.get(i));
+					}
+				}else{
+					maximum.put(i, aux2.get(i));
+				}
+			}
+			
+			
+			
+//			maximum.putAll(getMaximumValues(cc, maximum));
+//			maximum.putAll(getMaximumValues(cc.getPlatform().getPlatformContract(), maximum));
 		}
 
 		//		para cada argumento, buscar o maior valor em todos os candidatos e manter na tabela.
@@ -651,8 +719,16 @@ public class Resolution{
 				e.printStackTrace();
 			}
 		}
+		String str = "";
 		for(DecisionMatrix d : CalculatedArgumentHandler.decisionMatrix){
-			System.out.println(d.toString());
+			str+=(d.toWASPAS());
+			str+=("\n\n");
+		}
+		try {
+			Files.write(Paths.get("/home/wagner/mcdm.log"), str.getBytes());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		return cl;
 

@@ -341,7 +341,7 @@ public class CalculatedArgumentHandler extends DBHandler{
 
 
 	public static int calulateRankArguments(ContextContract cc, ArgumentTable argTable, Hashtable <Integer , MaxElement> maximum, int numOfAlternatives, int alternative) throws FunctionException{
-
+		System.out.println(">>>>>"+cc.getCcName());
 		int count = 0;
 		List<CalculatedParameterType> calcps = ResolutionNode.resolutionTree.findNode(cc.getAbstractComponent().getIdAc()).getRps();
 
@@ -384,7 +384,7 @@ public class CalculatedArgumentHandler extends DBHandler{
 					//######################## end
 					
 					
-					
+					System.out.print("--"+calcpt.getName()+" = ");
 					
 					for(int k = 0; k < terms.size(); k++){//busca cada argumento de cada termo da função
 						CalculatedFunctionTermType qftt = terms.get(k);
@@ -394,10 +394,11 @@ public class CalculatedArgumentHandler extends DBHandler{
 						//######################## end
 						ContextParameterType x = ContextParameterHandler.getContextParameter(qftt.getCpId());
 						if(cat!=null){
+							System.out.print(Double.parseDouble(cat.getValue().getValue())+" [ "+qftt.getWeight()+" ( "+maximum.get(qftt.getCpId()).getValue()+" ) "+" ] "+" ");
 							if(maximum.get(qftt.getCpId())!=null){
 								if(x.getKind()==ContextParameterHandler.INCREASEKIND){
 									if(cat.getValue().getValue()!=null){
-										if(maximum.get(qftt.getCpId()).getCount() > 1){
+										if(maximum.get(qftt.getCpId()).getCount() > 0){
 											cat.getValue().setValue(""+Double.parseDouble(cat.getValue().getValue())/maximum.get(qftt.getCpId()).getValue());
 										}else{
 											cat.getValue().setValue("1");
@@ -408,7 +409,7 @@ public class CalculatedArgumentHandler extends DBHandler{
 								}else{
 									if(x.getKind()==ContextParameterHandler.DECREASEKIND){
 										if(cat.getValue().getValue()!=null){
-											if(maximum.get(qftt.getCpId()).getCount() > 1){
+											if(maximum.get(qftt.getCpId()).getCount() > 0){
 												Double m = Double.parseDouble(cat.getValue().getValue())/maximum.get(qftt.getCpId()).getValue();
 												m = 1-m;
 												cat.getValue().setValue(""+m);
@@ -427,10 +428,13 @@ public class CalculatedArgumentHandler extends DBHandler{
 
 							function.getFunctionArguments().add(cat);
 						}
+						
 					}
+					System.out.print(" = ");
 					CalculatedArgumentType qat = new CalculatedArgumentType();
 					qat.setCpId(calcpt.getCalcId());
 					qat.setValue(CalculatedArgumentHandler.calculate(function, weight));
+					System.out.println(qat.getValue()+"");
 					argTable.addNewArgument(calcpt.getCalcId(), ""+qat.getValue(), calcpt.getKindId());
 					calcpt.setCalculatedArgument(qat);
 
@@ -456,13 +460,14 @@ public class CalculatedArgumentHandler extends DBHandler{
 	public static Double calculate(CalculatedFunctionType qft, Hashtable<Integer, Float> weight){
 		BigDecimal result = null;
 		int numOfarguments = qft.getFunctionArguments().size();
-
+//		System.out.print(">>>>>>>>>>>>>");
 		Expression expression = new Expression(qft.getFunctionValue());
 		for(int i = 0; i < numOfarguments; i++){
 			if(qft.getFunctionArguments().get(i).getValue().getValue()==null){
 				return null;
 			}
 			expression.with("v"+i, (qft.getFunctionArguments().get(i).getValue().getValue()));
+//			System.out.print(qft.getFunctionArguments().get(i).getValue().getValue()+" ");
 			//Modificando os pesos para virem do banco e assim poder gerar a matriz de 
 			//    alternativas e poder usar qualquer biblioteca de MCDM
 			if(true ){
@@ -477,9 +482,10 @@ public class CalculatedArgumentHandler extends DBHandler{
 			//}
 			//}
 		}
-		//System.out.println(expression.getExpression());
+//		System.out.print(" = ");
 		expression.setPrecision(6);
 		result = expression.eval();
+//		System.out.println(result.doubleValue());
 		return result.doubleValue();
 	}
 }
