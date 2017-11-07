@@ -6,11 +6,13 @@ import java.util.Hashtable;
 import br.ufc.storm.control.Resolution;
 import br.ufc.storm.exception.DBHandlerException;
 import br.ufc.storm.exception.FunctionException;
+import br.ufc.storm.export.FormalFormat;
 import br.ufc.storm.jaxb.ContextArgumentType;
 import br.ufc.storm.jaxb.ContextArgumentValueType;
 import br.ufc.storm.jaxb.ContextContract;
 import br.ufc.storm.jaxb.ContextParameterType;
 import br.ufc.storm.sql.AbstractComponentHandler;
+import br.ufc.storm.sql.ContextContractHandler;
 import br.ufc.storm.sql.ContextParameterHandler;
 import br.ufc.storm.sql.ContextParameterTreeHandler;
 
@@ -19,39 +21,62 @@ public class ArgumentTable {
 	Hashtable <Integer , ContextArgumentType> argumentTable = new Hashtable<Integer, ContextArgumentType>();
 	//The key is cp_id
 
-	//	public static void main(String [] a){
-	//		try {
-	//			Resolution.main(a);
-	//		} catch (DBHandlerException e) {
-	//			// TODO Auto-generated catch block
-	//			e.printStackTrace();
-	//		}
-	//	}
+	
+	public static void main(String[] args) {
+		ContextContract cc;
+		try {
+			
+			cc = ContextContractHandler.getContextContract(124);
+			ArgumentTable argumentT = new ArgumentTable(cc);
+			System.out.println(argumentT.getArgument(234).getValue().getValue());
+//			System.out.println(FormalFormat.exportContextContractWithIDs(cc, null));
+//			System.out.println(argumentT.toString());
+			
+		} catch (DBHandlerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+		private void fill(ContextContract cc) {
+			//Adds all numerical arguments to hash table for performance purpose
+			if(cc.getPlatform()!=null){
+				fill(cc.getPlatform().getPlatformContract());
+			}
+			for(ContextArgumentType cat:cc.getContextArguments()){
+				if(cat.getValue()!=null){
+					for(ContextParameterType cpt:cc.getAbstractComponent().getContextParameter()){
+						if(cpt.getCpId().equals(cat.getCpId())){
+							addNewArgument(cat.getCpId(), ""+cat.getValue().getValue(), cpt.getKind());
+						}
+					}
+	
+				}else{
+					if(cat.getContextContract()!=null){
+						fill(cat.getContextContract());
+					}
+				}
+			}
+			
+		}
 
 	public ArgumentTable(ContextContract cc){
 		fill(cc);
 	}
-
-	private void fill(ContextContract cc) {
-		//Adds all numerical arguments to hash table for performance purpose
-		for(ContextArgumentType cat:cc.getContextArguments()){
-			if(cat.getValue()!=null){
-				for(ContextParameterType cpt:cc.getAbstractComponent().getContextParameter()){
-					if(cpt.getCpId()==cat.getCpId()){
-						this.addNewArgument(cat.getCpId(), ""+cat.getValue().getValue(), cpt.getKind());
-					}
-				}
-
-			}else{
-				if(cat.getContextContract()!=null){
-					fill(cat.getContextContract());
-				}
-			}
-		}
-		if(cc.getPlatform()!=null){
-			fill(cc.getPlatform().getPlatformContract());
-		}
-	}
+	
+//	public static ContextArgumentType getContextArgument(ContextContract cc, int cp_id){
+//		ContextArgumentType x = null;
+//		for(ContextArgumentType cat:cc.getContextArguments()){
+//			if(cat.getCpId()==cp_id){
+//				return cat;
+//			}else{
+//				if(cat.get){
+//					
+//				}
+//			}
+//		}
+//	}
 
 	public void addArgument(int cp_id, ContextArgumentType arg){
 		argumentTable.put(cp_id, arg);

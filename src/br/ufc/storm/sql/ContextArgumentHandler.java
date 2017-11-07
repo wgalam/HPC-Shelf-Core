@@ -15,7 +15,7 @@ import br.ufc.storm.exception.DBHandlerException;
 public class ContextArgumentHandler extends DBHandler {
 
 	private static final String INSERT_CONTEXT_ARGUMENT = "INSERT INTO context_argument (cc_id, variable_cp_id) VALUES (?,?) RETURNING ca_id;";
-	private final static String SELECT_CONTEXT_ARGUMENT_BY_ID = "select * from context_argument A, context_parameter B where cc_id = ? and A.variable_cp_id = B.cp_id;";
+	private final static String SELECT_CONTEXT_ARGUMENT_BY_ID = "select * from context_argument A, context_parameter B where cc_id = ? and A.variable_cp_id = B.cp_id ORDER BY variable_cp_id;";
 	private static final String SELECT_VARIABLE_VALUE = "select * from context_argument A, closed_argument_values B WHERE A.variable_cp_id = ? AND A.cc_id = ? AND A.ca_id = B.ca_id;";
 	private static final String SELECT_SHARED_VARIABLE_CP = "select refers_to_var from context_parameter A, shared_context_variables B  WHERE A.cp_id = B.cp_id AND A.cp_id = ?;";
 	private static final String SELECT_CLOSED_ARGUMENT_CC = "select target_cc_id from context_argument A, closed_arguments_context_contract B WHERE A.variable_cp_id = ? AND A.cc_id = ? AND A.ca_id = B.ca_id;";

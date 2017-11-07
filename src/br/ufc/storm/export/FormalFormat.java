@@ -24,10 +24,10 @@ public static final String REQUIRED = " <: ";
 	public static void main(String[] args) {
 		try {
 			
-//			ContextContract cc = ContextContractHandler.getContextContract(318);
-//			System.out.println(FormalFormat.exportContextContract(cc, null));
-			System.out.println(XMLHandler.getAbstractComponent("EnvironmentBindingReadData"));;
-//			System.out.println(FormalFormat.exportCandyComponentSignature(AbstractComponentHandler.getAbstractComponent(299), null));
+			ContextContract cc = ContextContractHandler.getContextContract(315);
+			System.out.println(FormalFormat.exportContextContract(cc, null));
+//			System.out.println(XMLHandler.getAbstractComponent("EnvironmentBindingReadData"));;
+//			System.out.println(FormalFormat.exportCandyComponentSignature(AbstractComponentHandler.getAbstractComponent(89), null));
 //			System.out.println(FormalFormat.exportContextContractWithIDs(ContextContractHandler.getContextContract(177), null));
 		} catch (Exception e) {
 			e.printStackTrace();

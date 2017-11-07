@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.nio.file.WatchEvent.Kind;
@@ -36,10 +37,11 @@ import br.ufc.storm.jaxb.ContextArgumentValueType;
 import br.ufc.storm.jaxb.ContextContract;
 import br.ufc.storm.jaxb.ContextParameterType;
 import br.ufc.storm.jaxb.PlatformProfileType;
+import br.ufc.storm.mcdm.DecisionMatrix;
 import br.ufc.storm.model.ArgumentTable;
-import br.ufc.storm.model.DecisionMatrix;
 import br.ufc.storm.model.MaxElement;
 import br.ufc.storm.model.ResolutionNode;
+import br.ufc.storm.model.Sort;
 import br.ufc.storm.sql.CalculatedArgumentHandler;
 import br.ufc.storm.sql.ContextContractHandler;
 import br.ufc.storm.sql.ContextParameterHandler;
@@ -73,7 +75,13 @@ public class Resolution{
 		int y = 0; //Indice do argumento de contexto
 
 
-
+		//Define tamanho da entrada		
+//						cc.getPlatform().getPlatformContract().getContextArguments().add(new ContextArgumentType());
+//						cc.getPlatform().getPlatformContract().getContextArguments().get(x).setCpId(107);
+//						cc.getPlatform().getPlatformContract().getContextArguments().get(x).setValue(new ContextArgumentValueType());
+//						cc.getPlatform().getPlatformContract().getContextArguments().get(x).getValue().setDataType("Integer");
+//						cc.getPlatform().getPlatformContract().getContextArguments().get(x).getValue().setValue("100");
+						x++;
 
 		//[Argumento de Plataforma]Testando a filtragem por argumento de contexto (localizado em Fortaleza) (só a plataforma Sasquatch passa)
 
@@ -174,17 +182,41 @@ public class Resolution{
 			int cont = 0;
 			
 			
+			String str="";
+			String log="";
 			
 			for(ContextContract a:resolve.getCandidate()){
-				System.out.print("Elemento "+cont);
+//				log+=(cont+" & ");
 				cont++;
 				for(int i = 0; i < a.getRankingArguments().size(); i++){
-					System.out.print(" "+a.getRankingArguments().get(i).getValue());
+					log+=(" "+a.getRankingArguments().get(i).getValue());
+					if(i!=a.getRankingArguments().size()-1){
+						log+=" & ";
+					}
 				}
-				System.out.println("");
-//				System.out.println(FormalFormat.exportContextContract(a, null));
+				log+="\n";
+//				log+=("\\\\\n\\hline\n");
+//				System.out.println(FormalFormat.exportContextContractWithIDs(a, null));
+//				str+=FormalFormat.exportContextContractWithIDs(a, null)+"\n\n";
+				str+=FormalFormat.exportContextContract(a, null)+"\n\n";
+				
 			}
+//			System.out.println(Sort.sort(resolve));
 			
+			
+			
+			//Imprime a matriz de parâmetros de ranqueamento
+//			System.out.println(log);
+			
+			
+			
+			
+			try {
+				Files.write(Paths.get("/home/wagner/Core/result.log"), str.getBytes());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			
 				/*
 				  	try {
@@ -202,7 +234,7 @@ public class Resolution{
 //								System.out.println(FormalFormat.exportContextContract(a, null));
 				//				###########
 			
-			System.out.println("\n\n\nSize of resolve: "+resolve.getCandidate().size());
+			System.out.println("\n\nSize of resolve: "+resolve.getCandidate().size());
 			//						System.out.println("Último Candidato Compatível\n"+XMLHandler.getContextContract(resolve.getCandidate().get(resolve.getCandidate().size()-1)));
 			//						System.out.println("Último Candidato Compatível\n"+FormalFormat.exportContextContract(resolve.getCandidate().get(resolve.getCandidate().size()-1), null));
 		} catch (ResolveException e) {
@@ -407,7 +439,7 @@ public class Resolution{
 		}
 		//		System.out.println(candidateList.getCandidate().size());
 		LogHandler.getLogger().info("Calculating arguments...");
-		calculateCalculatedArguments(candidateList, application, tableOfSWidArgumentTable);
+		evaluateCalculatedArguments(candidateList, application, tableOfSWidArgumentTable);
 		return candidateList;
 	}
 
@@ -447,12 +479,12 @@ public class Resolution{
 		return null;
 	}
 
-	public static void calculateCalculatedArguments(CandidateListType candidateList, ContextContract application, Hashtable <Integer , Hashtable <Integer , ArgumentTable>> tableOfSWidArgumentTable){
+	public static void evaluateCalculatedArguments(CandidateListType candidateList, ContextContract application, Hashtable <Integer , Hashtable <Integer , ArgumentTable>> tableOfSWidArgumentTable){
 		Iterator<ContextContract> i = candidateList.getCandidate().iterator();
 		while(i.hasNext()){
 			ContextContract cc = (ContextContract) i.next();
 
-			ArgumentTable argumentTable = new ArgumentTable(cc);//Store argument table of a platform
+			ArgumentTable argumentTable = new ArgumentTable(cc);    //Store argument table of a platform
 			if(tableOfSWidArgumentTable.get(cc.getCcId())==null){
 				tableOfSWidArgumentTable.put(cc.getCcId(), new Hashtable<>());
 			}
@@ -598,12 +630,6 @@ public class Resolution{
 	private static Hashtable <Integer , MaxElement> getMaximumValues(ContextContract cc, Hashtable <Integer , MaxElement> maximum){
 		for(ContextArgumentType cat : cc.getContextArguments()){
 			if(cat.getValue()!=null){
-//				if(cat.getCpId()==36){
-//					System.out.println("CP 36 -------> "+cat.getValue().getValue());
-//					if(maximum.containsKey(cat.getCpId())){
-//						System.out.println("<> "+maximum.get(cat.getCpId()).getValue());
-//					}
-//				}
 				if(maximum.containsKey(cat.getCpId())){
 					if(maximum.get(cat.getCpId()).getValue() < Double.parseDouble(cat.getValue().getValue())){
 						maximum.get(cat.getCpId()).setValue(Double.parseDouble(cat.getValue().getValue()));
@@ -611,15 +637,7 @@ public class Resolution{
 				}else{
 					
 					MaxElement aux = new MaxElement(Double.parseDouble(cat.getValue().getValue()));
-//					if(cat.getCpId()==36){
-//						System.out.println(cat.getCpId()+"---"+aux.getValue());
-//					}
 					MaxElement x = maximum.put(cat.getCpId(), aux);
-					
-					
-//					if(maximum.containsKey(36)){
-//						System.out.println("<> "+maximum.get(36).getValue());
-//					}
 				}
 			}else{
 				if(cat.getContextContract() != null){
@@ -633,11 +651,6 @@ public class Resolution{
 							maximum.put(i, aux.get(i));
 						}
 					}
-					
-					
-					
-//					maximum.putAll(getMaximumValues(cat.getContextContract(), maximum));
-					//Variável compartilhada, buscar valor compartilhado
 				}
 			}
 
@@ -662,10 +675,6 @@ public class Resolution{
 				maximum.put(cat.getCpId(), new MaxElement(cat.getValue()));
 			}
 		}
-
-//		if(maximum.containsKey(36)){
-//			System.out.println("<> "+maximum.get(36).getValue());
-//		}
 		return maximum;
 	}
 
@@ -709,23 +718,76 @@ public class Resolution{
 	}
 
 	public static CandidateListType rankCandidates(CandidateListType cl, Hashtable <Integer , Hashtable <Integer , ArgumentTable>> tableOfSWidArgumentTable){
-		Hashtable <Integer , MaxElement> maximum = Resolution.getMaximumValues(cl);
-		for(int i = 0; i < cl.getCandidate().size(); i++){
-			ContextContract cc = cl.getCandidate().get(i);
-			try {
-				CalculatedArgumentHandler.calulateRankArguments(cc, tableOfSWidArgumentTable.get(cc.getCcId()).get(cc.getPlatform().getPlatformContract().getCcId()), maximum, cl.getCandidate().size(), i);
-			} catch (FunctionException e) {
-				// This occurs when the result of method get from hashtable is null
-				e.printStackTrace();
-			}
-		}
-		String str = "";
-		for(DecisionMatrix d : CalculatedArgumentHandler.decisionMatrix){
-			str+=(d.toWASPAS());
-			str+=("\n\n");
-		}
 		try {
-			Files.write(Paths.get("/home/wagner/mcdm.log"), str.getBytes());
+			Files.write(Paths.get("/home/wagner/Core/verifyRank.log"), "".getBytes());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+//		Hashtable <Integer , MaxElement> maximum = Resolution.getMaximumValues(cl);
+//		for(int i = 0; i < cl.getCandidate().size(); i++){
+//			ContextContract cc = cl.getCandidate().get(i);
+//			try {
+//				CalculatedArgumentHandler.calulateRankArguments(cc, tableOfSWidArgumentTable.get(cc.getCcId()).get(cc.getPlatform().getPlatformContract().getCcId()), maximum, cl.getCandidate().size(), i);
+//			} catch (FunctionException e) {
+//				// This occurs when the result of method get from hashtable is null
+//				e.printStackTrace();
+//			}
+//		}
+		try {
+			CalculatedArgumentHandler.calulateRankArguments(cl, tableOfSWidArgumentTable);
+		} catch (FunctionException e1) {
+			e1.printStackTrace();
+		}
+		
+		String str = "";
+		
+		
+		for(int k = 0; k < CalculatedArgumentHandler.decisionMatrix.size(); k++){
+			DecisionMatrix d = CalculatedArgumentHandler.decisionMatrix.get(k);
+//		DecisionMatrix d = CalculatedArgumentHandler.decisionMatrix.get(0);
+			
+			str+=(d.toString());
+			str+=("\n----------------------------------------\n");
+			str+=(d.toRmcdmFunction("MMOORA"));
+			str+=("\n----------------------------------------\n");
+			str+=(d.toRmcdmFunction("TOPSISLinear"));
+			str+=("\n----------------------------------------\n");
+			str+=(d.toRmcdmFunction("TOPSISVector"));
+			str+=("\n\n");
+			
+			int a [] = d.evalMMOORA();
+			int b [] = d.evalTOPSISLinear();
+			int c [] = d.evalTOPSISVector();
+			int compareMatrix[][] = new int[cl.getCandidate().size()][4];
+//			for(int i = 0; i < cl.getCandidate().size(); i++){
+//				for(int j = 0; j < CalculatedArgumentHandler.decisionMatrix.size(); j++){
+//					
+//				}
+//			}
+			for(int i = 0; i < cl.getCandidate().size(); i++){
+				compareMatrix[i][0]= cl.getCandidate().get(i).getRankingArguments().get(k).getValue().intValue();
+				compareMatrix[i][1]=a[i];
+				compareMatrix[i][2]=b[i];
+				compareMatrix[i][3]=c[i];
+			}
+			System.out.println("Parâmetro "+k+":");
+			System.out.println("Rank"+k+", MMOORA, TOPSISl, TOPSISv");
+			for(int i = 0; i < compareMatrix.length; i++){
+				System.out.printf("%d || ", i);
+				for(int j = 0; j < compareMatrix[0].length; j++){
+					System.out.print(compareMatrix[i][j]+" | ");
+				}
+				System.out.println("");
+			}
+			System.out.println("\n\n");
+		}
+
+		
+		
+		
+		try {
+			Files.write(Paths.get("/home/wagner/Core/mcdm.log"), str.getBytes());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
