@@ -272,8 +272,8 @@ public class CalculatedArgumentHandler extends DBHandler{
 		for(ContextArgumentType cat : cc.getContextArguments()){
 			//pegar o parametro
 			Integer kind=-1;
-			
-			
+
+
 			for(ContextParameterType cpt:ResolutionNode.resolutionTree.findNode(cc.getAbstractComponent().getIdAc()).getCps()){
 				if(cpt.getCpId()==cat.getCpId()){
 					kind = cpt.getKind();
@@ -291,11 +291,11 @@ public class CalculatedArgumentHandler extends DBHandler{
 		case ContextParameterHandler.COST:
 			calcps= ResolutionNode.resolutionTree.findNode(cc.getAbstractComponent().getIdAc()).getCops();
 			break;
-//		case ContextParameterHandler.RANKING:
-//			calcps= ResolutionNode.resolutionTree.findNode(cc.getAbstractComponent().getIdAc()).getRps();
-//			break;
+			//		case ContextParameterHandler.RANKING:
+			//			calcps= ResolutionNode.resolutionTree.findNode(cc.getAbstractComponent().getIdAc()).getRps();
+			//			break;
 		}
-		
+
 		if(cc.getPlatform()!=null){
 			count+=calulateContextContractArguments(cc.getPlatform().getPlatformContract(), argTable, type);
 		}
@@ -341,7 +341,7 @@ public class CalculatedArgumentHandler extends DBHandler{
 				e.printStackTrace();
 			}
 		}
-		
+
 		return count;
 	}
 
@@ -349,8 +349,8 @@ public class CalculatedArgumentHandler extends DBHandler{
 	public static int calulateRankArguments(CandidateListType cl, Hashtable <Integer , Hashtable <Integer , ArgumentTable>> tableOfSWidArgumentTable) throws FunctionException{
 		int count = 0;
 		int rankParametersCount = 0;
-		
-		
+
+
 		for(int c = 0; c < cl.getCandidate().size(); c++){
 			ContextContract cc = cl.getCandidate().get(c);
 			ArgumentTable argTable = tableOfSWidArgumentTable.get(cc.getCcId()).get(cc.getPlatform().getPlatformContract().getCcId());
@@ -360,7 +360,7 @@ public class CalculatedArgumentHandler extends DBHandler{
 				//testar esse metodo e carregar pesos e domínios do banco
 				int numOfMatrix = calcps.size();
 				for(int i = 0; i < numOfMatrix; i++){
-					DecisionMatrix d = new DecisionMatrix(cc.getCcName()+" in platform "+cc.getPlatform().getPlatformContract().getCcName());
+					DecisionMatrix d = new DecisionMatrix(calcps.get(i).getName());
 					decisionMatrix.add(d);
 				}
 			}
@@ -400,134 +400,137 @@ public class CalculatedArgumentHandler extends DBHandler{
 				}
 			}
 		}
+		
+		
 		for(int i=0; i < rankParametersCount; i++){
-			int r[] = WPM.eval(decisionMatrix.get(i).getWeight(), decisionMatrix.get(i).getMatrix(), null);
-				for(int j=0; j < cl.getCandidate().size();j++){
-//					TODO: The results were inverted to transform benefits criteria in cost criteria
-					cl.getCandidate().get(j).getRankingArguments().get(i).setValue((double) r[cl.getCandidate().size()-j-1]);
-				}
+			int r[] = decisionMatrix.get(i).evalTOPSISVector();
+					for(int j=0; j < cl.getCandidate().size();j++){
+						cl.getCandidate().get(j).getRankingArguments().get(i).setValue((double) r[j]);
+					}
 		}
 		return count;
 	}
 
+	
+	
 	//	public static int calulateRankArguments(ContextContract cc, ArgumentTable argTable, Hashtable <Integer , MaxElement> maximum, int numOfAlternatives, int alternative) throws FunctionException{
-//		int count = 0;
-//		String str = "Candidate: "+cc.getCcName()+"\n";
-//		List<CalculatedParameterType> calcps = ResolutionNode.resolutionTree.findNode(cc.getAbstractComponent().getIdAc()).getRps();
-//
-//		//######################## begin
-//		if(numOfAlternatives > 0 && decisionMatrix.size() == 0){
-//			//testar esse metodo e carregar pesos e domínios do banco
-//			int numOfMatrix = calcps.size();
-//			for(int i = 0; i < numOfMatrix; i++){
-//				DecisionMatrix d = new DecisionMatrix(cc.getCcName()+" in platform "+cc.getPlatform().getPlatformContract().getCcName());
-//				decisionMatrix.add(d);
-//			}
-//		}
-//		
-//		//######################## end
-//
-//		//Begin of calculus
-//		CalculatedParameterType calcpt;
-//		for(int i = 0; i < calcps.size(); i++){//calcula cada parametro
-//			calcpt = calcps.get(i);
-//			CalculatedFunctionType function = null;
-//			
-//
-//			try {
-//				function = CalculatedArgumentHandler.getCalculatedFunction(calcpt.getCalcId(), cc.getCcId(), ContextParameterHandler.RANKING);
-//				Hashtable<Integer, Float> weight = new Hashtable<>();
-//				ArrayList<CalculatedFunctionTermType> terms = CalculatedArgumentHandler.getCalculatedFunctionParameter(function.getFunctionId());
-//				
-//				if(function != null){
-//					
-//					//######################## begin
-//					if(decisionMatrix.get(i).getMatrix()==null){
-//						if(terms.size() > 0){
-//							for(int j = 0; j < terms.size(); j++){
-//								ContextParameterType cpt = ContextParameterHandler.getContextParameter(terms.get(j).getCpId());
-//								decisionMatrix.get(i).addCriterion(cpt.getKind(), terms.get(j).getWeight(), terms.get(j).getCpId(), cpt.getName());
-//							}
-//							decisionMatrix.get(i).createMatrix(numOfAlternatives, terms.size());
-//						}
-//					}
-//					//######################## end
-//					
-//					
-//					str+=("--"+calcpt.getName()+" = ");
-//					
-//					for(int k = 0; k < terms.size(); k++){//busca cada argumento de cada termo da função
-//						CalculatedFunctionTermType qftt = terms.get(k);
-//						ContextArgumentType cat = argTable.getArgument(qftt.getCpId());
-//						//######################## begin
-//						decisionMatrix.get(i).getMatrix()[alternative][k] = Double.parseDouble(cat.getValue().getValue());
-//						//######################## end
-//						ContextParameterType x = ContextParameterHandler.getContextParameter(qftt.getCpId());
-//						if(cat!=null){
-//							str+=(Double.parseDouble(cat.getValue().getValue())+" [ "+qftt.getWeight()+" ( "+maximum.get(qftt.getCpId()).getValue()+" ) "+" ] "+" ");
-//							
-//							if(maximum.get(qftt.getCpId())!=null){
-////								if(x.getKind()==ContextParameterHandler.INCREASEKIND){
-////									if(cat.getValue().getValue()!=null){
-////										if(maximum.get(qftt.getCpId()).getCount() > 0){
-////											cat.getValue().setValue(""+Double.parseDouble(cat.getValue().getValue())/maximum.get(qftt.getCpId()).getValue());
-////										}else{
-////											cat.getValue().setValue("1");
-////										}
-////									}else{
-////										cat.getValue().setValue("0");
-////									}
-////								}else{
-////									if(x.getKind()==ContextParameterHandler.DECREASEKIND){
-////										if(cat.getValue().getValue()!=null){
-////											if(maximum.get(qftt.getCpId()).getCount() > 0){
-////												Double m = Double.parseDouble(cat.getValue().getValue())/maximum.get(qftt.getCpId()).getValue();
-//////												m = 1-m;
-////												cat.getValue().setValue(""+m);
-////											}else{
-////												cat.getValue().setValue("1");
-////											}
-////										}else{
-////											cat.getValue().setValue("0");
-////										}
-////									}
-////								}
-//							}else{
-//								cat.getValue().setValue("1");
-//							}
-////							str+=(Double.parseDouble(cat.getValue().getValue())+" [ "+qftt.getWeight()+" ( "+maximum.get(qftt.getCpId()).getValue()+" ) "+" ] "+" ");
-//							function.getFunctionArguments().add(cat);
-//						}
-//					}
-//					str+=(" = ");
-//					CalculatedArgumentType qat = new CalculatedArgumentType();
-//					qat.setCpId(calcpt.getCalcId());
-//					function.setCpId(qat.getCpId());
-//					function.setCcId(cc.getCcId());
-//					qat.setValue(CalculatedArgumentHandler.calculate(function, weight));
-//					str+=(qat.getValue()+"\n");
-//					argTable.addNewArgument(calcpt.getCalcId(), ""+qat.getValue(), calcpt.getKindId());
-//					calcpt.setCalculatedArgument(qat);
-//
-//					cc.getRankingArguments().add(qat);
-//					count++;
-//				}
-//			} catch (Exception e) {
-//				LogHandler.getLogger().info("Error while getting function. "+e.getCause());
-//				e.printStackTrace();
-//			}
-//		}
-//		if(cc.getPlatform()!=null){
-//			count+=calulateRankArguments(cc.getPlatform().getPlatformContract(), argTable, maximum, numOfAlternatives, alternative);
-//		}
-//		try {
-//			Files.write(Paths.get("/home/wagner/Core/verifyRank.log"), str.getBytes(),StandardOpenOption.APPEND);
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-////		System.out.println(str);
-//		return count;
-//	}
+	//		int count = 0;
+	//		String str = "Candidate: "+cc.getCcName()+"\n";
+	//		List<CalculatedParameterType> calcps = ResolutionNode.resolutionTree.findNode(cc.getAbstractComponent().getIdAc()).getRps();
+	//
+	//		//######################## begin
+	//		if(numOfAlternatives > 0 && decisionMatrix.size() == 0){
+	//			//testar esse metodo e carregar pesos e domínios do banco
+	//			int numOfMatrix = calcps.size();
+	//			for(int i = 0; i < numOfMatrix; i++){
+	//				DecisionMatrix d = new DecisionMatrix(cc.getCcName()+" in platform "+cc.getPlatform().getPlatformContract().getCcName());
+	//				decisionMatrix.add(d);
+	//			}
+	//		}
+	//		
+	//		//######################## end
+	//
+	//		//Begin of calculus
+	//		CalculatedParameterType calcpt;
+	//		for(int i = 0; i < calcps.size(); i++){//calcula cada parametro
+	//			calcpt = calcps.get(i);
+	//			CalculatedFunctionType function = null;
+	//			
+	//
+	//			try {
+	//				function = CalculatedArgumentHandler.getCalculatedFunction(calcpt.getCalcId(), cc.getCcId(), ContextParameterHandler.RANKING);
+	//				Hashtable<Integer, Float> weight = new Hashtable<>();
+	//				ArrayList<CalculatedFunctionTermType> terms = CalculatedArgumentHandler.getCalculatedFunctionParameter(function.getFunctionId());
+	//				
+	//				if(function != null){
+	//					
+	//					//######################## begin
+	//					if(decisionMatrix.get(i).getMatrix()==null){
+	//						if(terms.size() > 0){
+	//							for(int j = 0; j < terms.size(); j++){
+	//								ContextParameterType cpt = ContextParameterHandler.getContextParameter(terms.get(j).getCpId());
+	//								decisionMatrix.get(i).addCriterion(cpt.getKind(), terms.get(j).getWeight(), terms.get(j).getCpId(), cpt.getName());
+	//							}
+	//							decisionMatrix.get(i).createMatrix(numOfAlternatives, terms.size());
+	//						}
+	//					}
+	//					//######################## end
+	//					
+	//					
+	//					str+=("--"+calcpt.getName()+" = ");
+	//					
+	//					for(int k = 0; k < terms.size(); k++){//busca cada argumento de cada termo da função
+	//						CalculatedFunctionTermType qftt = terms.get(k);
+	//						ContextArgumentType cat = argTable.getArgument(qftt.getCpId());
+	//						//######################## begin
+	//						decisionMatrix.get(i).getMatrix()[alternative][k] = Double.parseDouble(cat.getValue().getValue());
+	//						//######################## end
+	//						ContextParameterType x = ContextParameterHandler.getContextParameter(qftt.getCpId());
+	//						if(cat!=null){
+	//							str+=(Double.parseDouble(cat.getValue().getValue())+" [ "+qftt.getWeight()+" ( "+maximum.get(qftt.getCpId()).getValue()+" ) "+" ] "+" ");
+	//							
+	//							if(maximum.get(qftt.getCpId())!=null){
+	////								if(x.getKind()==ContextParameterHandler.INCREASEKIND){
+	////									if(cat.getValue().getValue()!=null){
+	////										if(maximum.get(qftt.getCpId()).getCount() > 0){
+	////											cat.getValue().setValue(""+Double.parseDouble(cat.getValue().getValue())/maximum.get(qftt.getCpId()).getValue());
+	////										}else{
+	////											cat.getValue().setValue("1");
+	////										}
+	////									}else{
+	////										cat.getValue().setValue("0");
+	////									}
+	////								}else{
+	////									if(x.getKind()==ContextParameterHandler.DECREASEKIND){
+	////										if(cat.getValue().getValue()!=null){
+	////											if(maximum.get(qftt.getCpId()).getCount() > 0){
+	////												Double m = Double.parseDouble(cat.getValue().getValue())/maximum.get(qftt.getCpId()).getValue();
+	//////												m = 1-m;
+	////												cat.getValue().setValue(""+m);
+	////											}else{
+	////												cat.getValue().setValue("1");
+	////											}
+	////										}else{
+	////											cat.getValue().setValue("0");
+	////										}
+	////									}
+	////								}
+	//							}else{
+	//								cat.getValue().setValue("1");
+	//							}
+	////							str+=(Double.parseDouble(cat.getValue().getValue())+" [ "+qftt.getWeight()+" ( "+maximum.get(qftt.getCpId()).getValue()+" ) "+" ] "+" ");
+	//							function.getFunctionArguments().add(cat);
+	//						}
+	//					}
+	//					str+=(" = ");
+	//					CalculatedArgumentType qat = new CalculatedArgumentType();
+	//					qat.setCpId(calcpt.getCalcId());
+	//					function.setCpId(qat.getCpId());
+	//					function.setCcId(cc.getCcId());
+	//					qat.setValue(CalculatedArgumentHandler.calculate(function, weight));
+	//					str+=(qat.getValue()+"\n");
+	//					argTable.addNewArgument(calcpt.getCalcId(), ""+qat.getValue(), calcpt.getKindId());
+	//					calcpt.setCalculatedArgument(qat);
+	//
+	//					cc.getRankingArguments().add(qat);
+	//					count++;
+	//				}
+	//			} catch (Exception e) {
+	//				LogHandler.getLogger().info("Error while getting function. "+e.getCause());
+	//				e.printStackTrace();
+	//			}
+	//		}
+	//		if(cc.getPlatform()!=null){
+	//			count+=calulateRankArguments(cc.getPlatform().getPlatformContract(), argTable, maximum, numOfAlternatives, alternative);
+	//		}
+	//		try {
+	//			Files.write(Paths.get("/home/wagner/Core/verifyRank.log"), str.getBytes(),StandardOpenOption.APPEND);
+	//		} catch (IOException e) {
+	//			e.printStackTrace();
+	//		}
+	////		System.out.println(str);
+	//		return count;
+	//	}
 
 	/**
 	 * Given a calculated function, this method evaluate the function
@@ -545,10 +548,10 @@ public class CalculatedArgumentHandler extends DBHandler{
 			expression.with("v"+i, (qft.getFunctionArguments().get(i).getValue().getValue()));
 			//Modificando os pesos para virem do banco e assim poder gerar a matriz de 
 			//    alternativas e poder usar qualquer biblioteca de MCDM
-				if(qft.getFunctionArguments().get(i).getCpId() !=null){
-					//erro, faunções de qualidade e custo nao tem peso entao devem ser bloqueadas no processo de carregar os pesos
-					//incluir aqui a criação da matriz de alternativas e pesos para imprimir ou repassar a outras bibliotecas
-				}
+			if(qft.getFunctionArguments().get(i).getCpId() !=null){
+				//erro, faunções de qualidade e custo nao tem peso entao devem ser bloqueadas no processo de carregar os pesos
+				//incluir aqui a criação da matriz de alternativas e pesos para imprimir ou repassar a outras bibliotecas
+			}
 			//for(CalculatedFunctionTermType c: qft.getFunctionParameters()){
 			//if(c.getCpId()==qft.getFunctionArguments().get(i).getCpId()){
 			//expression.with("w"+i, (qft.getFunctionParameters().get(i).getWeight()+""));

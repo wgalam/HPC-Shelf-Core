@@ -5,7 +5,7 @@ public class WPM {
 	
 
 	public static void main(String[] args) {
-		double weight[] = {0.4504, 0.1231, 0.0848, 0.3417};
+		float weight[] = {(float)0.4504, (float)0.1231, (float)0.0848, (float)0.3417};
 		double d[][]={{0.9381, 0.3501, 0.8811, 0.5646},{0.7691, 0.4812, 0.1679, 0.9336},{0.9445, 0.1138, 0.2219, 0.0135},{0.1768, 0.0221, 0.9462, 0.1024}};
 //		for(int i=0; i < x.d.length; i++){
 //			for(int j=0; j < x.d[0].length; j++){
@@ -20,12 +20,12 @@ public class WPM {
 		}
 	}
 	
-	public static int[] eval(double weight[], double d[][], String cd[]){
+	public static int[] eval(float weight[], double d[][], String cd[]){
 		int x[] = new int[d.length];
 		for(int i = 0; i < d.length; i++){
 			x[i]=i+1;
 		}
-		double sum=0;
+		float sum=(float) 0.0;
 		for(int i=0; i < weight.length;i++){
 			sum+=weight[i];
 		}

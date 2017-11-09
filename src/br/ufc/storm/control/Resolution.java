@@ -742,11 +742,10 @@ public class Resolution{
 		
 		String str = "";
 		
-		
+		int col = 8;
 		for(int k = 0; k < CalculatedArgumentHandler.decisionMatrix.size(); k++){
 			DecisionMatrix d = CalculatedArgumentHandler.decisionMatrix.get(k);
-//		DecisionMatrix d = CalculatedArgumentHandler.decisionMatrix.get(0);
-			
+		
 			str+=(d.toString());
 			str+=("\n----------------------------------------\n");
 			str+=(d.toRmcdmFunction("MMOORA"));
@@ -757,30 +756,52 @@ public class Resolution{
 			str+=("\n\n");
 			
 			int a [] = d.evalMMOORA();
-			int b [] = d.evalTOPSISLinear();
-			int c [] = d.evalTOPSISVector();
-			int compareMatrix[][] = new int[cl.getCandidate().size()][4];
-//			for(int i = 0; i < cl.getCandidate().size(); i++){
-//				for(int j = 0; j < CalculatedArgumentHandler.decisionMatrix.size(); j++){
-//					
-//				}
-//			}
+			int b [] = d.evalVIKOR((float) 0.5);
+			int c [] = d.evalWASPAS((float) 0.0);
+			int e [] = d.evalTOPSISLinear();
+			char separator = '&';
+			double m[][] = d.getMatrix();
+			float compareMatrix[][] = new float[cl.getCandidate().size()][col];
 			for(int i = 0; i < cl.getCandidate().size(); i++){
-				compareMatrix[i][0]= cl.getCandidate().get(i).getRankingArguments().get(k).getValue().intValue();
-				compareMatrix[i][1]=a[i];
-				compareMatrix[i][2]=b[i];
-				compareMatrix[i][3]=c[i];
+				for(int j = 0; j < 3; j++){
+					compareMatrix[i][j]=(float) m[i][j];
+				}
 			}
-			System.out.println("Parâmetro "+k+":");
-			System.out.println("Rank"+k+", MMOORA, TOPSISl, TOPSISv");
+			for(int i = 0; i < cl.getCandidate().size(); i++){
+				compareMatrix[i][3]= cl.getCandidate().get(i).getRankingArguments().get(k).getValue().intValue();
+				compareMatrix[i][4]=a[i];
+				compareMatrix[i][5]=b[i];
+				compareMatrix[i][6]=c[i];
+				compareMatrix[i][7]=e[i];
+			}
+			
+//			Printing
+			System.out.println("\\begin{table}\\label{tab:rank"+k+"}\n    \\centering\n    \\caption{Matriz de resultados do processo de classificação do \\alite}\n    {\\tiny \\begin{tabular}{|c|c|c|c|c|c|c|c|c|}\n\\hline");
+			System.out.println("%Rank "+k);
+			System.out.print("        Alternativa "+separator);
+			for(int i = 0; i < 3; i++){
+				System.out.print(d.getCriteriaName(i)+"["+d.getWeight()[i]+"] "+separator+" ");
+			}
+			System.out.println(" TOPSIS "+separator+" MMOORA "+separator+" VIKOR "+separator+" WPM"+separator+"TOPSISLinear\\\\");
+			
 			for(int i = 0; i < compareMatrix.length; i++){
-				System.out.printf("%d || ", i);
-				for(int j = 0; j < compareMatrix[0].length; j++){
-					System.out.print(compareMatrix[i][j]+" | ");
+				System.out.printf("        %d "+separator+" ", i);
+				
+				for(int j = 0; j < 3; j++){
+					System.out.print(compareMatrix[i][j]+" "+separator+" ");
+				}
+				for(int j = 3; j < compareMatrix[0].length; j++){
+					System.out.printf("%.0f ", compareMatrix[i][j]);
+					if(j<compareMatrix[0].length-1){
+						System.out.print(separator+" ");
+					}else{
+						System.out.print("\\\\");
+					}
 				}
 				System.out.println("");
 			}
-			System.out.println("\n\n");
+			System.out.println("\\hline \n \\end{tabular}}\n\\begin{center}\n     Fonte: Próprio autor.\n\\end{center}\n\\end{table}");
+			System.out.println("\n%--------------------------------------\n");
 		}
 
 		
