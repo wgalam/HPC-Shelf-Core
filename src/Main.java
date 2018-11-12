@@ -44,8 +44,17 @@ public class Main {
 			int ac = 1;
 			int cc = 315;
 			int cc2 = 126;
-			System.out.println(FormalFormat.exportContextContractWithIDs(ContextContractHandler.getContextContract(cc), null));
-//			System.out.println();
+			//System.out.println(FormalFormat.exportContextContractWithIDs(ContextContractHandler.getContextContract(cc), null));
+			Expression expression = new Expression("((((100.0*100.0*100.0)/2.0)*4.0)/(320.4*10.0^9.0))+(((100.0*100.0*100.0)/2.0)*8.0*(10.0*10.0^-9.0))+0.000009588");
+			expression.setPrecision(20);
+			System.out.println(expression.eval().doubleValue());
+			
+			
+			
+			
+			
+			
+			//			System.out.println();
 //			System.out.println(FormalFormat.exportContextContractWithIDs(ContextContractHandler.getContextContract(cc2), null));
 //			System.out.println();
 //			System.out.println(FormalFormat.exportComponentSignatureWithIDs(AbstractComponentHandler.getAbstractComponent(ac), null));

@@ -23,12 +23,18 @@ public static final String REQUIRED = " <: ";
 
 	public static void main(String[] args) {
 		try {
+			int ac_id = 19;
 			
-			ContextContract cc = ContextContractHandler.getContextContract(315);
+			ContextContract cc = ContextContractHandler.getContextContract(318);
 			System.out.println(FormalFormat.exportContextContract(cc, null));
-//			System.out.println(XMLHandler.getAbstractComponent("EnvironmentBindingReadData"));;
-//			System.out.println(FormalFormat.exportCandyComponentSignature(AbstractComponentHandler.getAbstractComponent(89), null));
-//			System.out.println(FormalFormat.exportContextContractWithIDs(ContextContractHandler.getContextContract(177), null));
+//			System.out.println(FormalFormat.exportContextContractWithIDs(cc, null));
+//			System.out.println(XMLHandler.getAbstractComponent("EnvironmentBindingReadData"));
+//			System.out.println(FormalFormat.exportCandyComponentSignature(AbstractComponentHandler.getAbstractComponent(ac_id, false),""));
+//			System.out.println("------------------------------------------");
+//			System.out.println(FormalFormat.exportComponentSignatureLatex(AbstractComponentHandler.getAbstractComponent(ac_id,true), null, false));
+//			System.out.println("------------------------------------------");
+//			System.out.println(FormalFormat.exportContextContractWithIDs(ContextContractHandler.getContextContract(ac_id), null));
+		
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -41,6 +47,8 @@ public static final String REQUIRED = " <: ";
 	}
 
 	public static String exportComponentSignature(AbstractComponentType ac, String space){
+		boolean b;
+		
 		try {
 			ResolutionNode.setup();
 		} catch (ResolveException e1) {
@@ -48,12 +56,16 @@ public static final String REQUIRED = " <: ";
 			e1.printStackTrace();
 		}
 		String str = "";
-		if(space == null){
+		if (space==null) {
+			b = true;
 			space="    ";
+			str+="[name :> "+ac.getName()+",";
 		}else{
+			b = false;
 			space+="    ";
+			str+=ac.getName()+"[";
 		}
-		str+="[name :> "+ac.getName()+",";
+		
 //		str+="\n concern :> "+ac.getSupertype().getName()+",";
 		for(ContextParameterType cp: ac.getContextParameter()){
 			if(cp.getBound()!= null){
@@ -80,16 +92,92 @@ public static final String REQUIRED = " <: ";
 				str+="\n"+space+cp.getName()+" : "+cp.getBoundValue()+",";
 			}
 		}
-		for(CalculatedParameterType cp: ac.getQualityParameters()){
-			str+="\n"+space+cp.getName()+" : DATA(Quality)";
-		}
-		for(CalculatedParameterType cp: ac.getCostParameters()){
-			str+="\n"+space+cp.getName()+" : DATA(Cost)";
-		}
-		for(CalculatedParameterType cp: ac.getRankingParameters()){
-			str+="\n"+space+cp.getName()+" : DATA(Ranking)";
+		if(b){
+			for(CalculatedParameterType cp: ac.getQualityParameters()){
+				str+="\n"+space+cp.getName()+" : DATA(Quality)";
+			}
+			for(CalculatedParameterType cp: ac.getCostParameters()){
+				str+="\n"+space+cp.getName()+" : DATA(Cost)";
+			}
+			for(CalculatedParameterType cp: ac.getRankingParameters()){
+				str+="\n"+space+cp.getName()+" : DATA(Ranking)";
+			}
+			
 		}
 		str+="]";
+		return str;
+	}
+	//Recursive é quando está dentro de uma impressão completa
+	public static String exportComponentSignatureLatex(AbstractComponentType ac, String space, boolean recursive){
+		boolean b;
+		String str;
+		try {
+			ResolutionNode.setup();
+		} catch (ResolveException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		if(recursive){
+			str = "";
+		}else{
+			str = "\\begin{figure}\n\\caption{CAPTION ????????? }\\label{??????????}\n\\begin{small}\n\\begin{center}\n$\\left[\n\\begin{minipage}{\\textwidth}\n\\begin{tabbing}\n";
+		}
+		
+		if (space==null) {
+			b = true;
+			space="    ";
+			str+="\\=\\textbf{\\textit{name}} :> "+"\\textsc{"+ac.getName()+"}"+",\\\\";
+		}else{
+			b = false;
+			space+="    ";
+			str+="\\textsc{"+ac.getName()+"}"+"[";
+		}
+		
+//		str+="\n concern :> "+ac.getSupertype().getName()+",";
+		for(ContextParameterType cp: ac.getContextParameter()){
+			if(cp.getBound()!= null){
+				try {
+					if(cp.getBoundValue()==null){
+						if(cp.getBound().getCcName().equals("DATA")){
+							str+="\n"+space+"\\>\\textbf{\\textit{"+cp.getName()+"}}"+REQUIRED+"\\textsc{"+cp.getBound().getCcName()+"},\\\\";
+						}else{
+							if(AbstractComponentHandler.getAbstractComponentFromContextContractID(cp.getBound().getCcId()).getIdAc() == ac.getIdAc() ){
+								str+="\n"+space+"\\>\\textbf{\\textit{"+cp.getName()+"}}"+REQUIRED+"\\textsc{"+cp.getBound().getCcName()+"} [],\\\\";
+							}else{
+//								str+="\n"+space+"\\>\\textbf{\\textit{"+cp.getName()+"}}"+REQUIRED+"\\textsc{"+cp.getBound().getCcName()+"} ["+exportComponentSignatureLatex(AbstractComponentHandler.getAbstractComponentFromContextContractID(cp.getBound().getCcId()), ""+space, true)+"],";
+							}
+						}
+					}else{
+						str+="\n"+space+"\\>\\textbf{\\textit{"+cp.getName()+"}}"+REQUIRED+"\\textsc{"+cp.getBoundValue()+"},\\\\";
+					}
+					
+				} catch (DBHandlerException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}else{
+				str+="\n"+"\\>\\textbf{\\textit{"+space+cp.getName()+"}}"+" : "+"\\textsc{"+cp.getBoundValue()+"}\\\\,";
+			}
+		}
+		if(b){
+			for(CalculatedParameterType cp: ac.getQualityParameters()){
+				str+="\n"+space+"\\>\\textbf{\\textit{"+cp.getName()+"}}"+" : \\textsc{DATA(Quality)}\\\\";
+			}
+			for(CalculatedParameterType cp: ac.getCostParameters()){
+				str+="\n"+space+"\\>\\textbf{\\textit{"+cp.getName()+"}}"+" : \\textsc{DATA(Cost)}\\\\";
+			}
+			for(CalculatedParameterType cp: ac.getRankingParameters()){
+				str+="\n"+space+"\\>\\textbf{\\textit{"+cp.getName()+"}}"+" : \\textsc{DATA(Ranking)}\\\\";
+			}
+			
+		}
+		
+		if(recursive){
+			str+="]";
+			
+		}else{
+			str +="\n\\end{tabbing}\n\\end{minipage}\n\\right]$\n\\end{center}\n\\end{small}\n\\begin{center}\n    Fonte: Próprio autor.\n\\end{center}\n\\end{figure}";
+		}
 		return str;
 	}
 	

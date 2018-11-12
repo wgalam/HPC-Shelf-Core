@@ -342,7 +342,7 @@ public class CoreServices {
 	 */
 	public static String exportComponentSignature(int ac_id){
 		try {
-			AbstractComponentType ac = AbstractComponentHandler.getAbstractComponent(ac_id);
+			AbstractComponentType ac = AbstractComponentHandler.getAbstractComponent(ac_id, true);
 			return FormalFormat.exportComponentSignature(ac, null);
 		} catch (DBHandlerException e) {
 			return null;

@@ -558,7 +558,16 @@ public class CalculatedArgumentHandler extends DBHandler{
 			//}
 			//}
 		}
-		expression.setPrecision(6);
+		
+		expression.setPrecision(20);
+//		if(qft.getCpId().equals(235)){
+//			String str=">>>>>>>>>"+expression.getExpression();
+//			for(int i=0; i < qft.getFunctionArguments().size();i++){
+//				str=str.replaceAll("v"+i, ""+qft.getFunctionArguments().get(i).getValue().getValue());
+//			}
+//			System.out.println(str);
+//		}
+		
 		result = expression.eval();
 		return result.doubleValue();
 	}

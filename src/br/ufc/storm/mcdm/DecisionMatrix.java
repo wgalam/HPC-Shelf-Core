@@ -1,7 +1,13 @@
 package br.ufc.storm.mcdm;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import org.rosuda.REngine.REXP;
 import org.rosuda.REngine.REXPMismatchException;
@@ -17,51 +23,81 @@ public class DecisionMatrix {
 	private double list [][];
 	RConnection c;
 
-	
-//	Pesos 4/7, 2/7 e 1/7
-	
+
+	//	Pesos 4/7, 2/7 e 1/7
+
 
 	public static void main(String [] a){
-		DecisionMatrix d = new DecisionMatrix("TesteA");
-		d.list = new double [3][3];
-		d.criterionList.add(new Criterion(5, (float) 0.3, 150, "Criterio1"));
-		d.criterionList.add(new Criterion(5, (float) 0.3, 151, "Criterio2"));
-		d.criterionList.add(new Criterion(5, (float) 0.4, 152, "Criterio3"));
-		int k=0;
-		for(int i = 0; i < 3; i++){
-			for(int j = 0; j < 3; j++){
-				d.list[i][j] = k;
-				System.out.print(k+" ");
-				k++;
-			}
-			System.out.println("");
-		}
-		d.evalMMOORA();
-		d.evalTOPSISVector();
 
-		System.out.println(d.toRmcdmFunction("TOPSISLinear"));
+		int i[] = new int[5];
+		i[0] = 1;
+		i[1] = 51;
+		i[2] = 52;
+		i[3] = 53;
+		i[4] = 54;
+		System.out.println(findElement1(i));
+
+		//		double m[][] = new double[5][2];
+		//		m[0][0] = 1;
+		//		m[0][1] = 2;
+		//		m[1][0] = 3;
+		//		m[1][1] = 4;
+		//		m[2][0] = 5;
+		//		m[2][1] = 6;
+		//		m[3][0] = 7;
+		//		m[3][1] = 8;
+		//		m[4][0] = 9;
+		//		m[4][1] = 10;
+		//		
+		//		double x[][]=copyMatrix(m);
+		//		x=delMatrixRow(2, x);
+		//		for(int i =0; i < m.length-1; i++){
+		//			for(int j = 0; j < m[0].length; j++){
+		//				System.out.print(x[i][j]+" ");
+		//			}
+		//			System.out.println();
+		//		}
+		//		
+
+		//		DecisionMatrix d = new DecisionMatrix("TesteA");
+		//		d.list = new double [3][3];
+		//		d.criterionList.add(new Criterion(5, (float) 0.3, 150, "Criterio1"));
+		//		d.criterionList.add(new Criterion(5, (float) 0.3, 151, "Criterio2"));
+		//		d.criterionList.add(new Criterion(5, (float) 0.4, 152, "Criterio3"));
+		//		int k=0;
+		//		for(int i = 0; i < 3; i++){
+		//			for(int j = 0; j < 3; j++){
+		//				d.list[i][j] = k;
+		//				System.out.print(k+" ");
+		//				k++;
+		//			}
+		//			System.out.println("");
+		//		}
+		//		d.evalMMOORA();
+		//		d.evalTOPSISVector();
+		//		System.out.println(d.toRmcdmFunction("TOPSISLinear", null));
 	}
 
 	public DecisionMatrix(String alternative_name){
 		this.alternative_name = alternative_name;
 	}
 
-	
+
 	public String getCriteriaName(int index){
 		return criterionList.get(index).getName();
 	}
 	public double[][] getMatrix(){
 		return list;
 	}
-	
+
 	public  ArrayList<Criterion> getCriterionList(){
 		return criterionList;
 	}
-	
+
 	public String getName(){
 		return alternative_name;
 	}
-	
+
 	public float[] getWeight(){
 		float x[] = new float[criterionList.size()];
 		for(int i=0; i < x.length; i++){
@@ -71,24 +107,44 @@ public class DecisionMatrix {
 	}
 
 	public int[] evalMMOORA(){
-		return evalMCDMmethod("MMOORA", "MultiMooraRanking");
+		return evalMCDMmethod("MMOORA", "MultiMooraRanking", null);
 	}
 
 	public int[] evalTOPSISLinear(){
-		return evalMCDMmethod("TOPSISLinear", "Ranking");
+		return evalMCDMmethod("TOPSISLinear", "Ranking", null);
 	}
 
 	public int[] evalTOPSISVector(){
-		return evalMCDMmethod("TOPSISVector", "Ranking");
+		return evalMCDMmethod("TOPSISVector", "Ranking", null);
 	}
-	
+
 	public int[] evalVIKOR(float q){
+		return evalMCDMmethod("VIKOR", "Ranking", q);
+	}
+
+
+	public int[] evalWASPAS(float q){
+		return evalMCDMmethod("WASPAS", "Ranking", q);
+	}
+
+	public int[] evalRelativeMCDMmethod(String method, String column, Float q, double newlist[][]){
+		REXP rResponseObject=null;
+		double sum=0;
+		//Inclusão da avaliação de matrizes com um único critério
+		//Se entrar nesse caso, basta retornar a propria matriz
+		if(criterionList.size()==1){
+			int r[] = rankVector(newlist);
+			return r;
+		}
+		for(int i=0; i < criterionList.size();i++){
+			sum+=Double.parseDouble(criterionList.get(i).getWeight()+"");
+		}
 		double w [] = new double[criterionList.size()];
 		String cb [] = new String[criterionList.size()];
 		try {
 			c = new RConnection();
 			c.voidEval("library(MCDM)");
-			c.assign("d", REXP.createDoubleMatrix(list));
+			c.assign("d", REXP.createDoubleMatrix(newlist));
 			for(int i = 0; i < criterionList.size(); i++){
 				w[i]=Double.parseDouble(criterionList.get(i).getWeight()+"");
 				if(criterionList.get(i).getDomain()==5){
@@ -99,13 +155,28 @@ public class DecisionMatrix {
 			}
 			c.assign("w", w);
 			c.assign("cb", cb);
-			c.voidEval("v<-"+q);// assign("v", (double) q);
-			REXP rResponseObject = c.parseAndEval("try(eval(VIKOR(d, w, cb,v)"+"),silent=TRUE)"); 
+
+
+			if (q==null) {
+				rResponseObject = c.parseAndEval("try(eval("+method+"(d,w,cb)"+"),silent=TRUE)");
+			}else{
+				c.voidEval("v<-"+q);
+				//				c.assign("v", q.toString());
+				rResponseObject = c.parseAndEval("try(eval("+method+"(d,w,cb, v)"+"),silent=TRUE)");
+			}
+
 			if (rResponseObject.inherits("try-error")) { 
 				System.out.println(rResponseObject.asString());; 
 			}
 			RList l = rResponseObject.asList();
-			int[] ret = l.at("Ranking").asIntegers();
+			int[] ret = l.at(column).asIntegers();
+			//			System.out.println(method+" Ranking");
+			//			for(Integer i: ret){
+			//				System.out.println(i);
+			//			}
+			//			System.out.println("----------------------");
+
+//			System.out.println("AAAAA______________________\n"+toRmcdmFunction(method, q)+"\n___________________________\n");
 			return ret;
 		} catch (RserveException e) {
 			// TODO Auto-generated catch block
@@ -120,7 +191,19 @@ public class DecisionMatrix {
 		return null;
 	}
 
-	public int[] evalWASPAS(float q){
+	public int[] evalMCDMmethod(String method, String column, Float q){
+		REXP rResponseObject=null;
+		double sum=0;
+		//Inclusão da avaliação de matrizes com um único critério
+		//Se entrar nesse caso, basta retornar a propria matriz
+		if(criterionList.size()==1){
+			int r[] = rankVector(list);
+			return r;
+		}
+		//
+		for(int i=0; i < criterionList.size();i++){
+			sum+=Double.parseDouble(criterionList.get(i).getWeight()+"");
+		}
 		double w [] = new double[criterionList.size()];
 		String cb [] = new String[criterionList.size()];
 		try {
@@ -137,13 +220,28 @@ public class DecisionMatrix {
 			}
 			c.assign("w", w);
 			c.assign("cb", cb);
-			c.voidEval("v<-"+q);// assign("v", (double) q);
-			REXP rResponseObject = c.parseAndEval("try(eval(WASPAS(d, w, cb,v)"+"),silent=TRUE)"); 
+
+
+			if (q==null) {
+				rResponseObject = c.parseAndEval("try(eval("+method+"(d,w,cb)"+"),silent=TRUE)");
+			}else{
+				c.voidEval("v<-"+q);
+				//				c.assign("v", q.toString());
+				rResponseObject = c.parseAndEval("try(eval("+method+"(d,w,cb, v)"+"),silent=TRUE)");
+			}
+
 			if (rResponseObject.inherits("try-error")) { 
 				System.out.println(rResponseObject.asString());; 
 			}
 			RList l = rResponseObject.asList();
-			int[] ret = l.at("Ranking").asIntegers();
+			int[] ret = l.at(column).asIntegers();
+			//			System.out.println(method+" Ranking");
+			//			for(Integer i: ret){
+			//				System.out.println(i);
+			//			}
+			//			System.out.println("----------------------");
+			VerifyRank(method, column, q, list);
+//			System.out.println("______________________\n"+toRmcdmFunction(method, null)+"\n___________________________\n");
 			return ret;
 		} catch (RserveException e) {
 			// TODO Auto-generated catch block
@@ -157,9 +255,92 @@ public class DecisionMatrix {
 		}
 		return null;
 	}
-	
+
+	public void VerifyRank(String method, String column, Float q, double m[][]){
+		String str="";
+		int p=-1;
+		double matrix[][] = copyMatrix(m);
+		int alternatives[] = new int[m.length]; 
+		for(int x=0; x < alternatives.length; x++){
+			alternatives[x]=x;
+		}
+		int[] res = evalRelativeMCDMmethod(method, column, q, matrix);
+		p = findElement1(res);
+		str+=(method+" \n"+p+"\n");
+		for(int i = 0; i < m.length-1; i++){
+//			System.out.println("------------>>>"+matrix.length+" - p = "+p);
+			matrix = delMatrixRow(p, matrix);
+			alternatives=delArrayRow(p, alternatives);
+			res = evalRelativeMCDMmethod(method, column, q, matrix);
+			p = findElement1(res);
+			str += alternatives[p]+"\n";
+		}
+		str+="\n";
+		try {
+			Files.write(Paths.get("pairwiseComparing.log"), str.getBytes(), StandardOpenOption.APPEND);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public static int findElement1(int array[]){
+		for(int i = 0; i <  array.length; i++){
+			if(array[i] == 1){
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	public static double [][] copyMatrix(double m[][]){
+		double matrix[][] = new double[m.length][m[0].length];
+		for(int i=0; i < m.length;i++){
+			for(int j=0;j<m[0].length;j++){
+				matrix[i][j]=m[i][j];
+			}
+		}
+		return matrix;
+	}
+
+	public static double [][] delMatrixRow(int pos, double m[][]){
+		double matrix[][] = new double[m.length-1][m[0].length];
+		int row = 0;
+		for(int i = 0; i < m.length;i++){
+			for(int j = 0; j < m[0].length; j++){
+				if(i != pos){
+					matrix[row][j] = m[i][j];
+				}
+			}
+			if(i != pos){
+				row++;
+			}
+		}
+		return matrix;
+	}
+	public static int [] delArrayRow(int pos, int m[]){
+		int matrix[] = new int[m.length-1];
+		int row = 0;
+		for(int i = 0; i < m.length;i++){
+			if(i != pos){
+				matrix[row] = m[i];
+			}
+			if(i != pos){
+				row++;
+			}
+		}
+		return matrix;
+	}
+	/*	
 	public int[] evalMCDMmethod(String method, String column){
 		double sum=0;
+		//Inclusão da avaliação de matrizes com um único critério
+		//Se entrar nesse caso, basta retornar a própŕia matriz
+		if(criterionList.size()==1){
+			int r[] = rankVector(list);
+			return r;
+		}
+		//
 		for(int i=0; i < criterionList.size();i++){
 			sum+=Double.parseDouble(criterionList.get(i).getWeight()+"");
 		}
@@ -190,6 +371,8 @@ public class DecisionMatrix {
 			//				System.out.println(i);
 			//			}
 			//			System.out.println("----------------------");
+
+			System.out.println("______________________\n"+toRmcdmFunction(method)+"\n___________________________\n");
 			return ret;
 		} catch (RserveException e) {
 			// TODO Auto-generated catch block
@@ -203,8 +386,30 @@ public class DecisionMatrix {
 		}
 		return null;
 	}
+	 */
+	@SuppressWarnings("unchecked")
+	private int[] rankVector(double[][] list2) {
+		if(list2[0].length!=1){
+			return null;
+		}
+		List<Pair> l = new ArrayList<>();
+		for(int i = 0; i < list2.length; i++){
+			l.add(new Pair(i, list2[i][0]));
+		}
+		Collections.sort (l, new ComparatorPairs(true));
+		int [] aux = new int[l.size()];
 
-	public int[] evalMCDMmethod(String method, int column){
+		for(int i = 0; i < l.size(); i++){
+			for(int j = 0; j < l.size(); j++){
+				if(l.get(j).getPos()==i){
+					aux[i]=j;
+				}
+			}
+		}
+		return aux;
+	}
+
+	/*public int[] evalMCDMmethod(String method, int column){
 
 		double w [] = new double[criterionList.size()];
 		String cb [] = new String[criterionList.size()];
@@ -246,9 +451,9 @@ public class DecisionMatrix {
 			e.printStackTrace();
 		}
 		return null;
-	}
-	
-	
+	}*/
+
+
 	public static String toString(double m[][]){
 		String s = "";
 		for(int i = 0; i < m.length; i++){
@@ -289,7 +494,7 @@ public class DecisionMatrix {
 	}
 
 
-	public String toRmcdmFunction(String func){
+	public String toRmcdmFunction(String func, Float q){
 		String str = "library(MCDM)\n";
 		str+="d<-matrix(c(";
 		int rows = list.length;
@@ -325,7 +530,13 @@ public class DecisionMatrix {
 			}
 		}
 		str+=")\n";
-		str+=func+"(d, w, cb)";		
+		if(q!=null){
+			str+="v<-"+q+"\n";
+			str+=func+"(d, w, cb, v)";
+		}else{
+			str+=func+"(d, w, cb)";
+		}
+
 		return str;
 	}
 
@@ -370,32 +581,8 @@ public class DecisionMatrix {
 
 	}
 
-	public double[][] getNormalizedMatrix(){
-		double matrix[][] = list;
-		double max = 0;
-		double min =0;
-		for(int i = 0; i < matrix.length; i++){
-			for(int j = 0; j < matrix[0].length; j++){
-				if(matrix[i][j]>max){
-					max=matrix[i][j];
-				}
-				if(matrix[i][j]< min){
-					min = matrix[i][j];
-				}
-				
-			}
-			
-			for(int j = 0; j < matrix[0].length; j++){
-				if(criterionList.get(j).getDomain()==5.0){
-					matrix[i][j]=(matrix[i][j]*min)/matrix[i][j];
-				}else{
-					matrix[i][j]=matrix[i][j]/(max*matrix[i][j]);
-				}
-			}
-		}
-		return matrix;
-	}
-	
+
+
 	double getValue(int sequence, int criterion){
 		try{
 			return list[sequence][criterion];
@@ -433,5 +620,173 @@ public class DecisionMatrix {
 		list = new double [numOfAlternatives][numOfCriterion];
 	}
 
+	//	public double[][] getNormalizedMatrix(){
+	//	double matrix[][] = list;
+	//	double max = 0;
+	//	double min =0;
+	//	for(int i = 0; i < matrix.length; i++){
+	//		for(int j = 0; j < matrix[0].length; j++){
+	//			if(matrix[i][j]>max){
+	//				max=matrix[i][j];
+	//			}
+	//			if(matrix[i][j]< min){
+	//				min = matrix[i][j];
+	//			}
+	//			
+	//		}
+	//		
+	//		for(int j = 0; j < matrix[0].length; j++){
+	//			if(criterionList.get(j).getDomain()==5.0){
+	//				matrix[i][j]=(matrix[i][j]*min)/matrix[i][j];
+	//			}else{
+	//				matrix[i][j]=matrix[i][j]/(max*matrix[i][j]);
+	//			}
+	//		}
+	//	}
+	//	return matrix;
+	//}
+
+	/*public int[] evalVIKOR(float q){
+	if(criterionList.size()==1){
+		int r[] = rankVector(list);
+		return r;
+	}
+	double w [] = new double[criterionList.size()];
+	String cb [] = new String[criterionList.size()];
+	try {
+		c = new RConnection();
+		c.voidEval("library(MCDM)");
+		c.assign("d", REXP.createDoubleMatrix(list));
+		for(int i = 0; i < criterionList.size(); i++){
+			w[i]=Double.parseDouble(criterionList.get(i).getWeight()+"");
+			if(criterionList.get(i).getDomain()==5){
+				cb[i]="min";
+			}else{
+				cb[i]="max";
+			}
+		}
+		c.assign("w", w);
+		c.assign("cb", cb);
+		c.voidEval("v<-"+q);// assign("v", (double) q);
+		REXP rResponseObject = c.parseAndEval("try(eval(VIKOR(d, w, cb,v)"+"),silent=TRUE)"); 
+		if (rResponseObject.inherits("try-error")) { 
+			System.out.println(rResponseObject.asString());; 
+		}
+		RList l = rResponseObject.asList();
+		int[] ret = l.at("Ranking").asIntegers();
+
+//		String s = "";
+//		for(int x=0; x < cb.length; x++){
+//			s+=cb[x]+", ";
+//		}
+//		System.out.println(">>>>>>>>>>>>"+s);
+
+		return ret;
+	} catch (RserveException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (REXPMismatchException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (REngineException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	return null;
+}*/
+
+	/*public int[] evalWASPAS(float q){
+	if(criterionList.size()==1){
+		int r[] = rankVector(list);
+		return r;
+	}
+	double w [] = new double[criterionList.size()];
+	String cb [] = new String[criterionList.size()];
+	try {
+		c = new RConnection();
+		c.voidEval("library(MCDM)");
+		c.assign("d", REXP.createDoubleMatrix(list));
+		for(int i = 0; i < criterionList.size(); i++){
+			w[i]=Double.parseDouble(criterionList.get(i).getWeight()+"");
+			if(criterionList.get(i).getDomain()==5){
+				cb[i]="min";
+			}else{
+				cb[i]="max";
+			}
+		}
+		c.assign("w", w);
+		c.assign("cb", cb);
+		c.voidEval("v<-"+q);// assign("v", (double) q);
+		REXP rResponseObject = c.parseAndEval("try(eval(WASPAS(d, w, cb,v)"+"),silent=TRUE)"); 
+		if (rResponseObject.inherits("try-error")) { 
+			System.out.println(rResponseObject.asString());; 
+		}
+		RList l = rResponseObject.asList();
+		int[] ret = l.at("Ranking").asIntegers();
+		return ret;
+	} catch (RserveException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (REXPMismatchException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (REngineException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	return null;
+}*/
 
 }
+
+class Pair{
+	private int pos;
+	private int newpos;
+	private double value;
+	public Pair(int p, double v) {
+		pos=p;
+		value=v;
+	}
+	public int getPos(){
+		return pos;
+	}
+
+	public double getValue(){
+		return value;
+	}
+
+	public int getNewPos(){
+		return newpos;
+	}
+
+	public void setPos(int p){
+		pos=p;
+	}
+
+	public void setValue(double v){
+		value=v;
+	}
+
+	public void setNewPos(int p){
+		newpos=p;
+	}
+}
+
+@SuppressWarnings("rawtypes")
+class ComparatorPairs implements Comparator {  
+	boolean crescente = true;  
+
+	public ComparatorPairs(boolean crescente) {  
+		this.crescente = crescente;  
+	}  
+
+	public int compare(Object o1, Object o2) {  
+		Pair p1 = (Pair) o1;  
+		Pair p2 = (Pair) o2;  
+		if (crescente) {  
+			return p1.getValue() < p2.getValue() ? -1 : (p1.getValue() > p2.getValue() ? +1 : 0);  
+		} else {  
+			return p1.getValue() < p2.getValue() ? +1 : (p1.getValue() > p2.getValue() ? -1 : 0);  
+		}  
+	}  
+}  

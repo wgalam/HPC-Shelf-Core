@@ -20,6 +20,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
+import br.ufc.shelf.util.MatrixOperations;
 import br.ufc.storm.exception.DBHandlerException;
 import br.ufc.storm.exception.FunctionException;
 import br.ufc.storm.exception.ResolveException;
@@ -61,27 +62,75 @@ public class Resolution{
 	public static final int SMALLER = 5;
 
 	public static void main(String args[]) throws DBHandlerException{
+		int x = 0; //Indice do argumento de plataforma
+		int y = 0; //Indice do argumento de contexto
+		//Executar R CMD Rserve
 		ContextContract cc = new ContextContract();
 		cc.setCcName("Multiplicação de Matrizes do Wagner");
 		cc.setOwnerId(1);
 		cc.setAbstractComponent(new AbstractComponentType());
-		cc.getAbstractComponent().setIdAc(218);//218
+		cc.getAbstractComponent().setIdAc(322);//218        
 		cc.setPlatform(new PlatformProfileType());
 		cc.getPlatform().setPlatformContract(new ContextContract());
 		cc.getPlatform().getPlatformContract().setAbstractComponent(new AbstractComponentType());
 		cc.getPlatform().getPlatformContract().getAbstractComponent().setIdAc(19);
 
-		int x = 0; //Indice do argumento de plataforma
-		int y = 0; //Indice do argumento de contexto
+//		//Add node // Restringe GPU
+//				cc.getPlatform().getPlatformContract().getContextArguments().add(new ContextArgumentType());
+//				cc.getPlatform().getPlatformContract().getContextArguments().get(x).setCpId(23);
+//				cc.getPlatform().getPlatformContract().getContextArguments().get(x).setContextContract(new ContextContract());
+//				cc.getPlatform().getPlatformContract().getContextArguments().get(x).getContextContract().setCcId(141);
+//				x++;
+//				cc.getPlatform().getPlatformContract().getContextArguments().get(0).getContextContract().getContextArguments().add(new ContextArgumentType());
+//				cc.getPlatform().getPlatformContract().getContextArguments().get(0).getContextContract().getContextArguments().get(0).setCpId(101);
+//				cc.getPlatform().getPlatformContract().getContextArguments().get(0).getContextContract().getContextArguments().get(0).setContextContract(new ContextContract());
+//				cc.getPlatform().getPlatformContract().getContextArguments().get(0).getContextContract().getContextArguments().get(0).getContextContract().setCcId(181);
 
+		//[Argumento de Contexto] Definir o tipo de dado precisao simples
+		cc.getContextArguments().add(new ContextArgumentType());
+		cc.getContextArguments().get(y).setCpId(242);
+		cc.getContextArguments().get(y).setContextContract(new ContextContract());
+		cc.getContextArguments().get(y).getContextContract().setCcId(195);
+		y++;
+
+		//[Argumento de Contexto] Definir genérico
+		cc.getContextArguments().add(new ContextArgumentType());
+		cc.getContextArguments().get(y).setCpId(243);
+		cc.getContextArguments().get(y).setContextContract(new ContextContract());
+		cc.getContextArguments().get(y).getContextContract().setCcId(198);
+		y++;
+
+		//Define tamanho da entrada	m	
+		cc.getContextArguments().add(new ContextArgumentType());
+		cc.getContextArguments().get(y).setCpId(247);
+		cc.getContextArguments().get(y).setValue(new ContextArgumentValueType());
+		cc.getContextArguments().get(y).getValue().setDataType("Integer");
+		cc.getContextArguments().get(y).getValue().setValue("100");
+		y++;
+
+		//Define tamanho da entrada	n	
+		cc.getContextArguments().add(new ContextArgumentType());
+		cc.getContextArguments().get(y).setCpId(248);
+		cc.getContextArguments().get(y).setValue(new ContextArgumentValueType());
+		cc.getContextArguments().get(y).getValue().setDataType("Integer");
+		cc.getContextArguments().get(y).getValue().setValue("100");
+		y++;
+
+		//Define tamanho da entrada	k	
+		cc.getContextArguments().add(new ContextArgumentType());
+		cc.getContextArguments().get(y).setCpId(249);
+		cc.getContextArguments().get(y).setValue(new ContextArgumentValueType());
+		cc.getContextArguments().get(y).getValue().setDataType("Integer");
+		cc.getContextArguments().get(y).getValue().setValue("100");
+		y++;
 
 		//Define tamanho da entrada		
-//						cc.getPlatform().getPlatformContract().getContextArguments().add(new ContextArgumentType());
-//						cc.getPlatform().getPlatformContract().getContextArguments().get(x).setCpId(107);
-//						cc.getPlatform().getPlatformContract().getContextArguments().get(x).setValue(new ContextArgumentValueType());
-//						cc.getPlatform().getPlatformContract().getContextArguments().get(x).getValue().setDataType("Integer");
-//						cc.getPlatform().getPlatformContract().getContextArguments().get(x).getValue().setValue("100");
-						x++;
+		//						cc.getPlatform().getPlatformContract().getContextArguments().add(new ContextArgumentType());
+		//						cc.getPlatform().getPlatformContract().getContextArguments().get(x).setCpId(107);
+		//						cc.getPlatform().getPlatformContract().getContextArguments().get(x).setValue(new ContextArgumentValueType());
+		//						cc.getPlatform().getPlatformContract().getContextArguments().get(x).getValue().setDataType("Integer");
+		//						cc.getPlatform().getPlatformContract().getContextArguments().get(x).getValue().setValue("100");
+		//x++;
 
 		//[Argumento de Plataforma]Testando a filtragem por argumento de contexto (localizado em Fortaleza) (só a plataforma Sasquatch passa)
 
@@ -92,6 +141,7 @@ public class Resolution{
 		//		x++;
 
 
+
 		//[Argumento de Contexto] Definir o tipo de dado da matriz L
 		//				cc.getContextArguments().add(new ContextArgumentType());
 		//				cc.getContextArguments().get(y).setCpId(151);
@@ -100,11 +150,11 @@ public class Resolution{
 		//				y++;
 
 		// Restringe GPU
-		//				cc.getPlatform().getPlatformContract().getContextArguments().add(new ContextArgumentType());
-		//				cc.getPlatform().getPlatformContract().getContextArguments().get(x).setCpId(101);
-		//				cc.getPlatform().getPlatformContract().getContextArguments().get(x).setContextContract(new ContextContract());
-		//				cc.getPlatform().getPlatformContract().getContextArguments().get(x).getContextContract().setCcId(184);
-		//				x++;
+		//						cc.getPlatform().getPlatformContract().getContextArguments().add(new ContextArgumentType());
+		//						cc.getPlatform().getPlatformContract().getContextArguments().get(x).setCpId(101);
+		//						cc.getPlatform().getPlatformContract().getContextArguments().get(x).setContextContract(new ContextContract());
+		//						cc.getPlatform().getPlatformContract().getContextArguments().get(x).getContextContract().setCcId(186);
+		//						x++;
 
 
 		// Restringe virtualização 
@@ -180,13 +230,13 @@ public class Resolution{
 
 			//			resolve = sortCandidateList(resolve, 3);
 			int cont = 0;
-			
-			
+
+
 			String str="";
 			String log="";
-			
+
 			for(ContextContract a:resolve.getCandidate()){
-//				log+=(cont+" & ");
+				//				log+=(cont+" & ");
 				cont++;
 				for(int i = 0; i < a.getRankingArguments().size(); i++){
 					log+=(" "+a.getRankingArguments().get(i).getValue());
@@ -195,45 +245,45 @@ public class Resolution{
 					}
 				}
 				log+="\n";
-//				log+=("\\\\\n\\hline\n");
-//				System.out.println(FormalFormat.exportContextContractWithIDs(a, null));
-//				str+=FormalFormat.exportContextContractWithIDs(a, null)+"\n\n";
+				//				log+=("\\\\\n\\hline\n");
+				//				System.out.println(FormalFormat.exportContextContractWithIDs(a, null));
+				//				str+=FormalFormat.exportContextContractWithIDs(a, null)+"\n\n";
 				str+=FormalFormat.exportContextContract(a, null)+"\n\n";
-				
+
 			}
-//			System.out.println(Sort.sort(resolve));
-			
-			
-			
+			//			System.out.println(Sort.sort(resolve));
+
+
+
 			//Imprime a matriz de parâmetros de ranqueamento
-//			System.out.println(log);
-			
-			
-			
-			
+			//			System.out.println(log);
+
+
+
+
 			try {
-				Files.write(Paths.get("/home/wagner/Core/result.log"), str.getBytes());
+				Files.write(Paths.get("result.log"), str.getBytes());///home/wagner/Drive/workspace/HPC-Shelf-Core/out/
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-				/*
+
+			/*
 				  	try {
 						System.out.println(BackendHandler.instantiatePlatftorm(a.getPlatform()));
 					} catch (ShelfRuntimeException e) {
 						e.printStackTrace();
 					}
-				 */
-				//			System.out.println("Candidato compatível ("+ cont++ +"): "+XMLHandler.getContextContract(a));
-				//				if(a.getCcId()==229){
-				////					System.out.println(FormalFormat.exportContextContract(a, null));
-				//					System.out.println("Candidato compatível ("+ cont++ +"): "+XMLHandler.getContextContract(a));
-				//				}
-				//				###########18/07/2016
-//								System.out.println(FormalFormat.exportContextContract(a, null));
-				//				###########
-			
+			 */
+			//			System.out.println("Candidato compatível ("+ cont++ +"): "+XMLHandler.getContextContract(a));
+			//				if(a.getCcId()==229){
+			////					System.out.println(FormalFormat.exportContextContract(a, null));
+			//					System.out.println("Candidato compatível ("+ cont++ +"): "+XMLHandler.getContextContract(a));
+			//				}
+			//				###########18/07/2016
+			//								System.out.println(FormalFormat.exportContextContract(a, null));
+			//				###########
+
 			System.out.println("\n\nSize of resolve: "+resolve.getCandidate().size());
 			//						System.out.println("Último Candidato Compatível\n"+XMLHandler.getContextContract(resolve.getCandidate().get(resolve.getCandidate().size()-1)));
 			//						System.out.println("Último Candidato Compatível\n"+FormalFormat.exportContextContract(resolve.getCandidate().get(resolve.getCandidate().size()-1), null));
@@ -241,7 +291,7 @@ public class Resolution{
 			System.out.println("Erro enquanto estava resolvendo um contrato");
 			e.printStackTrace();
 		}
-		
+
 
 		//		System.out.println("################### Start Deploy #####################");
 		//		LogHandler.getLogger().info("Starting to deploy an application...");
@@ -366,7 +416,7 @@ public class Resolution{
 
 		candidateList.setUserId(application.getOwnerId());
 		Resolution.rankCandidates(candidateList, tableOfSWidArgumentTable); //Rank all candidates
-//		Resolution.sortCandidateList(candidateList, 0);//Primeira função de ranqueamento
+		//		Resolution.sortCandidateList(candidateList, 0);//Primeira função de ranqueamento
 		long elapsed = System.currentTimeMillis() - start;
 		System.out.println("Resolution Time: "+(int)((elapsed/1000)/60)+" minutos e "+(elapsed/1000) % 60+" segundos. Time millis: "+elapsed+" ms");
 		return candidateList;
@@ -635,7 +685,7 @@ public class Resolution{
 						maximum.get(cat.getCpId()).setValue(Double.parseDouble(cat.getValue().getValue()));
 					}
 				}else{
-					
+
 					MaxElement aux = new MaxElement(Double.parseDouble(cat.getValue().getValue()));
 					MaxElement x = maximum.put(cat.getCpId(), aux);
 				}
@@ -654,7 +704,7 @@ public class Resolution{
 				}
 			}
 
-			
+
 		}
 
 		for(CalculatedArgumentType cat : cc.getQualityArguments()){
@@ -693,7 +743,7 @@ public class Resolution{
 					maximum.put(i, aux.get(i));
 				}
 			}
-			
+
 			Hashtable <Integer , MaxElement> aux2 = getMaximumValues(cc.getPlatform().getPlatformContract(), maximum);
 			for(Integer i:aux2.keySet()){
 				if(maximum.containsKey(i)){
@@ -704,11 +754,11 @@ public class Resolution{
 					maximum.put(i, aux2.get(i));
 				}
 			}
-			
-			
-			
-//			maximum.putAll(getMaximumValues(cc, maximum));
-//			maximum.putAll(getMaximumValues(cc.getPlatform().getPlatformContract(), maximum));
+
+
+
+			//			maximum.putAll(getMaximumValues(cc, maximum));
+			//			maximum.putAll(getMaximumValues(cc.getPlatform().getPlatformContract(), maximum));
 		}
 
 		//		para cada argumento, buscar o maior valor em todos os candidatos e manter na tabela.
@@ -719,43 +769,45 @@ public class Resolution{
 
 	public static CandidateListType rankCandidates(CandidateListType cl, Hashtable <Integer , Hashtable <Integer , ArgumentTable>> tableOfSWidArgumentTable){
 		try {
-			Files.write(Paths.get("/home/wagner/Core/verifyRank.log"), "".getBytes());
+			Files.write(Paths.get("pairwiseComparing.log"), "".getBytes());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-//		Hashtable <Integer , MaxElement> maximum = Resolution.getMaximumValues(cl);
-//		for(int i = 0; i < cl.getCandidate().size(); i++){
-//			ContextContract cc = cl.getCandidate().get(i);
-//			try {
-//				CalculatedArgumentHandler.calulateRankArguments(cc, tableOfSWidArgumentTable.get(cc.getCcId()).get(cc.getPlatform().getPlatformContract().getCcId()), maximum, cl.getCandidate().size(), i);
-//			} catch (FunctionException e) {
-//				// This occurs when the result of method get from hashtable is null
-//				e.printStackTrace();
-//			}
-//		}
+		//		Hashtable <Integer , MaxElement> maximum = Resolution.getMaximumValues(cl);
+		//		for(int i = 0; i < cl.getCandidate().size(); i++){
+		//			ContextContract cc = cl.getCandidate().get(i);
+		//			try {
+		//				CalculatedArgumentHandler.calulateRankArguments(cc, tableOfSWidArgumentTable.get(cc.getCcId()).get(cc.getPlatform().getPlatformContract().getCcId()), maximum, cl.getCandidate().size(), i);
+		//			} catch (FunctionException e) {
+		//				// This occurs when the result of method get from hashtable is null
+		//				e.printStackTrace();
+		//			}
+		//		}
 		try {
 			CalculatedArgumentHandler.calulateRankArguments(cl, tableOfSWidArgumentTable);
 		} catch (FunctionException e1) {
 			e1.printStackTrace();
 		}
-		
+
 		String str = "";
-		
-		int col = 8;
+		String pairwise = "";
+		int col = 7;
 		for(int k = 0; k < CalculatedArgumentHandler.decisionMatrix.size(); k++){
 			DecisionMatrix d = CalculatedArgumentHandler.decisionMatrix.get(k);
-		
+
 			str+=(d.toString());
-			str+=("\n----------------------------------------\n");
-			str+=(d.toRmcdmFunction("MMOORA"));
-			str+=("\n----------------------------------------\n");
-			str+=(d.toRmcdmFunction("TOPSISLinear"));
-			str+=("\n----------------------------------------\n");
-			str+=(d.toRmcdmFunction("TOPSISVector"));
-			str+=("\n\n");
 			
-			int a [] = d.evalMMOORA();
+			str+=("\n----------------------------------------\n");
+			str+=(d.toRmcdmFunction("TOPSISVector", null));
+			str+=("\n----------------------------------------\n");
+			str+=(d.toRmcdmFunction("VIKOR", (float) 0.5));
+			str+=("\n----------------------------------------\n");
+			str+=(d.toRmcdmFunction("WASPAS", (float) 0.0));
+			str+=("\n----------------------------------------\n");
+			str+=(d.toRmcdmFunction("TOPSISLinear", null));
+			str+=("\n\n");
+
 			int b [] = d.evalVIKOR((float) 0.5);
 			int c [] = d.evalWASPAS((float) 0.0);
 			int e [] = d.evalTOPSISLinear();
@@ -763,31 +815,43 @@ public class Resolution{
 			double m[][] = d.getMatrix();
 			float compareMatrix[][] = new float[cl.getCandidate().size()][col];
 			for(int i = 0; i < cl.getCandidate().size(); i++){
-				for(int j = 0; j < 3; j++){
+				for(int j = 0; j < d.getCriterionList().size(); j++){//3
 					compareMatrix[i][j]=(float) m[i][j];
 				}
 			}
 			for(int i = 0; i < cl.getCandidate().size(); i++){
 				compareMatrix[i][3]= cl.getCandidate().get(i).getRankingArguments().get(k).getValue().intValue();
-				compareMatrix[i][4]=a[i];
-				compareMatrix[i][5]=b[i];
-				compareMatrix[i][6]=c[i];
-				compareMatrix[i][7]=e[i];
+				compareMatrix[i][4]=b[i];
+				compareMatrix[i][5]=c[i];
+				compareMatrix[i][6]=e[i];
 			}
-			
-//			Printing
-			System.out.println("\\begin{table}\\label{tab:rank"+k+"}\n    \\centering\n    \\caption{Matriz de resultados do processo de classificação do \\alite}\n    {\\tiny \\begin{tabular}{|c|c|c|c|c|c|c|c|c|}\n\\hline");
+
+			//			int r = 1;
+			//			for(int j = 3; j < col; j++){
+			//				for(int i = 0; i < compareMatrix.length; i++){
+			//					if(compareMatrix[i][j]==1){
+			//						for(int n = 0; n < 3; n++){
+			//							System.out.print(compareMatrix[i][n]+" ");
+			//						}
+			//						System.out.println("");
+			//					}
+			//				}
+			//			}
+			//			
+
+			//			Printing
+			System.out.println("\\begin{table}\n    \\centering\n    \\caption{Matriz de resultados do processo de classificação do \\alite}\\label{tab:rank"+k+"}\n    {\\tiny \\begin{tabular}{|c|c|c|c|c|c|c|c|c|}\n\\hline");
 			System.out.println("%Rank "+k);
 			System.out.print("        Alternativa "+separator);
-			for(int i = 0; i < 3; i++){
+			for(int i = 0; i < d.getCriterionList().size(); i++){
 				System.out.print(d.getCriteriaName(i)+"["+d.getWeight()[i]+"] "+separator+" ");
 			}
-			System.out.println(" TOPSIS "+separator+" MMOORA "+separator+" VIKOR "+separator+" WPM"+separator+"TOPSISLinear\\\\");
-			
+			System.out.println(" TOPSIS "+separator+" VIKOR "+separator+" WPM"+separator+"TOPSISLinear\\\\");
+
 			for(int i = 0; i < compareMatrix.length; i++){
 				System.out.printf("        %d "+separator+" ", i);
-				
-				for(int j = 0; j < 3; j++){
+
+				for(int j = 0; j < d.getCriterionList().size(); j++){
 					System.out.print(compareMatrix[i][j]+" "+separator+" ");
 				}
 				for(int j = 3; j < compareMatrix[0].length; j++){
@@ -805,14 +869,13 @@ public class Resolution{
 		}
 
 		
-		
-		
 		try {
-			Files.write(Paths.get("/home/wagner/Core/mcdm.log"), str.getBytes());
+			Files.write(Paths.get("mcdm.log"), str.getBytes());// /home/wagner/Core/
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
 		return cl;
 
 

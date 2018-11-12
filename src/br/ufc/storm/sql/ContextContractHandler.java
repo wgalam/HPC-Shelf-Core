@@ -44,7 +44,7 @@ public class ContextContractHandler extends DBHandler{
 	
 
 	public static void main(String[] args) {
-		for(int i = 0; i < 84; i++){
+		for(int i = 0; i < 0; i++){
 			//BEGIN PROCESSOR
 			ContextContract processor = new ContextContract();
 			processor.setCcName("E5-2650v3");
@@ -469,7 +469,7 @@ public class ContextContractHandler extends DBHandler{
 				cc.setCcName(name);
 				cc.setKindId(resultSet.getInt("kind_id"));
 				cc.setOwnerId(Integer.parseInt(owner));
-				cc.setAbstractComponent(AbstractComponentHandler.getAbstractComponent(ac_id));
+				cc.setAbstractComponent(AbstractComponentHandler.getAbstractComponent(ac_id, true));
 				cc.getContextArguments().addAll(ContextArgumentHandler.getContextArguments(cc_id));
 				cc.getInnerComponents().addAll(getInnerCompponents(cc_id));
 				for(ContextArgumentType cat:cc.getContextArguments()){
@@ -670,7 +670,7 @@ public class ContextContractHandler extends DBHandler{
 	 * @throws DBHandlerException 
 	 */
 	public static void completeContextContract(ContextContract application) throws DBHandlerException{
-		application.setAbstractComponent(AbstractComponentHandler.getAbstractComponent(application.getAbstractComponent().getIdAc()));
+		application.setAbstractComponent(AbstractComponentHandler.getAbstractComponent(application.getAbstractComponent().getIdAc(), true));
 		for(ContextArgumentType cat:application.getContextArguments()){
 			if(cat.getContextContract()!=null){
 				cat.getContextContract().setCcName(ContextContractHandler.getContextContractName(cat.getContextContract().getCcId()));

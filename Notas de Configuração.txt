@@ -6,3 +6,24 @@ https://stackoverflow.com/questions/2718786/how-to-increase-java-heap-space-for-
 #na lista de sistemas computacionais
 #CATALINA_OPTS=-Xms1024m -Xmx1024m
 CATALINA_OPTS="$CATALINA_OPTS -Xms1024m -Xmx3024m"
+
+
+
+	//Intalar o R
+sudo apt-get install r-base-core
+
+	//Instalar o Rserve:
+R
+install.packages("Rserve")
+
+	//Instalar Package MCDM
+R
+install.packages("MCDM")
+
+	//Executar Rserve{
+R CMD Rserve
+}ou{
+R
+library(Rserve)
+Rserve()
+}

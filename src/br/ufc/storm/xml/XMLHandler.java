@@ -470,7 +470,7 @@ public class XMLHandler {
 	public static String getAbstractComponent(String ac_name) throws XMLException{
 		AbstractComponentType abscom = null;
 		try {
-			abscom = AbstractComponentHandler.getAbstractComponent(AbstractComponentHandler.getAbstractComponentID(ac_name));
+			abscom = AbstractComponentHandler.getAbstractComponent(AbstractComponentHandler.getAbstractComponentID(ac_name), true);
 		} catch (DBHandlerException e1) {
 			throw new XMLException("Can not get component in database", e1);
 		}

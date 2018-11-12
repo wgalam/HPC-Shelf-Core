@@ -40,7 +40,7 @@ public class PlatformHandler extends DBHandler {
 				cc.getAbstractComponent().setIdAc(resultSet.getInt("ac_id")); 
 				cc.setCcName(resultSet.getString("cc_name"));
 				cc.setKindId(resultSet.getInt("kind_id")); 
-				cc.setAbstractComponent(AbstractComponentHandler.getAbstractComponent(cc.getAbstractComponent().getIdAc()));
+				cc.setAbstractComponent(AbstractComponentHandler.getAbstractComponent(cc.getAbstractComponent().getIdAc(), false));
 				cc.getContextArguments().addAll(ContextArgumentHandler.getContextArguments(cc.getCcId()));
 				return cc;
 			}else{
@@ -115,7 +115,7 @@ public class PlatformHandler extends DBHandler {
 				cc.getAbstractComponent().setIdAc(resultSet.getInt("ac_id")); 
 				cc.setKindId(resultSet.getInt("kind_id")); 
 				cc.setCcName(resultSet.getString("cc_name"));
-				cc.setAbstractComponent(AbstractComponentHandler.getAbstractComponent(cc.getAbstractComponent().getIdAc()));
+				cc.setAbstractComponent(AbstractComponentHandler.getAbstractComponent(cc.getAbstractComponent().getIdAc(), false));
 				cc.getContextArguments().addAll(ContextArgumentHandler.getContextArguments(cc.getCcId()));
 				ppt.setPlatformContract(cc);
 				ppt.setNetworkIpAddress(resultSet.getString("ip"));

@@ -86,7 +86,7 @@ public class AbstractComponentHandler extends DBHandler{
 	
 	public static void main(String [] a){
 		try {
-			AbstractComponentType act = AbstractComponentHandler.getAbstractComponent(218);
+			AbstractComponentType act = AbstractComponentHandler.getAbstractComponent(218, true);
 			System.out.println(FormalFormat.exportComponentSignature(act, null));
 //			System.out.println(XMLHandler.getAbstractComponent(AbstractComponentHandler.getAbstractComponent(19)));
 
@@ -219,11 +219,12 @@ public class AbstractComponentHandler extends DBHandler{
 
 	/**
 	 * This method get an abstract component from components library
+	 * @param b 
 	 * @param compName
 	 * @return Abstract component if found, else it returns null
 	 * @throws DBHandlerException 
 	 */
-	public static AbstractComponentType getAbstractComponent(int ac_id) throws DBHandlerException{
+	public static AbstractComponentType getAbstractComponent(int ac_id, boolean b) throws DBHandlerException{
 		try {
 			ResolutionNode.setup();
 		} catch (ResolveException e1) {
@@ -236,7 +237,9 @@ public class AbstractComponentHandler extends DBHandler{
 		ac.getContextParameter().addAll(ResolutionNode.resolutionTree.findNode(ac_id).getCps());
 		ac.getQualityParameters().addAll(ResolutionNode.resolutionTree.findNode(ac_id).getQps());
 		ac.getCostParameters().addAll(ResolutionNode.resolutionTree.findNode(ac_id).getCops());
-		ac.getRankingParameters().addAll(ResolutionNode.resolutionTree.findNode(ac_id).getRps());
+		if(b){
+			ac.getRankingParameters().addAll(ResolutionNode.resolutionTree.findNode(ac_id).getRps());
+		}
 		ac.getAbstractUnit().addAll(AbstractUnitHandler.getAbstractUnits(ac_id));
 		ac.getSlices().addAll(SliceHandler.getSlices(ac_id));
 		return ac;
@@ -301,7 +304,7 @@ public class AbstractComponentHandler extends DBHandler{
 				if(resultSet.getBoolean("enabled") == false){
 					throw new DBHandlerException("Abstract component disabled, can't be caught");
 				}else{
-					return getAbstractComponent(resultSet.getInt("ac_id"));	
+					return getAbstractComponent(resultSet.getInt("ac_id"), false);	
 				}
 			}else{
 				throw new DBHandlerException("Abstract component not found");
@@ -416,7 +419,7 @@ public class AbstractComponentHandler extends DBHandler{
 			prepared.setInt(1, parent_ac_id); 
 			ResultSet resultSet = prepared.executeQuery(); 
 			while(resultSet.next()) { 
-				list.add(AbstractComponentHandler.getAbstractComponent(resultSet.getInt("ac_id"))); 
+				list.add(AbstractComponentHandler.getAbstractComponent(resultSet.getInt("ac_id"), false)); 
 			}
 			return list;
 		} catch (SQLException e) { 
