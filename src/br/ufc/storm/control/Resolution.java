@@ -27,6 +27,7 @@ import br.ufc.storm.exception.ResolveException;
 import br.ufc.storm.exception.ShelfException;
 import br.ufc.storm.exception.XMLException;
 import br.ufc.storm.export.FormalFormat;
+import br.ufc.storm.export.TextOutput;
 import br.ufc.storm.io.LogHandler;
 import br.ufc.storm.jaxb.AbstractComponentType;
 import br.ufc.storm.jaxb.CalculatedArgumentType;
@@ -39,6 +40,7 @@ import br.ufc.storm.jaxb.ContextContract;
 import br.ufc.storm.jaxb.ContextParameterType;
 import br.ufc.storm.jaxb.PlatformProfileType;
 import br.ufc.storm.mcdm.DecisionMatrix;
+import br.ufc.storm.mcdm.InvokeRserve;
 import br.ufc.storm.model.ArgumentTable;
 import br.ufc.storm.model.MaxElement;
 import br.ufc.storm.model.ResolutionNode;
@@ -60,6 +62,7 @@ public class Resolution{
 	public static final int EQUAL = 3;
 	public static final int BIGGER = 4;
 	public static final int SMALLER = 5;
+	public static final boolean FLOATRANK = true;
 
 	public static void main(String args[]) throws DBHandlerException{
 		int x = 0; //Indice do argumento de plataforma
@@ -75,16 +78,16 @@ public class Resolution{
 		cc.getPlatform().getPlatformContract().setAbstractComponent(new AbstractComponentType());
 		cc.getPlatform().getPlatformContract().getAbstractComponent().setIdAc(19);
 
-//		//Add node // Restringe GPU
-//				cc.getPlatform().getPlatformContract().getContextArguments().add(new ContextArgumentType());
-//				cc.getPlatform().getPlatformContract().getContextArguments().get(x).setCpId(23);
-//				cc.getPlatform().getPlatformContract().getContextArguments().get(x).setContextContract(new ContextContract());
-//				cc.getPlatform().getPlatformContract().getContextArguments().get(x).getContextContract().setCcId(141);
-//				x++;
-//				cc.getPlatform().getPlatformContract().getContextArguments().get(0).getContextContract().getContextArguments().add(new ContextArgumentType());
-//				cc.getPlatform().getPlatformContract().getContextArguments().get(0).getContextContract().getContextArguments().get(0).setCpId(101);
-//				cc.getPlatform().getPlatformContract().getContextArguments().get(0).getContextContract().getContextArguments().get(0).setContextContract(new ContextContract());
-//				cc.getPlatform().getPlatformContract().getContextArguments().get(0).getContextContract().getContextArguments().get(0).getContextContract().setCcId(181);
+		//		//Add node // Restringe GPU
+		//				cc.getPlatform().getPlatformContract().getContextArguments().add(new ContextArgumentType());
+		//				cc.getPlatform().getPlatformContract().getContextArguments().get(x).setCpId(23);
+		//				cc.getPlatform().getPlatformContract().getContextArguments().get(x).setContextContract(new ContextContract());
+		//				cc.getPlatform().getPlatformContract().getContextArguments().get(x).getContextContract().setCcId(141);
+		//				x++;
+		//				cc.getPlatform().getPlatformContract().getContextArguments().get(0).getContextContract().getContextArguments().add(new ContextArgumentType());
+		//				cc.getPlatform().getPlatformContract().getContextArguments().get(0).getContextContract().getContextArguments().get(0).setCpId(101);
+		//				cc.getPlatform().getPlatformContract().getContextArguments().get(0).getContextContract().getContextArguments().get(0).setContextContract(new ContextContract());
+		//				cc.getPlatform().getPlatformContract().getContextArguments().get(0).getContextContract().getContextArguments().get(0).getContextContract().setCcId(181);
 
 		//[Argumento de Contexto] Definir o tipo de dado precisao simples
 		cc.getContextArguments().add(new ContextArgumentType());
@@ -105,7 +108,7 @@ public class Resolution{
 		cc.getContextArguments().get(y).setCpId(247);
 		cc.getContextArguments().get(y).setValue(new ContextArgumentValueType());
 		cc.getContextArguments().get(y).getValue().setDataType("Integer");
-		cc.getContextArguments().get(y).getValue().setValue("100");
+		cc.getContextArguments().get(y).getValue().setValue("10000");
 		y++;
 
 		//Define tamanho da entrada	n	
@@ -113,7 +116,7 @@ public class Resolution{
 		cc.getContextArguments().get(y).setCpId(248);
 		cc.getContextArguments().get(y).setValue(new ContextArgumentValueType());
 		cc.getContextArguments().get(y).getValue().setDataType("Integer");
-		cc.getContextArguments().get(y).getValue().setValue("100");
+		cc.getContextArguments().get(y).getValue().setValue("10000");
 		y++;
 
 		//Define tamanho da entrada	k	
@@ -121,7 +124,7 @@ public class Resolution{
 		cc.getContextArguments().get(y).setCpId(249);
 		cc.getContextArguments().get(y).setValue(new ContextArgumentValueType());
 		cc.getContextArguments().get(y).getValue().setDataType("Integer");
-		cc.getContextArguments().get(y).getValue().setValue("100");
+		cc.getContextArguments().get(y).getValue().setValue("10000");
 		y++;
 
 		//Define tamanho da entrada		
@@ -415,7 +418,12 @@ public class Resolution{
 		}
 
 		candidateList.setUserId(application.getOwnerId());
-		Resolution.rankCandidates(candidateList, tableOfSWidArgumentTable); //Rank all candidates
+		//		Resolution.rankCandidates(candidateList, tableOfSWidArgumentTable); //Rank all candidates
+		if(!FLOATRANK){
+			Resolution.rankCandidates(candidateList, tableOfSWidArgumentTable); //Rank all candidates
+		}else{
+			Resolution.rankCandidatesFloat(candidateList, tableOfSWidArgumentTable); //Rank all candidates
+		}
 		//		Resolution.sortCandidateList(candidateList, 0);//Primeira função de ranqueamento
 		long elapsed = System.currentTimeMillis() - start;
 		System.out.println("Resolution Time: "+(int)((elapsed/1000)/60)+" minutos e "+(elapsed/1000) % 60+" segundos. Time millis: "+elapsed+" ms");
@@ -539,6 +547,16 @@ public class Resolution{
 				tableOfSWidArgumentTable.put(cc.getCcId(), new Hashtable<>());
 			}
 			tableOfSWidArgumentTable.get(cc.getCcId()).put(cc.getPlatform().getPlatformContract().getCcId(), argumentTable);
+			//###########################
+			
+			try {
+				CalculatedArgumentHandler.calulateContextContractArguments(cc, argumentTable, ContextParameterHandler.CALCULATEDCONTEXT);
+			} catch (FunctionException e1) {
+				//do nothing
+			}
+			
+			
+			//###########################
 			//calcula parametros de qualidade
 			try {
 				CalculatedArgumentHandler.calulateContextContractArguments(cc, argumentTable, ContextParameterHandler.QUALITY);
@@ -673,6 +691,7 @@ public class Resolution{
 	 * @return 
 	 */
 	public static CandidateListType sortCandidateList(CandidateListType cl, int i) {
+		
 		Collections.sort (cl.getCandidate(), new ComparatorCandidates(false, i));
 		return cl;
 	}
@@ -797,7 +816,7 @@ public class Resolution{
 			DecisionMatrix d = CalculatedArgumentHandler.decisionMatrix.get(k);
 
 			str+=(d.toString());
-			
+
 			str+=("\n----------------------------------------\n");
 			str+=(d.toRmcdmFunction("TOPSISVector", null));
 			str+=("\n----------------------------------------\n");
@@ -868,18 +887,111 @@ public class Resolution{
 			System.out.println("\n%--------------------------------------\n");
 		}
 
-		
+
 		try {
 			Files.write(Paths.get("mcdm.log"), str.getBytes());// /home/wagner/Core/
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 		return cl;
-
-
 	}
+
+	
+
+	public static CandidateListType rankCandidatesFloat(CandidateListType cl, Hashtable <Integer , Hashtable <Integer , ArgumentTable>> tableOfSWidArgumentTable){
+		try {
+			Files.write(Paths.get("pairwiseComparing.log"), "".getBytes());
+			Files.write(Paths.get("spreadsheet_tables.log"), "".getBytes());
+			Files.write(Paths.get("Systat_tables.log"), "".getBytes());
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			CalculatedArgumentHandler.calulateRankArguments(cl, tableOfSWidArgumentTable);
+		} catch (FunctionException e1) {
+			e1.printStackTrace();
+		}
+
+		int col = 7;
+		for(int k = 0; k < CalculatedArgumentHandler.decisionMatrix.size(); k++){
+			DecisionMatrix d = CalculatedArgumentHandler.decisionMatrix.get(k);
+			
+//			str+=(d.toString());
+//
+//			str+=("\n----------------------------------------\n");
+//			str+=(d.toRmcdmFunction("TOPSISVector", null));
+//			str+=("\n----------------------------------------\n");
+//			str+=(d.toRmcdmFunction("VIKOR", (float) 0.5));
+//			str+=("\n----------------------------------------\n");
+//			str+=(d.toRmcdmFunction("WASPAS", (float) 0.0));
+//			str+=("\n----------------------------------------\n");
+//			str+=(d.toRmcdmFunction("TOPSISLinear", null));
+//			str+=("\n\n");
+			double a [] = d.evalTOPSISVectorValue();
+			double b [] = d.evalVIKORValue((float) 0.5);
+			double c [] = d.evalWASPASValue((float) 0.0);
+			double e [] = d.evalTOPSISLinearValue();
+			d.evalLexicographic();
+			char separator = '&';
+			double m[][] = d.getMatrix();
+			double compareMatrix[][] = new double[cl.getCandidate().size()][col];
+			for(int i = 0; i < cl.getCandidate().size(); i++){
+				for(int j = 0; j < d.getCriterionList().size(); j++){//3
+					compareMatrix[i][j]=(float) m[i][j];
+				}
+			}
+			for(int i = 0; i < cl.getCandidate().size(); i++){
+				compareMatrix[i][3]= a[i];
+				compareMatrix[i][4]=b[i];
+				compareMatrix[i][5]=c[i];
+				compareMatrix[i][6]=e[i];
+			}
+			
+			try {
+				Files.write(Paths.get("spreadsheet_tables.log"), TextOutput.toSpreadshetTable(d).getBytes(),StandardOpenOption.APPEND);// /home/wagner/Core/
+				Files.write(Paths.get("latex_tables.log"), TextOutput.toLatexTable(cl, d, compareMatrix).getBytes());// /home/wagner/Core/
+				Files.write(Paths.get("R_tables.log"), TextOutput.toRInput(cl).getBytes());// /home/wagner/Core/
+				Files.write(Paths.get("Systat_tables.log"), TextOutput.toSystatInput(cl, d, compareMatrix).getBytes(),StandardOpenOption.APPEND);// /home/wagner/Core/
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
+
+			//			Printing
+//			System.out.println("\\begin{table}\n    \\centering\n    \\caption{Matriz de resultados do processo de classificação do \\alite}\\label{tab:rank"+k+"}\n    {\\tiny \\begin{tabular}{|c|c|c|c|c|c|c|c|c|}\n\\hline");
+//			System.out.println("%Rank "+k);
+//			System.out.print("        Alternativa "+separator);
+//			for(int i = 0; i < d.getCriterionList().size(); i++){
+//				System.out.print(d.getCriteriaName(i)+"["+d.getWeight()[i]+"] "+separator+" ");
+//			}
+//			System.out.println(" TOPSISVector"+separator+" VIKOR "+separator+" WPM"+separator+"TOPSISLinear\\\\");
+//
+//			for(int i = 0; i < compareMatrix.length; i++){
+//				System.out.printf("        %d "+separator+" ", i);
+//
+//				for(int j = 0; j < d.getCriterionList().size(); j++){
+//					System.out.print(compareMatrix[i][j]+" "+separator+" ");
+//				}
+//				for(int j = 3; j < compareMatrix[0].length; j++){
+//					System.out.print(compareMatrix[i][j]);
+//					if(j<compareMatrix[0].length-1){
+//						System.out.print(separator+" ");
+//					}else{
+//						System.out.print("\\\\");
+//					}
+//				}
+//				System.out.println("");
+//			}
+//			System.out.println("\\hline \n \\end{tabular}}\n\\begin{center}\n     Fonte: Próprio autor.\n\\end{center}\n\\end{table}");
+//			System.out.println("\n%--------------------------------------\n");
+		}
+		return cl;
+	}
+	
 
 	/**
 	 * 

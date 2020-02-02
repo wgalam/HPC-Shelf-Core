@@ -12,17 +12,7 @@ import java.util.Scanner;
 import javax.swing.plaf.synth.SynthSeparatorUI;
 
 import org.apache.axis2.AxisFault;
-import org.apache.ws.axis2.FakeEndServicesStub;
-import org.apache.ws.axis2.FakeEndServicesStub.AddFileResponse;
-import org.apache.ws.axis2.FakeEndServicesStub.DeploycallBackResponse;
-import org.apache.ws.axis2.FakeEndServicesStub.GetStatusResponse;
-import org.apache.ws.axis2.FakeEndServicesStub.RemoveFileResponse;
-import org.apache.ws.axis2.FakeEndServicesStub.RunFileResponse;
-import org.apache.ws.axis2.FakeEndServicesStub.SetRunnableResponse;
 
-import br.ufc.mdcc.hpcshelf.backendservices.proxy.BackEndServicesImplServiceStub;
-import br.ufc.mdcc.hpcshelf.backendservices.proxy.BackEndServicesImplServiceStub.DeployContractCallback;
-import br.ufc.mdcc.hpcshelf.backendservices.proxy.BackEndServicesImplServiceStub.DestroyPlatform;
 import br.ufc.storm.exception.DBHandlerException;
 import br.ufc.storm.exception.ShelfRuntimeException;
 import br.ufc.storm.io.LogHandler;
@@ -52,7 +42,7 @@ public class BackendHandler {
 public static void main(String[] args) throws IOException {
 		try {
 //			System.out.println(BackendHandler.requestPlatformAxis("127.0.0.1", 1234,8000, 321+""));
-			System.out.println(BackendHandler.requestPlatform("200.19.177.89", 1235,8000, 321+""));//200.19.177.89
+//			System.out.println(BackendHandler.requestPlatform("200.19.177.89", 1235,8000, 321+""));//200.19.177.89
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -169,67 +159,60 @@ public static void main(String[] args) throws IOException {
 		 * @throws ShelfRuntimeException 
 		 */
 		
-		public static boolean deployPlatftorm(ContextContract cc, int sessionID) throws ShelfRuntimeException{
-			try {
-				System.out.println("Entrou no instantiate");
-				cc.getPlatform().setNetworkIpAddress(requestPlatform(PlatformHandler.getPlatformIP(cc.getPlatform().getPlatformContract().getCcId()), sessionID, PlatformHandler.getPlatformPort(cc.getPlatform().getPlatformContract().getCcId()), cc.getPlatform().getPlatformContract().getCcId()+""));
-				ComputationalSystemType cst = new ComputationalSystemType();
-				cst.setContextContract(cc);
-				SessionHandler.setCst(sessionID, cst);
-				System.out.println("----------------------------");
-				System.out.println(cc.getPlatform().getNetworkIpAddress());
-				LogHandler.getLogger().warning("Platform Instantiated with ip: "+cc.getPlatform().getNetworkIpAddress());
-				return true;
-			} catch (DBHandlerException e1) {
-				throw new ShelfRuntimeException(cc.getPlatform().getPlatformContract().getCcId()+" > No ip valid ip address", e1);
-			}
-		}
-	public static ComputationalSystemType deploy(CandidateListType clist) throws ShelfRuntimeException{
-		ComputationalSystemType platform = null;
-		try {
-//			Find 1º available platform
-			for(ContextContract cc : clist.getCandidate()){
-				//Create session
-				int sessionID = SessionHandler.createSession(cc.getOwnerId());//Get client id
-				System.out.println("Component: "+cc.getCcName()+" Platform: "+cc.getPlatform().getPlatformContract().getCcName());
-				if (deployPlatftorm(cc, sessionID)){//try instantiate platform
-					
-					
-					//Create computational system and set network info
-					ComputationalSystemType cst = new ComputationalSystemType();
-//					cst.setContextContract(cc);
-//					cst.setNetworkAddress(cc.getPlatform().getNetworkIpAddress());
-////					erro no id do usuario
-//					cst.setSession(sessionID);
-//					//copiar arquivos das unidades
-////					Create unit files list from computational system
-//					List<UnitFileType> listOfFile = getFiles(cst.getContextContract());//Recursive method that generates a list of files to send to platform
-//					cst.getFiles().addAll(listOfFile); 
-//					//Send unit files to platform
-//					BackendHandler.sendFiles(cst, listOfFile);
-					return cst;
-				}
-			}			
-			return null;
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new ShelfRuntimeException("Can not instantiate component files", e);
-		}
-	}
+	/*
+	 * public static boolean deployPlatftorm(ContextContract cc, int sessionID)
+	 * throws ShelfRuntimeException{ try {
+	 * System.out.println("Entrou no instantiate");
+	 * cc.getPlatform().setNetworkIpAddress(requestPlatform(PlatformHandler.
+	 * getPlatformIP(cc.getPlatform().getPlatformContract().getCcId()), sessionID,
+	 * PlatformHandler.getPlatformPort(cc.getPlatform().getPlatformContract().
+	 * getCcId()), cc.getPlatform().getPlatformContract().getCcId()+""));
+	 * ComputationalSystemType cst = new ComputationalSystemType();
+	 * cst.setContextContract(cc); SessionHandler.setCst(sessionID, cst);
+	 * System.out.println("----------------------------");
+	 * System.out.println(cc.getPlatform().getNetworkIpAddress());
+	 * LogHandler.getLogger().warning("Platform Instantiated with ip: "+cc.
+	 * getPlatform().getNetworkIpAddress()); return true; } catch
+	 * (DBHandlerException e1) { throw new
+	 * ShelfRuntimeException(cc.getPlatform().getPlatformContract().getCcId()
+	 * +" > No ip valid ip address", e1); } }
+	 */
+	/*
+	 * public static ComputationalSystemType deploy(CandidateListType clist) throws
+	 * ShelfRuntimeException{ ComputationalSystemType platform = null; try { // Find
+	 * 1º available platform for(ContextContract cc : clist.getCandidate()){
+	 * //Create session int sessionID =
+	 * SessionHandler.createSession(cc.getOwnerId());//Get client id
+	 * System.out.println("Component: "+cc.getCcName()+" Platform: "+cc.getPlatform(
+	 * ).getPlatformContract().getCcName()); if (deployPlatftorm(cc,
+	 * sessionID)){//try instantiate platform
+	 * 
+	 * 
+	 * //Create computational system and set network info ComputationalSystemType
+	 * cst = new ComputationalSystemType(); // cst.setContextContract(cc); //
+	 * cst.setNetworkAddress(cc.getPlatform().getNetworkIpAddress()); //// erro no
+	 * id do usuario // cst.setSession(sessionID); // //copiar arquivos das unidades
+	 * //// Create unit files list from computational system // List<UnitFileType>
+	 * listOfFile = getFiles(cst.getContextContract());//Recursive method that
+	 * generates a list of files to send to platform //
+	 * cst.getFiles().addAll(listOfFile); // //Send unit files to platform //
+	 * BackendHandler.sendFiles(cst, listOfFile); return cst; } } return null; }
+	 * catch (Exception e) { e.printStackTrace(); throw new
+	 * ShelfRuntimeException("Can not instantiate component files", e); } }
+	 */
 
-	public static ComputationalSystemType deploySoftwareComponent(ComputationalSystemType cst) throws ShelfRuntimeException{
-		ComputationalSystemType platform = null;
-		try {
-					List<UnitFileType> listOfFile = getFiles(cst.getContextContract());//Recursive method that generates a list of files to send to platform
-					cst.getFiles().addAll(listOfFile); 
-					//Send unit files to platform
-					BackendHandler.sendFiles(cst, listOfFile);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new ShelfRuntimeException("Can not instantiate component files", e);
-		}
-		return null;
-	}
+	/*
+	 * public static ComputationalSystemType
+	 * deploySoftwareComponent(ComputationalSystemType cst) throws
+	 * ShelfRuntimeException{ ComputationalSystemType platform = null; try {
+	 * List<UnitFileType> listOfFile =
+	 * getFiles(cst.getContextContract());//Recursive method that generates a list
+	 * of files to send to platform cst.getFiles().addAll(listOfFile); //Send unit
+	 * files to platform BackendHandler.sendFiles(cst, listOfFile); } catch
+	 * (Exception e) { e.printStackTrace(); throw new
+	 * ShelfRuntimeException("Can not instantiate component files", e); } return
+	 * null; }
+	 */
 
 		public static boolean deployCallback(String sessionID, String uri) throws ShelfRuntimeException{
 			try {
@@ -250,23 +233,19 @@ public static void main(String[] args) throws IOException {
 			
 			return false;
 		}
-	public static String instantiateComponent(ComputationalSystemType cst) throws ShelfRuntimeException{
-//		Instantiate component
-		try{
-//			As linhas abaixo estão definidas para o teste específico, deve ser incluído qual o arquivo principal deve ser executado no banco de dados e corrigir as linhas abaixo
-			String target = null;
-			for(UnitFileType uft : cst.getFiles()){
-				if(uft.getFiletype()==3){
-					target = uft.getPath().replace('.', '/')+"/"+uft.getFilename()+"."+uft.getExtension();
-				}
-			}
-			return setRunnable(cst.getNetworkAddress(),target);// /tmp/root/Software/mImgTbl/teste.sh
-			//Call backend stub to instantiate component 
-			//if not possible, throw an exception
-		}catch(Exception e){
-			throw new ShelfRuntimeException("Can not instantiate component files", e);
-		}
-	}
+	/*
+	 * public static String instantiateComponent(ComputationalSystemType cst) throws
+	 * ShelfRuntimeException{ // Instantiate component try{ // As linhas abaixo
+	 * estão definidas para o teste específico, deve ser incluído qual o arquivo
+	 * principal deve ser executado no banco de dados e corrigir as linhas abaixo
+	 * String target = null; for(UnitFileType uft : cst.getFiles()){
+	 * if(uft.getFiletype()==3){ target = uft.getPath().replace('.',
+	 * '/')+"/"+uft.getFilename()+"."+uft.getExtension(); } } return
+	 * setRunnable(cst.getNetworkAddress(),target);//
+	 * /tmp/root/Software/mImgTbl/teste.sh //Call backend stub to instantiate
+	 * component //if not possible, throw an exception }catch(Exception e){ throw
+	 * new ShelfRuntimeException("Can not instantiate component files", e); } }
+	 */
 
 
 	public static boolean finishSession(int sessionID) throws ShelfRuntimeException {
@@ -277,214 +256,140 @@ public static void main(String[] args) throws IOException {
 		}
 	}
 	
-	public static String releasePlatform(ComputationalSystemType uri) {
-		
-		BackEndServicesImplServiceStub service;
-		try {
-			System.out.println("http://"+uri.getNetworkAddress()+":"+uri.getPort()+"/BackEndServices/");
-			service = new BackEndServicesImplServiceStub("http://"+uri.getNetworkAddress()+":"+uri.getPort()+"/BackEndServices/");
-			BackEndServicesImplServiceStub.DestroyPlatform request = new DestroyPlatform();
-			request.setArg0(uri.getSession()+"");
-//			request.setArg0(profile);
-//			request.setArg1(session+"");
-			BackEndServicesImplServiceStub.DestroyPlatformResponse response = service.destroyPlatform(request);
-			finishSession(uri.getSession());
-			return response.get_return();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-
-
-	private static String setRunnable(String target, String command) {
-
-		FakeEndServicesStub stub = null;
-		try {
-			stub = new FakeEndServicesStub("http://"+target+":8080/axis2/services/FakeEndServices.FakeEndServicesHttpSoap12Endpoint/");
-			//stub = new FakeEndServicesStub("http://localhost:8080/HPC-Shelf-FakeEnd/services/FakeEndServices.FakeEndServicesHttpSoap12Endpoint/");
-		} catch (AxisFault e1) {
-			e1.printStackTrace();
-		}
-		//Cria a requisicao para o servico
-		FakeEndServicesStub.SetRunnable request;
-		request = new FakeEndServicesStub.SetRunnable();
-		request.setPath(command);
-		SetRunnableResponse response = null;
-		try {
-			response = stub.setRunnable(request);
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		}
-		return response.get_return();
-	}
-	
-	private static String run(String target, String command) {
-
-		FakeEndServicesStub stub = null;
-		try {
-			stub = new FakeEndServicesStub("http://"+target+":8080/axis2/services/FakeEndServices.FakeEndServicesHttpSoap12Endpoint/");
-			//stub = new FakeEndServicesStub("http://localhost:8080/HPC-Shelf-FakeEnd/services/FakeEndServices.FakeEndServicesHttpSoap12Endpoint/");
-		} catch (AxisFault e1) {
-			e1.printStackTrace();
-		}
-		//Cria a requisicao para o servico
-		FakeEndServicesStub.RunFile request;
-		request = new FakeEndServicesStub.RunFile();
-		request.setPath(command);
-		RunFileResponse response = null;
-		try {
-			response = stub.runFile(request);
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		}
-		return response.get_return();
-	}
-
-	public static String getStatus(String target) {
-
-		FakeEndServicesStub stub = null;
-		try {
-			stub = new FakeEndServicesStub("http://"+target+":8080/axis2/services/FakeEndServices.FakeEndServicesHttpSoap12Endpoint/");//
-			//			stub = new FakeEndServicesStub("http://localhost:8080/HPC-Shelf-FakeEnd/services/FakeEndServices.FakeEndServicesHttpSoap12Endpoint/");
-		} catch (AxisFault e1) {
-			e1.printStackTrace();
-		}
-		//Cria a requisicao para o servico
-		FakeEndServicesStub.GetStatus request;
-		request = new FakeEndServicesStub.GetStatus();
-		GetStatusResponse response = null;
-		try {
-			response = stub.getStatus(request);
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		}
-		return response.get_return();
-	}
-
-	public static String requestPlatform(String target, int session, int port, String profile) {
-		BackEndServicesImplServiceStub service;
-		try {
-			System.out.println("http://"+target+":"+port+"/BackEndServices/");
-			service = new BackEndServicesImplServiceStub("http://"+target+":"+port+"/BackEndServices/");
-			BackEndServicesImplServiceStub.DeployContractCallback request = new DeployContractCallback();
-			request.setArg0(profile);
-			request.setArg1(session+"");
-			BackEndServicesImplServiceStub.DeployContractCallbackResponse response = service.deployContractCallback(request);
-			return response.get_return();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-		
-		
-		
-//		
-//		BackEndServiceStub stub = null;
-//		try {
-//			stub = new BackEndServiceStub(target);//
-//			System.out.println(stub.toString());
-//		} catch (AxisFault e1) {
-//			e1.printStackTrace();
-//		}
-//		Deploy_contract_callback request;
-//		request = new Deploy_contract_callback();
-//		request.setCore_session_id(session+"");
-//		request.setProfile_id(profile);
-//		Deploy_contract_callback_result response = null;
-//		try {
-//			response = stub.deploy_contract_callback(request);
-//		} catch (RemoteException | Error e) {
-//			e.printStackTrace();
-//		}
-//		return response.getResult();
-	}
-
-//	public static String requestPlatformAxis(String target, int session, int port, String profile) {
-//		BackEndServiceStub stub = null;
-//		try {
-//			stub = new BackEndServiceStub("http://"+target+":"+port+"/backendservices/");
-//			System.out.println(stub.toString());
-//		} catch (AxisFault e1) {
-//			e1.printStackTrace();
-//		}
-//		Deploy_contract_callback request;
-//		request = new Deploy_contract_callback();
-//		request.setCore_session_id(session+"");
-//		request.setProfile_id(profile);
-//		Deploy_contract_callback_result response = null;
-//		try {
-//			response = stub.deploy_contract_callback(request);
-//		} catch (RemoteException | Error e) {
-//			e.printStackTrace();
-//		} catch (br.ufc.mdcc.www.hpcshelf.backend.Error e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		return response.getResult();
-//	}
-	
-	//Validate this method
-	private static void sendFiles(ComputationalSystemType cst, List<UnitFileType> listOfFile) {
-		String target = "http://"+cst.getNetworkAddress()+":8080/HPC-Shelf-FakeEnd/services/FakeEndServices.FakeEndServicesHttpSoap12Endpoint/";
-		for(UnitFileType uft : listOfFile){
-			try {
-				sendFile( PropertiesHandler.getProperty("core.library.path")+"/"+uft.getPath().replace('.', '/')+"/"+uft.getFilename()+"."+uft.getExtension(), cst.getNetworkAddress(), uft.getPath().replace('.', '/')+"/"+uft.getFilename()+"."+uft.getExtension());
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		
-	}
-
-	private static boolean sendFile(String sourcePath, String target, String toPath) {
-
-		FakeEndServicesStub stub = null;
-		try {
-			//stub = new FakeEndServicesStub();
-			stub = new FakeEndServicesStub("http://"+target+":8080/axis2/services/FakeEndServices.FakeEndServicesHttpSoap12Endpoint/");
-		} catch (AxisFault e1) {
-			e1.printStackTrace();
-		}
-		//Cria a requisicao para o servico
-		FakeEndServicesStub.AddFile request;
-		request = new FakeEndServicesStub.AddFile();
-		request.setFullPath(toPath);
-		javax.activation.FileDataSource fileDataSource = new javax.activation.FileDataSource(sourcePath);
-		javax.activation.DataHandler dh = new javax.activation.DataHandler(fileDataSource);
-
-		request.setFile(dh);
-		AddFileResponse response = null;
-		try {
-			response = stub.addFile(request);
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		}
-		return response.get_return();
-	}
-	
-	private static String deleteFile(String target, String toPath) {
-
-		FakeEndServicesStub stub = null;
-		try {
-			stub = new FakeEndServicesStub("http://"+target+":8080/axis2/services/FakeEndServices.FakeEndServicesHttpSoap12Endpoint/");
-		} catch (AxisFault e1) {
-			e1.printStackTrace();
-		}
-		//Cria a requisicao para o servico
-		FakeEndServicesStub.RemoveFile request;
-		request = new FakeEndServicesStub.RemoveFile();
-		request.setPath(toPath);
-		RemoveFileResponse response = null;
-		try {
-			response = stub.removeFile(request);
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		}
-		return response.get_return();
-	}
+	/*
+	 * public static String releasePlatform(ComputationalSystemType uri) {
+	 * 
+	 * BackEndServicesImplServiceStub service; try {
+	 * System.out.println("http://"+uri.getNetworkAddress()+":"+uri.getPort()+
+	 * "/BackEndServices/"); service = new
+	 * BackEndServicesImplServiceStub("http://"+uri.getNetworkAddress()+":"+uri.
+	 * getPort()+"/BackEndServices/");
+	 * BackEndServicesImplServiceStub.DestroyPlatform request = new
+	 * DestroyPlatform(); request.setArg0(uri.getSession()+"");
+	 * BackEndServicesImplServiceStub.DestroyPlatformResponse response =
+	 * service.destroyPlatform(request); finishSession(uri.getSession()); return
+	 * response.get_return(); } catch (Exception e) { e.printStackTrace(); } return
+	 * null; }
+	 * 
+	 * 
+	 * 
+	 * private static String setRunnable(String target, String command) {
+	 * 
+	 * FakeEndServicesStub stub = null; try { stub = new
+	 * FakeEndServicesStub("http://"+target+
+	 * ":8080/axis2/services/FakeEndServices.FakeEndServicesHttpSoap12Endpoint/");
+	 * //stub = new FakeEndServicesStub(
+	 * "http://localhost:8080/HPC-Shelf-FakeEnd/services/FakeEndServices.FakeEndServicesHttpSoap12Endpoint/"
+	 * ); } catch (AxisFault e1) { e1.printStackTrace(); } //Cria a requisicao para
+	 * o servico FakeEndServicesStub.SetRunnable request; request = new
+	 * FakeEndServicesStub.SetRunnable(); request.setPath(command);
+	 * SetRunnableResponse response = null; try { response =
+	 * stub.setRunnable(request); } catch (RemoteException e) { e.printStackTrace();
+	 * } return response.get_return(); }
+	 * 
+	 * private static String run(String target, String command) {
+	 * 
+	 * FakeEndServicesStub stub = null; try { stub = new
+	 * FakeEndServicesStub("http://"+target+
+	 * ":8080/axis2/services/FakeEndServices.FakeEndServicesHttpSoap12Endpoint/");
+	 * //stub = new FakeEndServicesStub(
+	 * "http://localhost:8080/HPC-Shelf-FakeEnd/services/FakeEndServices.FakeEndServicesHttpSoap12Endpoint/"
+	 * ); } catch (AxisFault e1) { e1.printStackTrace(); } //Cria a requisicao para
+	 * o servico FakeEndServicesStub.RunFile request; request = new
+	 * FakeEndServicesStub.RunFile(); request.setPath(command); RunFileResponse
+	 * response = null; try { response = stub.runFile(request); } catch
+	 * (RemoteException e) { e.printStackTrace(); } return response.get_return(); }
+	 * 
+	 * public static String getStatus(String target) {
+	 * 
+	 * FakeEndServicesStub stub = null; try { stub = new
+	 * FakeEndServicesStub("http://"+target+
+	 * ":8080/axis2/services/FakeEndServices.FakeEndServicesHttpSoap12Endpoint/");//
+	 * // stub = new FakeEndServicesStub(
+	 * "http://localhost:8080/HPC-Shelf-FakeEnd/services/FakeEndServices.FakeEndServicesHttpSoap12Endpoint/"
+	 * ); } catch (AxisFault e1) { e1.printStackTrace(); } //Cria a requisicao para
+	 * o servico FakeEndServicesStub.GetStatus request; request = new
+	 * FakeEndServicesStub.GetStatus(); GetStatusResponse response = null; try {
+	 * response = stub.getStatus(request); } catch (RemoteException e) {
+	 * e.printStackTrace(); } return response.get_return(); }
+	 * 
+	 * public static String requestPlatform(String target, int session, int port,
+	 * String profile) { BackEndServicesImplServiceStub service; try {
+	 * System.out.println("http://"+target+":"+port+"/BackEndServices/"); service =
+	 * new
+	 * BackEndServicesImplServiceStub("http://"+target+":"+port+"/BackEndServices/")
+	 * ; BackEndServicesImplServiceStub.DeployContractCallback request = new
+	 * DeployContractCallback(); request.setArg0(profile);
+	 * request.setArg1(session+"");
+	 * BackEndServicesImplServiceStub.DeployContractCallbackResponse response =
+	 * service.deployContractCallback(request); return response.get_return(); }
+	 * catch (Exception e) { e.printStackTrace(); } return null;
+	 * 
+	 * 
+	 * 
+	 * // // BackEndServiceStub stub = null; // try { // stub = new
+	 * BackEndServiceStub(target);// // System.out.println(stub.toString()); // }
+	 * catch (AxisFault e1) { // e1.printStackTrace(); // } //
+	 * Deploy_contract_callback request; // request = new
+	 * Deploy_contract_callback(); // request.setCore_session_id(session+""); //
+	 * request.setProfile_id(profile); // Deploy_contract_callback_result response =
+	 * null; // try { // response = stub.deploy_contract_callback(request); // }
+	 * catch (RemoteException | Error e) { // e.printStackTrace(); // } // return
+	 * response.getResult(); }
+	 * 
+	 * // public static String requestPlatformAxis(String target, int session, int
+	 * port, String profile) { // BackEndServiceStub stub = null; // try { // stub =
+	 * new BackEndServiceStub("http://"+target+":"+port+"/backendservices/"); //
+	 * System.out.println(stub.toString()); // } catch (AxisFault e1) { //
+	 * e1.printStackTrace(); // } // Deploy_contract_callback request; // request =
+	 * new Deploy_contract_callback(); // request.setCore_session_id(session+""); //
+	 * request.setProfile_id(profile); // Deploy_contract_callback_result response =
+	 * null; // try { // response = stub.deploy_contract_callback(request); // }
+	 * catch (RemoteException | Error e) { // e.printStackTrace(); // } catch
+	 * (br.ufc.mdcc.www.hpcshelf.backend.Error e) { // // TODO Auto-generated catch
+	 * block // e.printStackTrace(); // } // return response.getResult(); // }
+	 * 
+	 * //Validate this method private static void sendFiles(ComputationalSystemType
+	 * cst, List<UnitFileType> listOfFile) { String target =
+	 * "http://"+cst.getNetworkAddress()+
+	 * ":8080/HPC-Shelf-FakeEnd/services/FakeEndServices.FakeEndServicesHttpSoap12Endpoint/";
+	 * for(UnitFileType uft : listOfFile){ try { sendFile(
+	 * PropertiesHandler.getProperty("core.library.path")+"/"+uft.getPath().replace(
+	 * '.', '/')+"/"+uft.getFilename()+"."+uft.getExtension(),
+	 * cst.getNetworkAddress(), uft.getPath().replace('.',
+	 * '/')+"/"+uft.getFilename()+"."+uft.getExtension()); } catch (IOException e) {
+	 * // TODO Auto-generated catch block e.printStackTrace(); } }
+	 * 
+	 * }
+	 * 
+	 * private static boolean sendFile(String sourcePath, String target, String
+	 * toPath) {
+	 * 
+	 * FakeEndServicesStub stub = null; try { //stub = new FakeEndServicesStub();
+	 * stub = new FakeEndServicesStub("http://"+target+
+	 * ":8080/axis2/services/FakeEndServices.FakeEndServicesHttpSoap12Endpoint/"); }
+	 * catch (AxisFault e1) { e1.printStackTrace(); } //Cria a requisicao para o
+	 * servico FakeEndServicesStub.AddFile request; request = new
+	 * FakeEndServicesStub.AddFile(); request.setFullPath(toPath);
+	 * javax.activation.FileDataSource fileDataSource = new
+	 * javax.activation.FileDataSource(sourcePath); javax.activation.DataHandler dh
+	 * = new javax.activation.DataHandler(fileDataSource);
+	 * 
+	 * request.setFile(dh); AddFileResponse response = null; try { response =
+	 * stub.addFile(request); } catch (RemoteException e) { e.printStackTrace(); }
+	 * return response.get_return(); }
+	 * 
+	 * private static String deleteFile(String target, String toPath) {
+	 * 
+	 * FakeEndServicesStub stub = null; try { stub = new
+	 * FakeEndServicesStub("http://"+target+
+	 * ":8080/axis2/services/FakeEndServices.FakeEndServicesHttpSoap12Endpoint/"); }
+	 * catch (AxisFault e1) { e1.printStackTrace(); } //Cria a requisicao para o
+	 * servico FakeEndServicesStub.RemoveFile request; request = new
+	 * FakeEndServicesStub.RemoveFile(); request.setPath(toPath); RemoveFileResponse
+	 * response = null; try { response = stub.removeFile(request); } catch
+	 * (RemoteException e) { e.printStackTrace(); } return response.get_return(); }
+	 */
 	
 	private static String readFile(String pathname) throws IOException {
 

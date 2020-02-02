@@ -391,38 +391,30 @@ public class CoreServices {
 	 * @return True if no exception occurs
 	 */
 
-	public String releasePlatform(String cst){
-		LogHandler.getLogger().info("Starting to reease a platform...");
-		ComputationalSystemType clt = null;
-		try {
-			clt = XMLHandler.getComputationalSystemType(cst);
-			String b = BackendHandler.releasePlatform(clt);
-			LogHandler.close();
-			return b;
-		} catch (XMLException e) {
-			cancelSession(clt.getSession());
-			LogHandler.close();
-			return null;
-		}
-	}
+	/*
+	 * public String releasePlatform(String cst){
+	 * LogHandler.getLogger().info("Starting to reease a platform...");
+	 * ComputationalSystemType clt = null; try { clt =
+	 * XMLHandler.getComputationalSystemType(cst); String b =
+	 * BackendHandler.releasePlatform(clt); LogHandler.close(); return b; } catch
+	 * (XMLException e) { cancelSession(clt.getSession()); LogHandler.close();
+	 * return null; } }
+	 */
 
 	/**
 	 * This method deploy the application in selected backend infrastructure.
 	 * @param candidateList - component in xml as string
 	 * @return session URI 
 	 */
-	public static String deploy(String candidateList){
-		CandidateListType clt;
-		try {
-			clt = XMLHandler.getCandidateList(candidateList);
-			LogHandler.getLogger().info("Starting to deploy an application...");
-			ComputationalSystemType ppt = BackendHandler.deploy(clt);
-			LogHandler.close();
-			return XMLHandler.getComputationalSystem(ppt);
-		} catch (XMLException | ShelfRuntimeException e) {
-			return "An error occurred while deploying application";
-		}
-	}
+	/*
+	 * public static String deploy(String candidateList){ CandidateListType clt; try
+	 * { clt = XMLHandler.getCandidateList(candidateList);
+	 * LogHandler.getLogger().info("Starting to deploy an application...");
+	 * ComputationalSystemType ppt = BackendHandler.deploy(clt); LogHandler.close();
+	 * return XMLHandler.getComputationalSystem(ppt); } catch (XMLException |
+	 * ShelfRuntimeException e) { return
+	 * "An error occurred while deploying application"; } }
+	 */
 	
 	public static String sortCandidates(String candidateList, int i){
 		CandidateListType clt;
@@ -437,30 +429,22 @@ public class CoreServices {
 		}
 	}
 
-	public static String instantiate(String cst){
-		ComputationalSystemType clt = null;
-		try {
-			clt = XMLHandler.getComputationalSystemType(cst);
-			LogHandler.getLogger().info("Starting to instantiate application...");
-			String str = BackendHandler.instantiateComponent(clt);
-			LogHandler.close();
-			return str;
-		} catch (XMLException | ShelfRuntimeException e) {
-			cancelSession(clt.getSession());
-			return null;
-		}
-	}
+	/*
+	 * public static String instantiate(String cst){ ComputationalSystemType clt =
+	 * null; try { clt = XMLHandler.getComputationalSystemType(cst);
+	 * LogHandler.getLogger().info("Starting to instantiate application..."); String
+	 * str = BackendHandler.instantiateComponent(clt); LogHandler.close(); return
+	 * str; } catch (XMLException | ShelfRuntimeException e) {
+	 * cancelSession(clt.getSession()); return null; } }
+	 */
 
 	//TODO: Fazer
-	public static String getStatus(String cst){
-		ComputationalSystemType clt = null;
-		try {
-			clt = XMLHandler.getComputationalSystemType(cst);
-			return BackendHandler.getStatus(clt.getNetworkAddress());
-		} catch (XMLException e) {
-			return null;
-		}
-	}
+	/*
+	 * public static String getStatus(String cst){ ComputationalSystemType clt =
+	 * null; try { clt = XMLHandler.getComputationalSystemType(cst); return
+	 * BackendHandler.getStatus(clt.getNetworkAddress()); } catch (XMLException e) {
+	 * return null; } }
+	 */
 
 	public static boolean cancelSession(int sessionID){
 		LogHandler.getLogger().info("Starting to cancel a session...");

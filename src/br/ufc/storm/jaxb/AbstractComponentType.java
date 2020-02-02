@@ -1,8 +1,8 @@
 //
-// Este arquivo foi gerado pela Arquitetura JavaTM para Implementação de Referência (JAXB) de Bind XML, v2.2.8-b130911.1802 
-// Consulte <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
+// Este arquivo foi gerado pela Arquitetura JavaTM para Implementação de Referência (JAXB) de Bind XML, v2.4.0-b180830.0438 
+// Consulte <a href="https://javaee.github.io/jaxb-v2/">https://javaee.github.io/jaxb-v2/</a> 
 // Todas as modificações neste arquivo serão perdidas após a recompilação do esquema de origem. 
-// Gerado em: 2017.11.08 às 09:51:47 PM BRT 
+// Gerado em: 2020.02.02 às 07:19:57 PM BRT 
 //
 
 
@@ -23,26 +23,27 @@ import javax.xml.bind.annotation.XmlType;
  * <p>O seguinte fragmento do esquema especifica o conteúdo esperado contido dentro desta classe.
  * 
  * <pre>
- * &lt;complexType name="abstract_component_type">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element name="supertype" type="{http://storm.lia.ufc.br}abstract_component_type" minOccurs="0"/>
- *         &lt;element name="context_parameter" type="{http://storm.lia.ufc.br}context_parameter_type" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="inner_components" type="{http://storm.lia.ufc.br}abstract_component_type" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="abstract_unit" type="{http://storm.lia.ufc.br}abstract_unit_type" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="quality_parameters" type="{http://storm.lia.ufc.br}calculated_parameter_type" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="cost_parameters" type="{http://storm.lia.ufc.br}calculated_parameter_type" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="ranking_parameters" type="{http://storm.lia.ufc.br}calculated_parameter_type" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="slices" type="{http://storm.lia.ufc.br}slice_type" maxOccurs="unbounded" minOccurs="0"/>
- *       &lt;/sequence>
- *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="kind" type="{http://storm.lia.ufc.br}kind_type" />
- *       &lt;attribute name="id_ac" type="{http://www.w3.org/2001/XMLSchema}int" />
- *       &lt;attribute name="path" type="{http://www.w3.org/2001/XMLSchema}string" />
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="abstract_component_type"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="supertype" type="{http://storm.lia.ufc.br}abstract_component_type" minOccurs="0"/&gt;
+ *         &lt;element name="context_parameter" type="{http://storm.lia.ufc.br}context_parameter_type" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element name="inner_components" type="{http://storm.lia.ufc.br}abstract_component_type" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element name="abstract_unit" type="{http://storm.lia.ufc.br}abstract_unit_type" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element name="quality_parameters" type="{http://storm.lia.ufc.br}calculated_parameter_type" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element name="cost_parameters" type="{http://storm.lia.ufc.br}calculated_parameter_type" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element name="ranking_parameters" type="{http://storm.lia.ufc.br}calculated_parameter_type" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element name="slices" type="{http://storm.lia.ufc.br}slice_type" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element name="calculated_parameters" type="{http://storm.lia.ufc.br}calculated_parameter_type" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *       &lt;attribute name="kind" type="{http://storm.lia.ufc.br}kind_type" /&gt;
+ *       &lt;attribute name="id_ac" type="{http://www.w3.org/2001/XMLSchema}int" /&gt;
+ *       &lt;attribute name="path" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 
@@ -56,7 +57,8 @@ import javax.xml.bind.annotation.XmlType;
     "qualityParameters",
     "costParameters",
     "rankingParameters",
-    "slices"
+    "slices",
+    "calculatedParameters"
 })
 public class AbstractComponentType {
 
@@ -74,6 +76,8 @@ public class AbstractComponentType {
     @XmlElement(name = "ranking_parameters")
     protected List<CalculatedParameterType> rankingParameters;
     protected List<SliceType> slices;
+    @XmlElement(name = "calculated_parameters")
+    protected List<CalculatedParameterType> calculatedParameters;
     @XmlAttribute(name = "name")
     protected String name;
     @XmlAttribute(name = "kind")
@@ -308,6 +312,35 @@ public class AbstractComponentType {
             slices = new ArrayList<SliceType>();
         }
         return this.slices;
+    }
+
+    /**
+     * Gets the value of the calculatedParameters property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the calculatedParameters property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getCalculatedParameters().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link CalculatedParameterType }
+     * 
+     * 
+     */
+    public List<CalculatedParameterType> getCalculatedParameters() {
+        if (calculatedParameters == null) {
+            calculatedParameters = new ArrayList<CalculatedParameterType>();
+        }
+        return this.calculatedParameters;
     }
 
     /**

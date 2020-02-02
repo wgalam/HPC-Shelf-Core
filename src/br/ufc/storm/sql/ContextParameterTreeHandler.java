@@ -22,6 +22,7 @@ public class ContextParameterTreeHandler {
 	private final static String SELECT_ABSTRACTCOMPONENT = "select ac_name,ac_id,supertype_id from abstract_component where ac_id = ? AND enabled = TRUE;";
 	private final static String SELECT_ABSTRACTCOMPONENT_BY_SUPERTYPE = "select ac_name,ac_id,supertype_id from abstract_component where supertype_id = ? AND enabled = TRUE;";
 	private final static String SELECT_ABSTRACTCOMPONENT_PARAMETERS ="select * from context_parameter where ac_id = ?;";
+
 	
 public static void main(String[] args) {
 	System.out.println(CoreServices.getContextParameterTree(3));

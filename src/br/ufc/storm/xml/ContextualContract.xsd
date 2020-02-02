@@ -29,10 +29,14 @@
     			type="tns:calculated_parameter_type" maxOccurs="unbounded"
     			minOccurs="0">
     		</element>
-            <element name="ranking_parameters" type="tns:calculated_parameter_type" maxOccurs="unbounded" minOccurs="0"></element>
-            <element name="slices" type="tns:slice_type"
+    		<element name="ranking_parameters"
+    			type="tns:calculated_parameter_type" maxOccurs="unbounded"
+    			minOccurs="0">
+    		</element>
+    		<element name="slices" type="tns:slice_type"
     			maxOccurs="unbounded" minOccurs="0">
     		</element>
+    		<element name="calculated_parameters" type="tns:calculated_parameter_type" maxOccurs="unbounded" minOccurs="0"></element>
     	</sequence>
     	<attribute name="name" type="string"></attribute>
     	<attribute name="kind" type="tns:kind_type"></attribute>
@@ -65,6 +69,7 @@
     			maxOccurs="1" minOccurs="0">
     		</element>
     		<element name="numeric_domain" type="string"></element>
+    		<element name="cp_unit" type="string" maxOccurs="1" minOccurs="0"></element>
     	</sequence>
     	<attribute name="name" type="string"></attribute>
     	<attribute name="cp_id" type="int"></attribute>
@@ -212,6 +217,7 @@
     			type="tns:calculated_argument_type" maxOccurs="1"
     			minOccurs="0">
     		</element>
+    		<element name="cp_unit" type="string" maxOccurs="1" minOccurs="0"></element>
     	</sequence>
     	<attribute name="name" type="string"></attribute>
     	<attribute name="calc_id" type="int"></attribute>
@@ -309,4 +315,8 @@
     <element name="computational_system"
     	type="tns:computational_system_type">
     </element>
+
+    <simpleType name="calculated_parametersType">
+    	<restriction base="string"></restriction>
+    </simpleType>
 </schema>

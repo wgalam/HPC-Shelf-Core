@@ -6,13 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import javax.xml.bind.JAXB;
-
-import org.apache.axis2.jaxws.common.config.AddressingWSDLExtensionValidator;
-
 import br.ufc.storm.jaxb.AbstractComponentType;
 import br.ufc.storm.jaxb.AbstractUnitType;
 import br.ufc.storm.jaxb.ContextContract;
@@ -26,7 +22,7 @@ import br.ufc.storm.exception.XMLException;
 import br.ufc.storm.export.FormalFormat;
 
 public class AbstractComponentHandler extends DBHandler{
-	private final static String SELECT_ALL_ABSTRACTCOMPONENT = "select ac_name,ac_id,supertype_id from abstract_component;";
+	private final static String SELECT_ALL_ABSTRACTCOMPONENT = "select * from abstract_component where enabled=true;";
 	private final static String INSERT_ABSTRACT_COMPONENT ="INSERT INTO abstract_component (ac_name, supertype_id) VALUES (?, ?) RETURNING ac_id;" ;
 	private final static String SELECT_COMPONENT_ID = "select ac_id from abstract_component where ac_name=?;";
 	private final static String SELECT_ABSTRACT_COMPONENT_BY_ID = "select * from abstract_component WHERE ac_id = ?;";
@@ -37,7 +33,7 @@ public class AbstractComponentHandler extends DBHandler{
 	private static final String INSERT_INNER_COMPONENT = "INSERT INTO inner_components (parent_id, ac_id) VALUES (?, ?) RETURNING ic_id;" ;
 	private static final String SELECT_AC_ID_NAME = "SELECT * FROM abstract_component WHERE ac_id =  ? OR ac_name = ?;";
 	private final static String SELECT_INNER_COMPONENTS_IDs = "select A.ac_id from inner_components A, abstract_component B where A.parent_id = ? AND A.parent_id = B.ac_id;";
-	
+
 	/**
 	 * This method gets the list of all abstract components in the library
 	 * @return List of components
@@ -83,19 +79,19 @@ public class AbstractComponentHandler extends DBHandler{
 	 * @throws SQLException 
 	 * @throws XMLException 
 	 */
-	
+
 	public static void main(String [] a){
 		try {
 			AbstractComponentType act = AbstractComponentHandler.getAbstractComponent(218, true);
 			System.out.println(FormalFormat.exportComponentSignature(act, null));
-//			System.out.println(XMLHandler.getAbstractComponent(AbstractComponentHandler.getAbstractComponent(19)));
+			//			System.out.println(XMLHandler.getAbstractComponent(AbstractComponentHandler.getAbstractComponent(19)));
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static void main1(String [] a){
 		AbstractComponentType ac = new AbstractComponentType();
 		ac.setName("LSSapp");
@@ -115,9 +111,9 @@ public class AbstractComponentHandler extends DBHandler{
 		ac.getSlices().add(new SliceType());
 		ac.getSlices().get(0).setInnerUnitName("teste");
 		ac.getSlices().get(0).setInnerComponentName("teste1");
-		
-		
-		
+
+
+
 		try {
 			XMLHandler.addAbstractComponentFromXML(XMLHandler.getAbstractComponent(ac));
 		} catch (ResolveException e) {
@@ -129,7 +125,7 @@ public class AbstractComponentHandler extends DBHandler{
 		}
 		System.out.println("Tudo bem");
 	}
-	
+
 	//TODO: Concluir o cadastro de variáveis
 	public static int addAbstractComponent(AbstractComponentType ac, Map<String, Integer> sharedVariables) throws DBHandlerException, ResolveException{
 		if(!exists(ac)){
@@ -159,8 +155,8 @@ public class AbstractComponentHandler extends DBHandler{
 						}else{
 							boundName = ContextContractHandler.getContextContract(cp.getBound().getCcId()).getCcName();
 							if(boundName == null){
-							//Parameter without bound, must throw an exception
-							throw new DBHandlerException("Parameter without bound");
+								//Parameter without bound, must throw an exception
+								throw new DBHandlerException("Parameter without bound");
 							}
 						}
 
@@ -171,11 +167,11 @@ public class AbstractComponentHandler extends DBHandler{
 						cp.setCpId(i);
 					}
 				}
-//				TODO: Fix this part of process
+				//				TODO: Fix this part of process
 				//Add each abstract unit
-//				for(AbstractUnitType aut: ac.getAbstractUnit()){
-//					aut.setAuId(AbstractUnitHandler.addAbstractUnit(ac.getName(), aut.getAuName()));;
-//				}
+				//				for(AbstractUnitType aut: ac.getAbstractUnit()){
+				//					aut.setAuId(AbstractUnitHandler.addAbstractUnit(ac.getName(), aut.getAuName()));;
+				//				}
 				//Register inner components if not registered yet
 				for(AbstractComponentType inner:ac.getInnerComponents()){
 					if(inner.getIdAc()==null){
@@ -183,13 +179,13 @@ public class AbstractComponentHandler extends DBHandler{
 						addInnerComponnet(ac.getIdAc(), inner.getIdAc());
 					}
 				}
-//				TODO: Fix this part of process
-//				for(SliceType st:ac.getSlices()){
-//						SliceHandler.addSlice(st.getInnerComponentName(), st.getInnerUnitName(), ac.getName());
-//				}
-					
-				
-				
+				//				TODO: Fix this part of process
+				//				for(SliceType st:ac.getSlices()){
+				//						SliceHandler.addSlice(st.getInnerComponentName(), st.getInnerUnitName(), ac.getName());
+				//				}
+
+
+
 			} catch (SQLException e) {
 				throw new DBHandlerException("A sql error occurred: "+e.getMessage());
 			}
@@ -197,7 +193,7 @@ public class AbstractComponentHandler extends DBHandler{
 		return ac.getIdAc();
 
 	}
-	
+
 	public static int addInnerComponnet(Integer ac_id, Integer innerComponent_id) throws DBHandlerException, ResolveException{
 		try {
 			Connection con = DBHandler.getConnection();
@@ -215,34 +211,72 @@ public class AbstractComponentHandler extends DBHandler{
 		}
 
 	}
-	
+
+	public static List<AbstractComponentType> getAllAbstractComponent() throws DBHandlerException{
+		List<AbstractComponentType> acs = new LinkedList<AbstractComponentType>();
+		try {
+			Connection con = getConnection();
+			PreparedStatement prepared = con.prepareStatement(SELECT_ALL_ABSTRACTCOMPONENT); 
+			ResultSet resultSet = prepared.executeQuery(); 
+			while (resultSet.next()) {
+				AbstractComponentType ac = new AbstractComponentType();
+				Integer supertype_id = resultSet.getInt("supertype_id");
+				ac.setIdAc(resultSet.getInt("ac_id"));
+				ac.setName(resultSet.getString("ac_name"));
+				if(supertype_id!=null){
+					ac.setSupertype(new AbstractComponentType());
+					ac.getSupertype().setIdAc(supertype_id);
+				}
+				acs.add(ac); 
+			}
+		} catch (SQLException e) {
+			throw new DBHandlerException("A sql error occurred: ", e);
+		} 
+		return acs;
+//TODO: Complete abstract components
+		
+//		ac.getInnerComponents().addAll(AbstractComponentHandler.getInnerComponents(ac_id));
+//		ac.getContextParameter().addAll(ResolutionNode.resolutionTree.findNode(ac_id).getCps());
+//		ac.getQualityParameters().addAll(ResolutionNode.resolutionTree.findNode(ac_id).getQps());
+//		ac.getCostParameters().addAll(ResolutionNode.resolutionTree.findNode(ac_id).getCops());
+//		if(mainComponent){
+//			ac.getRankingParameters().addAll(ResolutionNode.resolutionTree.findNode(ac_id).getRps());
+//		}
+//		ac.getAbstractUnit().addAll(AbstractUnitHandler.getAbstractUnits(ac_id));
+//		ac.getSlices().addAll(SliceHandler.getSlices(ac_id));
+		
+		
+		
+	}
+
 
 	/**
 	 * This method get an abstract component from components library
-	 * @param b 
+	 * @param mainComponent 
 	 * @param compName
 	 * @return Abstract component if found, else it returns null
 	 * @throws DBHandlerException 
 	 */
-	public static AbstractComponentType getAbstractComponent(int ac_id, boolean b) throws DBHandlerException{
+	public static AbstractComponentType getAbstractComponent(int ac_id, boolean mainComponent) throws DBHandlerException{
 		try {
 			ResolutionNode.setup();
 		} catch (ResolveException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		AbstractComponentType ac;
-		ac = getAbstractComponentPartial(ac_id);
-		ac.getInnerComponents().addAll(AbstractComponentHandler.getInnerComponents(ac_id));
-		ac.getContextParameter().addAll(ResolutionNode.resolutionTree.findNode(ac_id).getCps());
-		ac.getQualityParameters().addAll(ResolutionNode.resolutionTree.findNode(ac_id).getQps());
-		ac.getCostParameters().addAll(ResolutionNode.resolutionTree.findNode(ac_id).getCops());
-		if(b){
-			ac.getRankingParameters().addAll(ResolutionNode.resolutionTree.findNode(ac_id).getRps());
-		}
-		ac.getAbstractUnit().addAll(AbstractUnitHandler.getAbstractUnits(ac_id));
-		ac.getSlices().addAll(SliceHandler.getSlices(ac_id));
-		return ac;
+//		AbstractComponentType ac;
+//		ac = getAbstractComponentPartial(ac_id);
+//		ac.getInnerComponents().addAll(AbstractComponentHandler.getInnerComponents(ac_id));
+//		ac.getContextParameter().addAll(ResolutionNode.resolutionTree.findNode(ac_id).getCps());
+//		ac.getQualityParameters().addAll(ResolutionNode.resolutionTree.findNode(ac_id).getQps());
+//		ac.getCostParameters().addAll(ResolutionNode.resolutionTree.findNode(ac_id).getCops());
+//		if(mainComponent){
+//			ac.getRankingParameters().addAll(ResolutionNode.resolutionTree.findNode(ac_id).getRps());
+//		}
+//		ac.getAbstractUnit().addAll(AbstractUnitHandler.getAbstractUnits(ac_id));
+//		ac.getSlices().addAll(SliceHandler.getSlices(ac_id));
+//		return ac;
+		return ResolutionNode.treeTable.get(ac_id).getAc();
 	}
 
 	/**
@@ -296,7 +330,7 @@ public class AbstractComponentHandler extends DBHandler{
 	public static AbstractComponentType getAbstractComponentFromContextContractID(int cc_id) throws DBHandlerException{
 		try {
 			Connection con = getConnection();
-//			System.out.println(cc_id);
+			//			System.out.println(cc_id);
 			PreparedStatement prepared = con.prepareStatement(SELECT_ABSTRACT_COMPONENT_BY_CC_ID); 
 			prepared.setInt(1, cc_id);
 			ResultSet resultSet = prepared.executeQuery(); 
@@ -376,8 +410,8 @@ public class AbstractComponentHandler extends DBHandler{
 			throw new DBHandlerException("A sql error occurred: ", e);
 		} 
 	}
-	
-	
+
+
 	/**
 	 * This method returns an abstract component id given an name
 	 * @param name
@@ -427,7 +461,7 @@ public class AbstractComponentHandler extends DBHandler{
 		}
 	}
 
-	
+
 	/**
 	 * This method is responsible for set a component as removed, disabling it in the database
 	 * @param name Abstract component name
@@ -450,3 +484,5 @@ public class AbstractComponentHandler extends DBHandler{
 
 
 }
+
+

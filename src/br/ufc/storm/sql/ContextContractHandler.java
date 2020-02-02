@@ -22,15 +22,15 @@ import br.ufc.storm.xml.XMLHandler;
 
 public class ContextContractHandler extends DBHandler{
 	private final static String INSERT_CONTEXT_CONTRACT = "INSERT INTO context_contract (ac_id, cc_name, kind_id, owner_id) VALUES ((select ac_id from abstract_component where ac_name = ?), ?, ?, ?) RETURNING cc_id;";
-	private final static String SELECT_CONTEXT_CONTRACT_ID = "select cc_id from context_contract where cc_name = ?;";
-	private static final String SELECT_CONTEXT_CONTRACT_NAME = "select cc_name from context_contract where cc_id = ?;";
-	private static final String SELECT_CONTEXT_CONTRACT = "select * from context_contract where cc_id = ?;";
-	private static final String SELECT_CONTEXT_CONTRACT_BY_AC_ID = "select cc_id from context_contract where ac_id = ?;";
-	private static final String SELECT_CC_ID_NAME = "SELECT * FROM context_contract WHERE cc_id = ? OR cc_name = ?;";
+	private final static String SELECT_CONTEXT_CONTRACT_ID = "select cc_id from context_contract where cc_name = ? AND enabled=true;";
+	private static final String SELECT_CONTEXT_CONTRACT_NAME = "select cc_name from context_contract where cc_id = ? AND enabled=true;";
+	private static final String SELECT_CONTEXT_CONTRACT = "select * from context_contract where cc_id = ? AND enabled=true;";
+	private static final String SELECT_CONTEXT_CONTRACT_BY_AC_ID = "select cc_id from context_contract where ac_id = ? AND enabled=true;";
+	private static final String SELECT_CC_ID_NAME = "SELECT * FROM context_contract WHERE cc_id = ? OR cc_name = ? AND enabled=true;";
 	private static final String INSERT_PLATFORM_LINKAGE = "INSERT INTO component_platform  (cc_id, platform_cc_id) VALUES (?,?);";
 	private static final String INSERT_INNER_COMPONENT = "INSERT INTO concrete_inner_contract  (parent_cc_id, inner_cc_id) VALUES (?,?) RETURNING id;";
 	private static final String SELECT_INNER_COMPONENT = "SELECT * FROM concrete_inner_contract  WHERE parent_cc_id = ?;";
-	private final static String SELECT_CONTEXT_CONTRACT_AC_ID = "select ac_id from context_contract where cc_id = ?;";
+	private final static String SELECT_CONTEXT_CONTRACT_AC_ID = "select ac_id from context_contract where cc_id = ? AND enabled=true;";
 	
 	private static final int QUALIFIER = 1;
 	private static final int PLATFORM = 2;
@@ -436,7 +436,7 @@ public class ContextContractHandler extends DBHandler{
 				CalculatedArgumentHandler.addCalculatedFunction(ca.getFunction(), 2);
 			}
 
-			System.out.println(cc.getCcId());
+//			System.out.println(cc.getCcId());
 			return cc.getCcId();
 		} catch (Exception e) {
 			throw new DBHandlerException("A sql error occurred: ", e);
@@ -673,6 +673,7 @@ public class ContextContractHandler extends DBHandler{
 		application.setAbstractComponent(AbstractComponentHandler.getAbstractComponent(application.getAbstractComponent().getIdAc(), true));
 		for(ContextArgumentType cat:application.getContextArguments()){
 			if(cat.getContextContract()!=null){
+//				System.out.println(cat.getContextContract().getCcId());
 				cat.getContextContract().setCcName(ContextContractHandler.getContextContractName(cat.getContextContract().getCcId()));
 				AbstractComponentType ac = AbstractComponentHandler.getAbstractComponentFromContextContractID(cat.getContextContract().getCcId());
 				cat.getContextContract().setAbstractComponent(ac);

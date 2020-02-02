@@ -26,7 +26,6 @@ import br.ufc.storm.jaxb.ContextArgumentType;
 import br.ufc.storm.jaxb.ContextContract;
 import br.ufc.storm.jaxb.ContextParameterType;
 import br.ufc.storm.mcdm.DecisionMatrix;
-import br.ufc.storm.mcdm.WPM;
 import br.ufc.storm.model.ArgumentTable;
 import br.ufc.storm.model.ResolutionNode;
 
@@ -176,6 +175,7 @@ public class CalculatedArgumentHandler extends DBHandler{
 				calcp.setCalcId(resultSet.getInt("cp_id"));
 				calcp.setName(resultSet.getString("cp_name"));
 				calcp.setKindId(resultSet.getInt("variance_id"));
+				calcp.setCpUnit(resultSet.getString("cp_unit"));
 				cps.add(calcp);
 			}
 			return cps;
@@ -265,7 +265,7 @@ public class CalculatedArgumentHandler extends DBHandler{
 		return null;
 	}
 
-	public static int calulateContextContractArguments(ContextContract cc, ArgumentTable argTable,int type) throws FunctionException{
+	public static int calulateContextContractArguments(ContextContract cc, ArgumentTable argTable, int type) throws FunctionException{
 		//Calculates arguments contracts parameters before it own quality arguments
 
 		int count = 0;
@@ -291,15 +291,19 @@ public class CalculatedArgumentHandler extends DBHandler{
 		case ContextParameterHandler.COST:
 			calcps= ResolutionNode.resolutionTree.findNode(cc.getAbstractComponent().getIdAc()).getCops();
 			break;
-			//		case ContextParameterHandler.RANKING:
-			//			calcps= ResolutionNode.resolutionTree.findNode(cc.getAbstractComponent().getIdAc()).getRps();
-			//			break;
+		case ContextParameterHandler.CALCULATEDCONTEXT:
+			calcps= ResolutionNode.resolutionTree.findNode(cc.getAbstractComponent().getIdAc()).getCaps();
+			break;
+		case ContextParameterHandler.RANKING:
+			calcps= ResolutionNode.resolutionTree.findNode(cc.getAbstractComponent().getIdAc()).getRps();
+			break;
 		}
 
 		if(cc.getPlatform()!=null){
 			count+=calulateContextContractArguments(cc.getPlatform().getPlatformContract(), argTable, type);
 		}
 		//Begin of calculus
+		System.out.println("---------->>>>>>"+calcps+"TYPE:");
 		for(CalculatedParameterType calcpt:calcps){//calcula cada parametro
 
 			CalculatedFunctionType function = null;
@@ -400,19 +404,28 @@ public class CalculatedArgumentHandler extends DBHandler{
 				}
 			}
 		}
-		
-		
+
+
 		for(int i=0; i < rankParametersCount; i++){
-			int r[] = decisionMatrix.get(i).evalTOPSISVector();
-					for(int j=0; j < cl.getCandidate().size();j++){
-						cl.getCandidate().get(j).getRankingArguments().get(i).setValue((double) r[j]);
-					}
+
+			if(Resolution.FLOATRANK){
+				double[] r = decisionMatrix.get(i).evalTOPSISVectorValue();
+				for(int j=0; j < cl.getCandidate().size();j++){
+					cl.getCandidate().get(j).getRankingArguments().get(i).setValue((double) r[j]);
+				}
+			}else{
+				int[] r = decisionMatrix.get(i).evalTOPSISVector();
+				for(int j=0; j < cl.getCandidate().size();j++){
+					cl.getCandidate().get(j).getRankingArguments().get(i).setValue((double) r[j]);
+				}
+			}
+
 		}
 		return count;
 	}
 
-	
-	
+
+
 	//	public static int calulateRankArguments(ContextContract cc, ArgumentTable argTable, Hashtable <Integer , MaxElement> maximum, int numOfAlternatives, int alternative) throws FunctionException{
 	//		int count = 0;
 	//		String str = "Candidate: "+cc.getCcName()+"\n";
@@ -532,6 +545,7 @@ public class CalculatedArgumentHandler extends DBHandler{
 	//		return count;
 	//	}
 
+
 	/**
 	 * Given a calculated function, this method evaluate the function
 	 * @param qft
@@ -539,13 +553,25 @@ public class CalculatedArgumentHandler extends DBHandler{
 	 */
 	public static Double calculate(CalculatedFunctionType qft, Hashtable<Integer, Float> weight){
 		BigDecimal result = null;
+
 		int numOfarguments = qft.getFunctionArguments().size();
 		Expression expression = new Expression(qft.getFunctionValue());
+		String f = expression.getExpression();
+
 		for(int i = 0; i < numOfarguments; i++){
 			if(qft.getFunctionArguments().get(i).getValue().getValue()==null){
 				return null;
 			}
-			expression.with("v"+i, (qft.getFunctionArguments().get(i).getValue().getValue()));
+			//			expression.with("v"+i, (qft.getFunctionArguments().get(i).getValue().getValue()));
+			expression.setVariable("v"+i, (qft.getFunctionArguments().get(i).getValue().getValue()));
+			try{
+				f=f.replaceAll("v"+i, ""+(qft.getFunctionArguments().get(i).getValue().getValue()));
+
+			}catch (NullPointerException e) {
+				System.out.println("Erro ao buscar argumento, possivelmente um termo não foi encontrado na função");
+				e.printStackTrace();
+			}
+
 			//Modificando os pesos para virem do banco e assim poder gerar a matriz de 
 			//    alternativas e poder usar qualquer biblioteca de MCDM
 			if(qft.getFunctionArguments().get(i).getCpId() !=null){
@@ -558,21 +584,22 @@ public class CalculatedArgumentHandler extends DBHandler{
 			//}
 			//}
 		}
-		
+
 		expression.setPrecision(20);
-//		if(qft.getCpId().equals(235)){
-//			String str=">>>>>>>>>"+expression.getExpression();
-//			for(int i=0; i < qft.getFunctionArguments().size();i++){
-//				str=str.replaceAll("v"+i, ""+qft.getFunctionArguments().get(i).getValue().getValue());
-//			}
-//			System.out.println(str);
-//		}
-		
+		//		System.out.println("cc="+qft.getCcId()+"--cp="+qft.getCpId()+">>>>"+f.replace(".",","));
+
+		//				if(qft.getCpId().equals(235)){
+		//					String str=">>>>>>>>>"+expression.getExpression();
+		//					for(int i=0; i < qft.getFunctionArguments().size();i++){
+		//						str=str.replaceAll("v"+i, ""+qft.getFunctionArguments().get(i).getValue().getValue());
+		//					}
+		//					System.out.println(str);
+		//				}
+
 		result = expression.eval();
 		return result.doubleValue();
 	}
 }
-
 
 
 @SuppressWarnings("rawtypes")

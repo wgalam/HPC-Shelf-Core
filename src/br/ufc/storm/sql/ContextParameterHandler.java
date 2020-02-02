@@ -8,12 +8,15 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import br.ufc.storm.jaxb.AbstractComponentType;
+import br.ufc.storm.jaxb.CalculatedParameterType;
 import br.ufc.storm.jaxb.ContextContract;
 import br.ufc.storm.jaxb.ContextParameterType;
+import br.ufc.storm.model.ACCPPair;
 import br.ufc.storm.model.MaxElement;
 import br.ufc.storm.xml.XMLHandler;
 import br.ufc.storm.exception.DBHandlerException;
@@ -23,7 +26,7 @@ import br.ufc.storm.exception.XMLException;
 public class ContextParameterHandler extends DBHandler {
 
 	private final static String INSERT_CONTEXT_PARAMETER ="INSERT INTO context_parameter (bound_id, cp_name, ac_id, parameter_type, variance_id) VALUES ((select cc_id from context_contract where cc_name=?), ? ,(select ac_id from abstract_component where ac_name=?), ?,?) RETURNING cp_id;";
-	private final static String SELECT_COMPONENT_PARAMETER = "select * from context_parameter where ac_id = ? AND parameter_type = ?;";
+	private final static String SELECT_COMPONENT_PARAMETER = "select * from context_parameter where ac_id = ? AND parameter_type = ? and enabled=true;";
 	private static final String SELECT_BOUND = "SELECT bound_id FROM context_parameter WHERE cp_id = ?;";
 	private static final String INSERT_BOUND_VALUE = "INSERT INTO bound_value (cp_id, bound_value) VALUES (?,?);";
 	private static final String SELECT_BOUND_VALUE = "SELECT bound_value FROM context_parameter WHERE cp_id=?;";
@@ -35,13 +38,16 @@ public class ContextParameterHandler extends DBHandler {
 	private final static String SELECT_CONTEXT_VARIABLE_REQUIRED ="SELECT * FROM context_variable_required WHERE cp_id = ?;";
 	private final static String SELECT_CONTEXT_VARIABLE_PROVIDED ="SELECT * FROM context_variable_provided WHERE cp_id = ?;";
 	private static final String SELECT_CONTEXT_PARAMETER_SPECIALIZED_ID = "select * from context_parameter A, context_parameter_bound_specialization B where A.cp_id = ? AND A.cp_id = B.cp_id;";
-
+	private final static String SELECT_ALL_PARAMETERS ="select * from context_parameter;";
+	
 	public final static int CONTEXT = 1;
 	public final static int QUALITY = 2;
 	public final static int COST = 3;
+	public final static int CALCULATEDCONTEXT = 5;
 	public final static int RANKING = 4;
 	public static final int INCREASEKIND = 4;
 	public static final int DECREASEKIND = 5;
+
 
 
 	/**
@@ -275,6 +281,7 @@ public class ContextParameterHandler extends DBHandler {
 				cp.setCpId(cp_id);
 				cp.setName(resultSet.getString("cp_name"));
 				cp.setKind(resultSet.getInt("variance_id"));
+				cp.setCpUnit(resultSet.getString("cp_unit"));
 			}
 
 			try {
@@ -333,6 +340,8 @@ public class ContextParameterHandler extends DBHandler {
 				cp.setKind(resultSet.getInt("variance_id"));
 				//				cp.setNumericDomain(resultSet.getString("bound_value_domain"));
 				Integer bound_id = resultSet.getInt("bound_id");
+				cp.setCpUnit(resultSet.getString("cp_unit"));
+				
 //				int parameter_type = resultSet.getInt("parameter_type");
 				
 				try{
@@ -352,6 +361,65 @@ public class ContextParameterHandler extends DBHandler {
 					cp.setBound(cc);
 				}
 				cpl.add(cp);
+			} 
+			return cpl;
+		} catch (SQLException e) { 
+			throw new DBHandlerException("A sql error occurred: ", e);
+		} 
+	}
+	
+	/**
+	 * This method lists all context parameters that will be bind to respective abstract component
+	 * @param ac_id
+	 * @param listCPS
+	 * @return
+	 * @throws DBHandlerException
+	 */
+	public static List<ACCPPair> getAllContextParameters() throws DBHandlerException {
+		//		TODO: Validar se não vai fechar um ciclo entre limites e componentes. Criar uma tabela para validar esta possibilidade, se fechar ciclo, disparar uma exception.
+		List<ACCPPair> cpl = new LinkedList<>();
+		try {  
+			PreparedStatement prepared = getConnection().prepareStatement(SELECT_ALL_PARAMETERS);
+			ResultSet resultSet = prepared.executeQuery();
+			while (resultSet.next()) {
+				Object cp;
+				int parameter_type = resultSet.getInt("parameter_type");
+				int ac_id = resultSet.getInt("ac_id");
+				if(parameter_type==1) {
+					cp = new ContextParameterType();
+					((ContextParameterType) cp).setCpId((resultSet.getInt("cp_id")));
+					((ContextParameterType) cp).setName(resultSet.getString("cp_name"));
+					((ContextParameterType) cp).setKind(resultSet.getInt("variance_id"));
+					//				cp.setNumericDomain(resultSet.getString("bound_value_domain"));
+					Integer bound_id = resultSet.getInt("bound_id");
+					((ContextParameterType) cp).setCpUnit(resultSet.getString("cp_unit"));
+					
+					try{
+						if(((ContextParameterType) cp).getKind() >= 3){
+							((ContextParameterType) cp).setBoundValue(resultSet.getString("bound_value"));
+						}
+						if(bound_id != ac_id && bound_id!=0){
+							ContextContract cc = new ContextContract();
+							cc.setCcId(bound_id);
+							((ContextParameterType) cp).setBound(cc);
+						}else{
+							throw new ResolveException("Context Parameter ("+((ContextParameterType) cp).getName()+") bound self referenced results in infinite loop");
+						}
+
+					}catch (ResolveException e) {
+						ContextContract cc = new ContextContract();
+						cc.setAbstractComponent(new AbstractComponentType());
+						cc.getAbstractComponent().setIdAc(bound_id);
+						((ContextParameterType) cp).setBound(cc);
+					}
+				}else {
+					cp = new CalculatedParameterType();
+					((CalculatedParameterType) cp).setCalcId(resultSet.getInt("cp_id"));
+					((CalculatedParameterType) cp).setName(resultSet.getString("cp_name"));
+					((CalculatedParameterType) cp).setKindId(resultSet.getInt("variance_id"));
+					((CalculatedParameterType) cp).setCpUnit(resultSet.getString("cp_unit"));
+				}				
+				cpl.add(new ACCPPair(ac_id, cp, parameter_type));
 			} 
 			return cpl;
 		} catch (SQLException e) { 
@@ -531,6 +599,15 @@ public class ContextParameterHandler extends DBHandler {
 		for(ContextParameterType cpt: ac.getContextParameter()){
 			if(cpt.getCpId()==cp_id){
 				return cpt;
+			}
+		}
+		return null;
+	}
+	
+	public static Integer findCpId(AbstractComponentType ac, String cp_name){
+		for(ContextParameterType cpt: ac.getContextParameter()){
+			if(cpt.getName().equals(cp_name)){
+				return cpt.getCpId();
 			}
 		}
 		return null;

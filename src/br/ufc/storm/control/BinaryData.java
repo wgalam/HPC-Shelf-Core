@@ -5,8 +5,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import javax.activation.DataHandler;
-import javax.xml.bind.annotation.XmlType;
-
 import org.apache.axiom.attachments.ByteArrayDataSource;
 
 import br.ufc.storm.properties.PropertiesHandler;

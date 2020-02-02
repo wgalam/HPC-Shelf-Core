@@ -5,10 +5,6 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import org.apache.axis2.AxisFault;
-import org.apache.ws.axis2.FakeEndServicesStub;
-import org.apache.ws.axis2.FakeEndServicesStub.DeploycallBack;
-import org.apache.ws.axis2.FakeEndServicesStub.DeploycallBackResponse;
-
 import com.udojava.evalex.Expression;
 
 import br.ufc.storm.backend.BackendHandler;
@@ -27,6 +23,7 @@ import br.ufc.storm.jaxb.ContextContract;
 import br.ufc.storm.jaxb.ContextParameterType;
 import br.ufc.storm.jaxb.PlatformProfileType;
 import br.ufc.storm.jaxb.UnitFileType;
+import br.ufc.storm.mcdm.InvokeRserve;
 import br.ufc.storm.sql.AbstractComponentHandler;
 import br.ufc.storm.sql.ConcreteUnitHandler;
 import br.ufc.storm.sql.ContextContractHandler;
@@ -48,7 +45,8 @@ public class Main {
 			Expression expression = new Expression("((((100.0*100.0*100.0)/2.0)*4.0)/(320.4*10.0^9.0))+(((100.0*100.0*100.0)/2.0)*8.0*(10.0*10.0^-9.0))+0.000009588");
 			expression.setPrecision(20);
 			System.out.println(expression.eval().doubleValue());
-			
+			InvokeRserve.invoke();
+
 			
 			
 			
@@ -76,25 +74,14 @@ public class Main {
 		
 
 	}
-	public static boolean testaFake(int session, String uri) throws ShelfRuntimeException{
-		FakeEndServicesStub stub = null;
-		try {
-			stub = new FakeEndServicesStub();
-		} catch (AxisFault e1) {
-			e1.printStackTrace();
-		}
-		//Cria a requisicao para o servico
-		DeploycallBack request;
-		request = new DeploycallBack();
-		request.setProfile_id(uri); 
-		request.setSessionID(session);
-		//Invoca o servico
-		DeploycallBackResponse response = null;
-		try {
-			response = stub.deploycallBack(request);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return response.get_return();
-	}
+	/*
+	 * public static boolean testaFake(int session, String uri) throws
+	 * ShelfRuntimeException{ FakeEndServicesStub stub = null; try { stub = new
+	 * FakeEndServicesStub(); } catch (AxisFault e1) { e1.printStackTrace(); }
+	 * //Cria a requisicao para o servico DeploycallBack request; request = new
+	 * DeploycallBack(); request.setProfile_id(uri); request.setSessionID(session);
+	 * //Invoca o servico DeploycallBackResponse response = null; try { response =
+	 * stub.deploycallBack(request); } catch (Exception e) { e.printStackTrace(); }
+	 * return response.get_return(); }
+	 */
 }
