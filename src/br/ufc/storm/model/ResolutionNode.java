@@ -8,9 +8,13 @@ import br.ufc.storm.exception.DBHandlerException;
 import br.ufc.storm.exception.ResolveException;
 import br.ufc.storm.jaxb.AbstractComponentType;
 import br.ufc.storm.jaxb.CalculatedParameterType;
+import br.ufc.storm.jaxb.ContextContract;
 import br.ufc.storm.jaxb.ContextParameterType;
 import br.ufc.storm.sql.AbstractComponentHandler;
+import br.ufc.storm.sql.AbstractUnitHandler;
+import br.ufc.storm.sql.ContextContractHandler;
 import br.ufc.storm.sql.ContextParameterHandler;
+import br.ufc.storm.sql.SliceHandler;
 
 
 public class ResolutionNode {
@@ -49,22 +53,22 @@ public class ResolutionNode {
 	}
 
 	public static void setup() throws ResolveException{
-
+		
 		if(ResolutionNode.resolutionTree == null){
+			long start = System.currentTimeMillis();
 			try {
-				//				ResolutionNode tree = new ResolutionNode();
-				//				tree.setAc_id(0);
-				//				tree.setName("root");
-				//				tree.setPath("");
-				//				tree.setSupertype(tree);
-				//				addTable(0, tree);
-				//				ResolutionNode.resolutionTree = ResolutionHandler.generateResolutionTree(0, tree, new ArrayList<ContextParameterType>(), new ArrayList<CalculatedParameterType>(), new ArrayList<CalculatedParameterType>(), new ArrayList<CalculatedParameterType>(), new ArrayList<CalculatedParameterType>(), "root");
 				generateResolutionTree();
 				getAllParameters();
+				getAllInnerComponents();
+				getAllSlices();
+				getAllAbstractUnits();
 			} catch (DBHandlerException e) {
 				throw new ResolveException("Can not create resolution tree: ",e);
 			}
+			long elapsed = System.currentTimeMillis() - start;
+			System.out.println("Resolution Tree Setup Time: "+(int)((elapsed/1000)/60)+" minutos e "+(elapsed/1000) % 60+" segundos. Time millis: "+elapsed+" ms");
 		}
+		
 	}
 
 
@@ -88,6 +92,19 @@ public class ResolutionNode {
 			}
 
 		}
+		Hashtable<Integer, List<ACCCPair>> ccAC = new Hashtable<Integer, List<ACCCPair>>();
+		List<ACCCPair> l = ContextContractHandler.getAllContextContract();
+		for(ACCCPair a: l) {
+			if(a.getAc()!=0) {
+				//Percorrendo toda lista de acs
+				//Cria uma lista l com o que já existir na hashtable
+				List<ACCCPair> list = ccAC.get(a.getAc());
+				if(list==null) {
+					list= new LinkedList<ACCCPair>();
+				}
+				list.add(a);
+			}
+		}
 		//Percorre a lista de componentes pelo indice dos supertipos, gerando a árvore
 		AbstractComponentType a = new AbstractComponentType();
 		a.setIdAc(0);
@@ -99,10 +116,12 @@ public class ResolutionNode {
 		r.supertype = null;
 		r.acPath="*";
 		addTable(0, r);
+		
 
 		for(AbstractComponentType ac:supertypeIndex.get(0)) {
-			r.addSubtype(addChildren(ac, r, supertypeIndex, acs));
+			r.addSubtype(addChildren(ac, r, supertypeIndex, acs, ccAC));
 		}
+		
 		resolutionTree = r;
 
 		//		node.setImplementationContracts(ContextContractHandler.getContextContractByAcId(node.getAc_id()));
@@ -112,12 +131,12 @@ public class ResolutionNode {
 		//		generateResolutionTree(node.getAc_id(), node, node.getCps(), node.getQps(), node.getCops(), node.getRps(), node.getCaps(), node.getPath()+"."+node.getName());
 
 
-		
+
 		//Cria lista de todos componentes abstratos a partir do banco de dados e salva em uma hashmap
 		//Criar link de todos os supertipos dos componentes abstratos com os respectivos objetos
 	}
 
-	public static ResolutionNode addChildren(AbstractComponentType a, ResolutionNode parent, Hashtable<Integer, List<AbstractComponentType>> supertypeIndex, List<AbstractComponentType> acs) throws DBHandlerException {
+	public static ResolutionNode addChildren(AbstractComponentType a, ResolutionNode parent, Hashtable<Integer, List<AbstractComponentType>> supertypeIndex, List<AbstractComponentType> acs, Hashtable<Integer,List<ACCCPair>> ccAC) throws DBHandlerException {
 		if(parent==null || a==null) {	
 			System.out.println("Error generating resolution tree, empty abstract component");
 		}
@@ -129,10 +148,20 @@ public class ResolutionNode {
 		//			TODO: Refactor this next line, to get best performance
 		//			node.setImplementationContracts(ContextContractHandler.getContextContractByAcId(node.getAc_id()));
 
+		List<ACCCPair> list = ccAC.get(a.getIdAc());
+		
+		if(list!=null) {
+//			System.out.println("aaaaaaaaaaa");
+			for(ACCCPair p:list) {
+				node.getImplementationContracts().add(p.cc);
+			}
+		}
+		
+		
 		List<AbstractComponentType> l = supertypeIndex.get(node.getAc_id());
 		if(l!=null) {
 			for(AbstractComponentType ac:l) {
-				node.addSubtype(addChildren(ac, node, supertypeIndex, acs));
+				node.addSubtype(addChildren(ac, node, supertypeIndex, acs,ccAC));
 			}
 		}
 		addTable(node.getAc_id(), node);
@@ -160,12 +189,51 @@ public class ResolutionNode {
 
 	}
 	
+	public static void getAllAbstractUnits() {
+		try {
+			List<ACAUNIT> auts = AbstractUnitHandler.getAllAbstractUnits();
+			for(ACAUNIT i:auts) {
+				ResolutionNode.treeTable.get(i.ac).getAc().getAbstractUnit().add(i.getAUT());
+			}
+			//TODO:Include the abstract units to inheritors
+
+		} catch (DBHandlerException e) {
+			e.printStackTrace();
+		}
+
+	}
+	
+	public static void getAllSlices() {
+		try {
+			List<ACSLICE> asl = SliceHandler.getAllSlices();
+			for(ACSLICE i:asl) {
+				ResolutionNode.treeTable.get(i.ac).getAc().getSlices().add(i.getSlice());
+			}
+			//TODO:Include the slices to inheritors components
+		} catch (DBHandlerException e) {
+			e.printStackTrace();
+		}
+
+	}
+	
+	public static void getAllInnerComponents(){
+		try {
+			List<IntIntPair> auts = AbstractComponentHandler.getAllInnerComponents();
+			for(IntIntPair i:auts) {
+				ResolutionNode.treeTable.get(i.first).getAc().getInnerComponents().add(treeTable.get(i.getSecond()).ac);
+			}
+			//TODO:Include the abstract units to inheritors
+
+		} catch (DBHandlerException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public static void applyParameterInheritance(ResolutionNode parent, ResolutionNode child) {
 		if(parent!=null) {
 			iheritParametersFromFather(parent, child);
 		}
 		for(ResolutionNode r:child.getSubtype()) {
-//			iheritParametersFromFather(child, r);
 			applyParameterInheritance(child, r);
 		}
 	}
@@ -215,10 +283,11 @@ public class ResolutionNode {
 	public String toString(){
 		String str = "";
 		if(this.getSupertype()== null) {
-			str = "\n"+this.getFullName()+" AC ID: "+this.ac.getIdAc()+" Supertype Name: root"+" Quantidade de Filhos: "+this.subtype.size() + " E possui "+this.getCps().size()+" parâmetros de contexto #"+this.writeParameters()+", possui "+this.getQps().size()+" parâmetros de qualidade e "+this.getRps().size()+" Parâmetros de Ranqueamento";
+			str = "\n"+this.getFullName()+" AC ID: "+this.ac.getIdAc()+" \nSupertype Name: root"+" \nQuantidade de Filhos: "+this.subtype.size() + " \nE possui "+this.getCps().size()+" parâmetros de contexto #"+this.writeParameters()+"\nPossui "+this.getQps().size()+" parâmetros de qualidade e "+this.getRps().size()+" Parâmetros de Ranqueamento. Implementações: "+this.implementationContracts.size();
 		}else {
-			str = "\n"+this.getFullName()+" AC ID: "+this.ac.getIdAc()+" Supertype Name: "+ this.getSupertype().getName() +" Quantidade de Filhos: "+this.subtype.size() + " E possui "+this.getCps().size()+" parâmetros de contexto #"+this.writeParameters()+"E possui "+this.getQps().size()+" parâmetros de qualidade e "+this.getRps().size()+" Parâmetros de Ranqueamento";
+			str = "\n"+this.getFullName()+" AC ID: "+this.ac.getIdAc()+" \nSupertype Name: "+ this.getSupertype().getName() +" \nQuantidade de Filhos: "+this.subtype.size() + " \nE possui "+this.getCps().size()+" parâmetros de contexto #"+this.writeParameters()+"\nPossui "+this.getQps().size()+" parâmetros de qualidade e "+this.getRps().size()+" Parâmetros de Ranqueamento. Implementações: "+this.implementationContracts.size();
 		}
+		str+="\n---------------------------------------------------------";
 		for(ResolutionNode rn : subtype){
 			str += rn.toString();
 		}
@@ -228,7 +297,7 @@ public class ResolutionNode {
 	private String writeParameters() {
 		String str = "";
 		for(ContextParameterType cp: ac.getContextParameter()){
-			str += "CP Name = "+cp.getName()+", CP ID = "+cp.getCpId()+".";
+			str += "CP Name = "+cp.getName()+", CP ID = "+cp.getCpId()+".\n";
 		}
 		return str;
 	}
@@ -240,17 +309,17 @@ public class ResolutionNode {
 	 */
 	public ResolutionNode findNode(Integer id){
 		return treeTable.get(id);
-//		if(ac.getIdAc()==id){
-//			return this;
-//		}else{
-//			for(ResolutionNode rn: this.getSubtype()){
-//				ResolutionNode x = rn.findNode(id);
-//				if(x != null){
-//					return x;
-//				}
-//			}
-//		}
-//		return null;
+		//		if(ac.getIdAc()==id){
+		//			return this;
+		//		}else{
+		//			for(ResolutionNode rn: this.getSubtype()){
+		//				ResolutionNode x = rn.findNode(id);
+		//				if(x != null){
+		//					return x;
+		//				}
+		//			}
+		//		}
+		//		return null;
 	}
 
 	/**
@@ -343,7 +412,7 @@ public class ResolutionNode {
 	}
 
 	public List<CalculatedParameterType> getCaps() {
-		
+
 		// TODO Auto-generated method stub
 		return ac.getCalculatedParameters();
 	}

@@ -303,7 +303,6 @@ public class CalculatedArgumentHandler extends DBHandler{
 			count+=calulateContextContractArguments(cc.getPlatform().getPlatformContract(), argTable, type);
 		}
 		//Begin of calculus
-		System.out.println("---------->>>>>>"+calcps+"TYPE:");
 		for(CalculatedParameterType calcpt:calcps){//calcula cada parametro
 
 			CalculatedFunctionType function = null;

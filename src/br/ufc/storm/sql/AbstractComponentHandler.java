@@ -14,6 +14,7 @@ import br.ufc.storm.jaxb.AbstractUnitType;
 import br.ufc.storm.jaxb.ContextContract;
 import br.ufc.storm.jaxb.ContextParameterType;
 import br.ufc.storm.jaxb.SliceType;
+import br.ufc.storm.model.IntIntPair;
 import br.ufc.storm.model.ResolutionNode;
 import br.ufc.storm.xml.XMLHandler;
 import br.ufc.storm.exception.DBHandlerException;
@@ -28,12 +29,13 @@ public class AbstractComponentHandler extends DBHandler{
 	private final static String SELECT_ABSTRACT_COMPONENT_BY_ID = "select * from abstract_component WHERE ac_id = ?;";
 	private final static String SELECT_ABSTRACT_COMPONENT_BY_CC_ID = "select * from abstract_component A, context_contract B WHERE A.ac_id = B.ac_id AND cc_id = ?;";
 	private final static String SELECT_COMPONENT_NAME = "select ac_name from abstract_component where ac_id=?;";
-	private static final String SELECT_ALL_SLICES = "SELECT * FROM slice WHERE ac_id = ?;";
+//	private static final String SELECT_ALL_SLICES = "SELECT * FROM slice WHERE ac_id = ?;";
 	private final static String UPDATE_ABSTRACT_COMPONENT = "update abstract_component set enabled=false where ac_name = ?;";
 	private static final String INSERT_INNER_COMPONENT = "INSERT INTO inner_components (parent_id, ac_id) VALUES (?, ?) RETURNING ic_id;" ;
 	private static final String SELECT_AC_ID_NAME = "SELECT * FROM abstract_component WHERE ac_id =  ? OR ac_name = ?;";
 	private final static String SELECT_INNER_COMPONENTS_IDs = "select A.ac_id from inner_components A, abstract_component B where A.parent_id = ? AND A.parent_id = B.ac_id;";
-
+	private final static String SELECT_ALL_INNER_COMPONENTS = "select * from inner_components A, abstract_component B where A.parent_id = B.ac_id AND B.enabled=TRUE;";
+	
 	/**
 	 * This method gets the list of all abstract components in the library
 	 * @return List of components
@@ -73,7 +75,7 @@ public class AbstractComponentHandler extends DBHandler{
 
 	/**
 	 * This method adds an Abstract Component into components library 
-	 * @param ac object 
+	 * @param first object 
 	 * @return Abstract Component added id 
 	 * @throws ResolveException 
 	 * @throws SQLException 
@@ -123,7 +125,6 @@ public class AbstractComponentHandler extends DBHandler{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("Tudo bem");
 	}
 
 	//TODO: Concluir o cadastro de variáveis
@@ -319,6 +320,8 @@ public class AbstractComponentHandler extends DBHandler{
 
 	}
 
+	
+	
 	/**
 	 * This method gets an abstract component from a context contract id
 	 * @param cc_id
@@ -330,7 +333,6 @@ public class AbstractComponentHandler extends DBHandler{
 	public static AbstractComponentType getAbstractComponentFromContextContractID(int cc_id) throws DBHandlerException{
 		try {
 			Connection con = getConnection();
-			//			System.out.println(cc_id);
 			PreparedStatement prepared = con.prepareStatement(SELECT_ABSTRACT_COMPONENT_BY_CC_ID); 
 			prepared.setInt(1, cc_id);
 			ResultSet resultSet = prepared.executeQuery(); 
@@ -461,6 +463,26 @@ public class AbstractComponentHandler extends DBHandler{
 		}
 	}
 
+	/**
+	 * This method gets all inner component of all components
+	 * @param name Inner component name
+	 * @return Inner component id
+	 * @throws DBHandlerException 
+	 */
+	public static List<IntIntPair> getAllInnerComponents() throws DBHandlerException {
+		List <IntIntPair> list = new LinkedList<IntIntPair>();
+		try { 
+			Connection con = getConnection(); 
+			PreparedStatement prepared = con.prepareStatement(SELECT_ALL_INNER_COMPONENTS); 
+			ResultSet resultSet = prepared.executeQuery(); 
+			while(resultSet.next()) { 
+				list.add(new IntIntPair(resultSet.getInt("parent_id"),resultSet.getInt("ac_id"))); 
+			}
+			return list;
+		} catch (SQLException e) { 
+			throw new DBHandlerException("A sql error occurred: ", e);
+		}
+	}
 
 	/**
 	 * This method is responsible for set a component as removed, disabling it in the database

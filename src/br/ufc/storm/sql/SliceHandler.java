@@ -5,10 +5,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import br.ufc.storm.exception.DBHandlerException;
 import br.ufc.storm.jaxb.SliceType;
+import br.ufc.storm.model.ACSLICE;
 
 public class SliceHandler extends DBHandler {
 
@@ -16,6 +18,7 @@ public class SliceHandler extends DBHandler {
 	private static final String INSERT_SLICE_BY_NAME = "INSERT INTO slice (inner_component_id, inner_unit_id, ac_id) VALUES ((SELECT ic_id FROM abstract_component A, inner_components B WHERE A.ac_name = ? AND A.ac_id = B.ac_id AND B.parent_id = (SELECT ac_id FROM abstract_component WHERE ac_name = ?)), (SELECT abstract_unit_id FROM abstract_unit WHERE au_name = ?), (SELECT ac_id FROM abstract_component WHERE ac_name = ?)) RETURNING slice_id;";
 	private static final String SELECT_SLICE = "SELECT * FROM slice WHERE slice_id = ?;";
 	private static final String SELECT_SLICE_LIST = "SELECT * FROM slice WHERE ac_id = ?;";
+	private static final String SELECT_ALL_SLICES = "SELECT * FROM slice;";
 	
 	public static int addSlice(SliceType st, int ac_id) throws DBHandlerException {
 		try {
@@ -41,7 +44,6 @@ public class SliceHandler extends DBHandler {
 			prepared.setString(2, ac);
 			prepared.setString(3, innerUnit);  
 			prepared.setString(4, ac);
-			System.out.println(prepared);
 			ResultSet result = prepared.executeQuery(); 
 			if(result.next()){
 				return result.getInt("slice_id");
@@ -91,6 +93,24 @@ public class SliceHandler extends DBHandler {
 		} 
 	}
 
+	public static List<ACSLICE> getAllSlices() throws DBHandlerException{
+		List<ACSLICE> list = new LinkedList<ACSLICE>();
+		try {
+			PreparedStatement prepared = getConnection().prepareStatement(SELECT_ALL_SLICES); 
+			ResultSet result = prepared.executeQuery(); 
+			while(result.next()){
+				SliceType st = new SliceType();
+				st.setInnerComponentId(result.getInt("inner_component_id"));
+				st.setInnerUnitId(result.getInt("inner_unit_id"));
+				st.setSliceId(result.getInt("slice_id"));
+				list.add(new ACSLICE(result.getInt("ac_id"), st));
+			}
+			return list;
+		} catch (SQLException e) {
+			throw new DBHandlerException("A sql error occurred: ", e);
+		} 
+	}
+	
 	/*private static List<SliceType> getSlices(int ac_id) throws DBHandlerException {
 
 		try {

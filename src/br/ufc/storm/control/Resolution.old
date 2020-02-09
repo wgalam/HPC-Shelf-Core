@@ -19,11 +19,6 @@ import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
-import org.postgresql.core.SetupQueryRunner;
 
 import br.ufc.shelf.util.MatrixOperations;
 import br.ufc.storm.exception.DBHandlerException;
@@ -68,11 +63,6 @@ public class Resolution{
 	public static final int BIGGER = 4;
 	public static final int SMALLER = 5;
 	public static final boolean FLOATRANK = true;
-
-	CandidateListType candidateList = new CandidateListType();
-
-
-
 
 	public static void main(String args[]) throws DBHandlerException{
 		int x = 0; //Indice do argumento de plataforma
@@ -364,10 +354,10 @@ public class Resolution{
 		}*/
 	}
 
-	public static String formatTime(long elapsed) {
+	public static String getTime(long start, long elapsed) {
 		return (int)((elapsed/1000)/60)+" minutes and "+(elapsed/1000) % 60+" seconds. Time millis: "+elapsed+" ms";
 	}
-
+	
 	/**
 	 * This method generates and returns a list of all components compatibles with contract
 	 * @param application
@@ -379,221 +369,73 @@ public class Resolution{
 	public static CandidateListType resolve(ContextContract application) throws ResolveException{
 		long start = System.currentTimeMillis();
 		LogHandler.getLogger().info("Resolution Class: Starting to resolve a component!");
-
-		Resolution r = new Resolution();
-		List<ContextContract> concreteComponentCandidatesList;
-
 		ResolutionNode.setup();
-
 		Hashtable <Integer , Hashtable <Integer , ArgumentTable>> tableOfSWidArgumentTable = new Hashtable<Integer, Hashtable <Integer , ArgumentTable>>();
-		setupContextContract(application);
-		r.candidateList.setUserId(application.getOwnerId()); 		
-
-		LogHandler.getLogger().info("Generating Software Component Candidate List...");
-		concreteComponentCandidatesList = ResolutionHandler.generateCandidates(application.getAbstractComponent().getSupertype().getIdAc(), application.getAbstractComponent().getIdAc());
-		if(concreteComponentCandidatesList==null) {
-			LogHandler.getLogger().info("no components were found, now it will be filtered");			
-		}else {
-			LogHandler.getLogger().info(concreteComponentCandidatesList.size()+" components were found, now it will be filtered");
-		}
-
-		LogHandler.getLogger().info("Filtering Component Candidate List...");
-		r.candidateList = r.filterComponents(application, concreteComponentCandidatesList, tableOfSWidArgumentTable);
-
-
-
-
-		//  	Uncomment the line bellow for sort candidate list
-		//		Resolution.rankCandidates(candidateList, tableOfSWidArgumentTable); //Rank all candidates
-
-		r.rankCandidateList(tableOfSWidArgumentTable);
-
-
-		//		Resolution.sortCandidateList(candidateList, 0);//Primeira função de ranqueamento
-		System.out.println("Resolution Time: "+formatTime(System.currentTimeMillis() - start));
-		return r.candidateList;
-	}
-
-
-
-
-
-
-
-	public static ContextContract setupContextContract(ContextContract cc) throws ResolveException {
-		long start = System.currentTimeMillis();
 		try {
-			ContextContractHandler.completeContextContract(cc);
+			ContextContractHandler.completeContextContract(application);
 		} catch (DBHandlerException e1) {
 			throw new ResolveException("Can not complete context contract data: ",e1);
 		}
-		LogHandler.getLogger().info("setupContextContract invocation in "+(System.currentTimeMillis()-start)+"ms");
-		System.out.println("setupContextContract Time: "+formatTime(System.currentTimeMillis() - start));
-		return cc;
-	}
-
-	public CandidateListType filterComponents(ContextContract application, List<ContextContract> concreteComponentCandidatesList, Hashtable <Integer , Hashtable <Integer , ArgumentTable>> tableOfSWidArgumentTable) throws ResolveException {
-		long start = System.currentTimeMillis();
-		ContextContract candidate;
+		
+		System.out.println("Completing Contextual Contract Time: "+getTime(start, System.currentTimeMillis() - start));
 		CandidateListType candidateList = new CandidateListType();
+		List<ContextContract> concreteComponentCandidatesList;
+		LogHandler.getLogger().info("Generating Software Component Candidate List...");
+		try {
+			concreteComponentCandidatesList = ResolutionHandler.generateCandidates(application.getAbstractComponent().getSupertype().getIdAc(), application.getAbstractComponent().getIdAc());
+		} catch (DBHandlerException e1) {
+			return new CandidateListType();
+		}
+		System.out.println("Generate SW Candidates Time: "+getTime(start, System.currentTimeMillis() - start));
+		LogHandler.getLogger().info(concreteComponentCandidatesList.size()+" components were found, now it will be filtered");
+		
+		ContextContract candidate;
+		for(int i = 0; i < concreteComponentCandidatesList.size(); i++){
+			candidate = concreteComponentCandidatesList.get(i);
+			try {
+				if(componentSubTypeRecursiveTest(application, candidate, null, application.getAbstractComponent())){
+					if(candidate.getPlatform() == null){
+						//Will test the next software contract
+						continue;
+					}
+					Resolution.mergeContract(application, candidate);						
 
-		if(concreteComponentCandidatesList!=null) {
-			for(int i = 0; i < concreteComponentCandidatesList.size(); i++){
-				candidate = concreteComponentCandidatesList.get(i);
-				try {
-					if(componentSubTypeRecursiveTest(application, candidate, null, application.getAbstractComponent())){
-						Resolution.mergeContract(application, candidate);						
+					List<ContextContract> componentCandidatePlatformlist = null;
+					LogHandler.getLogger().info("Generating Hardware Candidate List for candidate: "+i);
+					try {
+						componentCandidatePlatformlist = ResolutionHandler.generateCompliantPlatformCandidates(candidate.getPlatform().getPlatformContract().getAbstractComponent().getIdAc());
+					} catch (DBHandlerException e3) {
+						//Will test the next software contract
+						continue;
+					}
 
-						List<ContextContract> componentCandidatePlatformlist = null;
-						LogHandler.getLogger().info("Generating Hardware Candidate List for candidate: "+i);
-						try {
-							componentCandidatePlatformlist = ResolutionHandler.generateCompliantPlatformCandidates(candidate.getPlatform().getPlatformContract().getAbstractComponent().getIdAc());
-						} catch (DBHandlerException e3) {
-							//Will test the next software contract
-							continue;
-						}
+					LogHandler.getLogger().info(componentCandidatePlatformlist.size()+" platforms were found for software component "+i);
+					if(componentCandidatePlatformlist.size() > 0){
+						CandidateListType c = filterPlatformCandidateList(componentCandidatePlatformlist, application, candidate, tableOfSWidArgumentTable);
 
-						LogHandler.getLogger().info(componentCandidatePlatformlist.size()+" platforms were found for software component "+i);
-						if(componentCandidatePlatformlist.size() > 0){
-							CandidateListType c = filterPlatformCandidateList(componentCandidatePlatformlist, application, candidate, tableOfSWidArgumentTable);
-
-							candidateList.getCandidate().addAll(c.getCandidate());
-							if(candidateList.getUserId()==null){
-								candidateList.setUserId(c.getUserId());
-							}
+						candidateList.getCandidate().addAll(c.getCandidate());
+						if(candidateList.getUserId()==null){
+							candidateList.setUserId(c.getUserId());
 						}
 					}
-				} catch (DBHandlerException e) {
-					//Will test the next software contract
-					continue;
 				}
+			} catch (DBHandlerException e) {
+				//Will test the next software contract
+				continue;
 			}
 		}
-		System.out.println("filterComponents Time: "+formatTime(System.currentTimeMillis() - start));
-		LogHandler.getLogger().info("filterComponents invocation in "+(System.currentTimeMillis()-start)+"ms");
+
+		System.out.println("Filtering time Time: "+getTime(start, System.currentTimeMillis() - start));
+		candidateList.setUserId(application.getOwnerId());
+		//		Resolution.rankCandidates(candidateList, tableOfSWidArgumentTable); //Rank all candidates
+		if(!FLOATRANK){
+			Resolution.rankCandidates(candidateList, tableOfSWidArgumentTable); //Rank all candidates
+		}else{
+			Resolution.rankCandidatesFloat(candidateList, tableOfSWidArgumentTable); //Rank all candidates
+		}
+		//		Resolution.sortCandidateList(candidateList, 0);//Primeira função de ranqueamento
+		System.out.println("Resolution Time: "+getTime(start, System.currentTimeMillis() - start));
 		return candidateList;
-	}
-
-	private static ContextContract filterplatform(ContextContract platform, ContextContract candidate, ContextContract application, Hashtable <Integer , Hashtable <Integer , ArgumentTable>> tableOfSWidArgumentTable, CandidateListType candidateList) {
-		if(isPlatformSubType(candidate.getPlatform().getPlatformContract(), platform, null)){
-			if(isPlatformSubType(application.getPlatform().getPlatformContract(), platform, null)){
-				ContextContract cct = XMLHandler.cloneContextContract(candidate);//Cloning component
-				cct.getPlatform().setPlatformContract(XMLHandler.cloneContextContract(platform));
-				ContextContract cc = resolveInnerComponents(candidate, candidateList, cct, tableOfSWidArgumentTable);
-				if(cc!=null){
-					return cc;
-//					candidateList.getCandidate().add(cc);
-				}
-			}
-		}
-		return null;
-	}
-
-	private static CandidateListType filterPlatformCandidateList( List<ContextContract> componentCandidatePlatformlist, ContextContract application, ContextContract candidate, Hashtable <Integer , Hashtable <Integer , ArgumentTable>> tableOfSWidArgumentTable) {
-		//TODO: Error filtering location
-		long start = System.currentTimeMillis();
-		CandidateListType candidateList = new CandidateListType();
-		ExecutorService es = Executors.newCachedThreadPool();
-		System.out.println("Befor Threads Time: "+formatTime(System.currentTimeMillis() - start)+", as part of FilterComponent time");
-		for(int i = 0; i < componentCandidatePlatformlist.size(); i++){
-			ContextContract platform = componentCandidatePlatformlist.get(i);
-
-			//			Executors.newCachedThreadPool().execute(new Runnable() {
-			//			    @Override
-			//			    public void run() {
-			//			    	filterplatform(platform, candidate, application, tableOfSWidArgumentTable, candidateList);
-			//			    }
-			//			});
-//			es.execute(new Runnable() {
-//				@Override
-//				public void run() {
-					candidateList.getCandidate().add(filterplatform(platform, candidate, application, tableOfSWidArgumentTable, candidateList));;
-//				}
-//			});
-
-
-
-		}
-		es.shutdown();
-		try {
-			boolean finished = es.awaitTermination(1, TimeUnit.MINUTES);
-			System.out.println("---->>>>>"+finished);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		System.out.println("After Threads Time: "+formatTime(System.currentTimeMillis() - start)+", as part of FilterComponent time");
-		System.out.println("filterPlatformCandidateList Time1: "+formatTime(System.currentTimeMillis() - start)+", as part of FilterComponent time");
-		LogHandler.getLogger().info("Calculating arguments...");
-		evaluateCalculatedArguments(candidateList, application, tableOfSWidArgumentTable);
-		LogHandler.getLogger().info("filterPlatformCandidateList invocation in "+(System.currentTimeMillis()-start)+"ms");
-		System.out.println("filterPlatformCandidateList Time: "+formatTime(System.currentTimeMillis() - start)+", as part of FilterComponent time");
-		return candidateList;
-	}
-
-	public void rankCandidateList(Hashtable <Integer , Hashtable <Integer , ArgumentTable>> tableOfSWidArgumentTable) throws ResolveException {
-		long start = System.currentTimeMillis();
-		//		if(!FLOATRANK){
-		//			Resolution.rankCandidates(this.candidateList, tableOfSWidArgumentTable); //Rank all candidates
-		//		}else{
-		//			Resolution.rankCandidatesFloat(this.candidateList, tableOfSWidArgumentTable); //Rank all candidates
-		//		}
-		try {
-			Files.write(Paths.get("spreadsheet_tables.log"), "".getBytes());
-			Files.write(Paths.get("Systat_tables.log"), "".getBytes());
-
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		try {
-			CalculatedArgumentHandler.calulateRankArguments(candidateList, tableOfSWidArgumentTable);
-		} catch (FunctionException e1) {
-			e1.printStackTrace();
-		}
-
-
-		int col = 7;
-		for(int k = 0; k < CalculatedArgumentHandler.decisionMatrix.size(); k++){
-			DecisionMatrix d = CalculatedArgumentHandler.decisionMatrix.get(k);
-			double a [] = d.evalTOPSISVectorValue();
-			double b [] = d.evalVIKORValue((float) 0.5);
-			double c [] = d.evalWASPASValue((float) 0.0);
-			double e [] = d.evalTOPSISLinearValue();
-
-			d.evalLexicographic();
-
-			double m[][] = d.getMatrix();
-			double compareMatrix[][] = new double[candidateList.getCandidate().size()][col];
-			for(int i = 0; i < candidateList.getCandidate().size(); i++){
-				for(int j = 0; j < d.getCriterionList().size(); j++){//3
-					compareMatrix[i][j]=(float) m[i][j];
-				}
-			}
-
-			for(int i = 0; i < candidateList.getCandidate().size(); i++){
-				compareMatrix[i][3]= a[i];
-				compareMatrix[i][4]=b[i];
-				compareMatrix[i][5]=c[i];
-				compareMatrix[i][6]=e[i];
-			}
-
-			//This try_catch must be uncommented only for debug purpose
-			try {
-
-				Files.write(Paths.get("spreadsheet_tables.log"), TextOutput.toSpreadshetTable(d).getBytes(),StandardOpenOption.APPEND);// /home/wagner/Core/
-				//				Files.write(Paths.get("latex_tables.log"), TextOutput.toLatexTable(cl, d, compareMatrix).getBytes());// /home/wagner/Core/
-				//				Files.write(Paths.get("R_tables.log"), TextOutput.toRInput(cl).getBytes());// /home/wagner/Core/
-				//				Files.write(Paths.get("Systat_tables.log"), TextOutput.toSystatInput(cl, d, compareMatrix).getBytes(),StandardOpenOption.APPEND);// /home/wagner/Core/
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-		}
-		System.out.println("rankCandidatesFloat Time: "+formatTime(System.currentTimeMillis() - start));
-		LogHandler.getLogger().info("rankCandidatesFloat invocation in "+(System.currentTimeMillis()-start)+"ms");
 	}
 
 	/**
@@ -608,43 +450,67 @@ public class Resolution{
 		long start = System.currentTimeMillis();
 		CandidateListType candidateList = new CandidateListType();
 		List<ContextContract> electedComponentList;
-		electedComponentList = ResolutionHandler.generateCandidates(application.getAbstractComponent().getSupertype().getIdAc(), application.getAbstractComponent().getIdAc());
-		ContextContract candidate;	
-		if(electedComponentList!=null) {
-			for(int i = 0; i < electedComponentList.size(); i++){
-				candidate = electedComponentList.get(i);
-				try {
-					if(componentSubTypeRecursiveTest(application, candidate, null, application.getAbstractComponent())){
-						if(candidate.getPlatform() == null){
-							//Will test the next software contract
-							continue;
-						}
-						Resolution.mergeContract(application, candidate);						
 
-						if(isPlatformSubType(candidate.getPlatform().getPlatformContract(), application.getPlatform().getPlatformContract(), null)){
-							ContextContract cct = XMLHandler.cloneContextContract(candidate);//Cloning component
-							cct.getPlatform().setPlatformContract(XMLHandler.cloneContextContract(application.getPlatform().getPlatformContract()));
-							ContextContract cc = resolveInnerComponents(candidate, candidateList, cct, tableOfSWidArgumentTable);
-							if(cc!=null){
-								candidateList.getCandidate().add(cc);
-							}
+		try {
+			electedComponentList = ResolutionHandler.generateCandidates(application.getAbstractComponent().getSupertype().getIdAc(), application.getAbstractComponent().getIdAc());
+		} catch (DBHandlerException e1) {
+			return new CandidateListType();
+		}
+		ContextContract candidate;	
+		for(int i = 0; i < electedComponentList.size(); i++){
+			candidate = electedComponentList.get(i);
+			try {
+				if(componentSubTypeRecursiveTest(application, candidate, null, application.getAbstractComponent())){
+					if(candidate.getPlatform() == null){
+						//Will test the next software contract
+						continue;
+					}
+					Resolution.mergeContract(application, candidate);						
+
+					if(isPlatformSubType(candidate.getPlatform().getPlatformContract(), application.getPlatform().getPlatformContract(), null)){
+						ContextContract cct = XMLHandler.cloneContextContract(candidate);//Cloning component
+						cct.getPlatform().setPlatformContract(XMLHandler.cloneContextContract(application.getPlatform().getPlatformContract()));
+						ContextContract cc = resolveInnerComponents(candidate, candidateList, cct, tableOfSWidArgumentTable);
+						if(cc!=null){
+							candidateList.getCandidate().add(cc);
 						}
 					}
-				} catch (DBHandlerException e) {
-					//Will test the next software contract
-					continue;
 				}
+			} catch (DBHandlerException e) {
+				//Will test the next software contract
+				continue;
 			}
 		}
 		candidateList.setUserId(application.getOwnerId());
 		//		Resolution.rankCandidates(candidateList, tableOfSWidArgumentTable); //Rank all candidates
 		//		Resolution.sortCandidateList(candidateList, 0);//Primeira função de ranqueamento
-		System.out.println("resolveInner Time: "+formatTime(System.currentTimeMillis() - start)+"ms");
 		LogHandler.getLogger().info("resolveInner invocation in "+(System.currentTimeMillis()-start)+"ms");
 		return candidateList;
 	}
 
-
+	private static CandidateListType filterPlatformCandidateList( List<ContextContract> componentCandidatePlatformlist, ContextContract application, ContextContract candidate, Hashtable <Integer , Hashtable <Integer , ArgumentTable>> tableOfSWidArgumentTable) {
+		//TODO: Error filtering location
+		long start = System.currentTimeMillis();
+		CandidateListType candidateList = new CandidateListType();
+		for(int i = 0; i < componentCandidatePlatformlist.size(); i++){
+			ContextContract platform = componentCandidatePlatformlist.get(i);
+			if(isPlatformSubType(candidate.getPlatform().getPlatformContract(), platform, null)){
+				if(isPlatformSubType(application.getPlatform().getPlatformContract(), platform, null)){
+					ContextContract cct = XMLHandler.cloneContextContract(candidate);//Cloning component
+					cct.getPlatform().setPlatformContract(XMLHandler.cloneContextContract(platform));
+					ContextContract cc = resolveInnerComponents(candidate, candidateList, cct, tableOfSWidArgumentTable);
+					if(cc!=null){
+						candidateList.getCandidate().add(cc);
+					}
+				}
+			}
+		}
+		//		System.out.println(candidateList.getCandidate().size());
+		LogHandler.getLogger().info("Calculating arguments...");
+		evaluateCalculatedArguments(candidateList, application, tableOfSWidArgumentTable);
+		LogHandler.getLogger().info("filterPlatformCandidateList invocation in "+(System.currentTimeMillis()-start)+"ms");
+		return candidateList;
+	}
 
 	private static ContextContract resolveInnerComponents(ContextContract candidate, CandidateListType candidateList, ContextContract cct, Hashtable<Integer, Hashtable <Integer , ArgumentTable>> tableOfSWidArgumentTable){
 		long start = System.currentTimeMillis();
@@ -699,14 +565,14 @@ public class Resolution{
 			}
 			tableOfSWidArgumentTable.get(cc.getCcId()).put(cc.getPlatform().getPlatformContract().getCcId(), argumentTable);
 			//###########################
-
+			
 			try {
 				CalculatedArgumentHandler.calulateContextContractArguments(cc, argumentTable, ContextParameterHandler.CALCULATEDCONTEXT);
 			} catch (FunctionException e1) {
 				//do nothing
 			}
-
-
+			
+			
 			//###########################
 			//calcula parametros de qualidade
 			try {
@@ -855,104 +721,104 @@ public class Resolution{
 		return cl;
 	}
 
-	//	private static Hashtable <Integer , MaxElement> getMaximumValues(ContextContract cc, Hashtable <Integer , MaxElement> maximum){
-	//		long start = System.currentTimeMillis();
-	//
-	//		for(ContextArgumentType cat : cc.getContextArguments()){
-	//			if(cat.getValue()!=null){
-	//				if(maximum.containsKey(cat.getCpId())){
-	//					if(maximum.get(cat.getCpId()).getValue() < Double.parseDouble(cat.getValue().getValue())){
-	//						maximum.get(cat.getCpId()).setValue(Double.parseDouble(cat.getValue().getValue()));
-	//					}
-	//				}else{
-	//
-	////					MaxElement aux = new MaxElement(Double.parseDouble(cat.getValue().getValue()));
-	////					MaxElement x = maximum.put(cat.getCpId(), aux);
-	//				}
-	//			}else{
-	//				if(cat.getContextContract() != null){
-	//					Hashtable <Integer , MaxElement> aux = getMaximumValues(cat.getContextContract(), maximum);
-	//					for(Integer i:aux.keySet()){
-	//						if(maximum.containsKey(i)){
-	//							if(aux.get(i).getValue() > maximum.get(i).getValue()){
-	//								maximum.put(i, aux.get(i));
-	//							}
-	//						}else{
-	//							maximum.put(i, aux.get(i));
-	//						}
-	//					}
-	//				}
-	//			}
-	//
-	//
-	//		}
-	//
-	//		for(CalculatedArgumentType cat : cc.getQualityArguments()){
-	//			if(maximum.get(cat.getCpId()) != null){
-	//				if(maximum.get(cat.getCpId()).getValue() < cat.getValue()){
-	//					maximum.get(cat.getCpId()).setValue(cat.getValue());
-	//				}
-	//			}else{
-	//				maximum.put(cat.getCpId(), new MaxElement(cat.getValue()));
-	//			}
-	//		}
-	//		for(CalculatedArgumentType cat : cc.getCostArguments()){
-	//			if(maximum.get(cat.getCpId()) != null){
-	//				if(maximum.get(cat.getCpId()).getValue() < cat.getValue()){
-	//					maximum.get(cat.getCpId()).setValue(cat.getValue());
-	//				}
-	//			}else{
-	//				maximum.put(cat.getCpId(), new MaxElement(cat.getValue()));
-	//			}
-	//		}
-	//		LogHandler.getLogger().info("getMaximumValues invocation in "+(System.currentTimeMillis()-start)+"ms");
-	//		return maximum;
-	//	}
+	private static Hashtable <Integer , MaxElement> getMaximumValues(ContextContract cc, Hashtable <Integer , MaxElement> maximum){
+		long start = System.currentTimeMillis();
+
+		for(ContextArgumentType cat : cc.getContextArguments()){
+			if(cat.getValue()!=null){
+				if(maximum.containsKey(cat.getCpId())){
+					if(maximum.get(cat.getCpId()).getValue() < Double.parseDouble(cat.getValue().getValue())){
+						maximum.get(cat.getCpId()).setValue(Double.parseDouble(cat.getValue().getValue()));
+					}
+				}else{
+
+					MaxElement aux = new MaxElement(Double.parseDouble(cat.getValue().getValue()));
+					MaxElement x = maximum.put(cat.getCpId(), aux);
+				}
+			}else{
+				if(cat.getContextContract() != null){
+					Hashtable <Integer , MaxElement> aux = getMaximumValues(cat.getContextContract(), maximum);
+					for(Integer i:aux.keySet()){
+						if(maximum.containsKey(i)){
+							if(aux.get(i).getValue() > maximum.get(i).getValue()){
+								maximum.put(i, aux.get(i));
+							}
+						}else{
+							maximum.put(i, aux.get(i));
+						}
+					}
+				}
+			}
+
+
+		}
+
+		for(CalculatedArgumentType cat : cc.getQualityArguments()){
+			if(maximum.get(cat.getCpId()) != null){
+				if(maximum.get(cat.getCpId()).getValue() < cat.getValue()){
+					maximum.get(cat.getCpId()).setValue(cat.getValue());
+				}
+			}else{
+				maximum.put(cat.getCpId(), new MaxElement(cat.getValue()));
+			}
+		}
+		for(CalculatedArgumentType cat : cc.getCostArguments()){
+			if(maximum.get(cat.getCpId()) != null){
+				if(maximum.get(cat.getCpId()).getValue() < cat.getValue()){
+					maximum.get(cat.getCpId()).setValue(cat.getValue());
+				}
+			}else{
+				maximum.put(cat.getCpId(), new MaxElement(cat.getValue()));
+			}
+		}
+		LogHandler.getLogger().info("getMaximumValues invocation in "+(System.currentTimeMillis()-start)+"ms");
+		return maximum;
+	}
 
 
 
-	//	private static Hashtable <Integer , MaxElement> getMaximumValues(CandidateListType cl){
-	//		long start = System.currentTimeMillis();
-	//		Hashtable <Integer , MaxElement> maximum = new Hashtable<Integer, MaxElement>();
-	//		for(ContextContract cc : cl.getCandidate()){
-	//			Hashtable <Integer , MaxElement> aux = getMaximumValues(cc, maximum);
-	//			for(Integer i:aux.keySet()){
-	//				if(maximum.containsKey(i)){
-	//					if(aux.get(i).getValue() > maximum.get(i).getValue()){
-	//						maximum.put(i, aux.get(i));
-	//					}
-	//				}else{
-	//					maximum.put(i, aux.get(i));
-	//				}
-	//			}
-	//
-	//			Hashtable <Integer , MaxElement> aux2 = getMaximumValues(cc.getPlatform().getPlatformContract(), maximum);
-	//			for(Integer i:aux2.keySet()){
-	//				if(maximum.containsKey(i)){
-	//					if(aux2.get(i).getValue() > maximum.get(i).getValue()){
-	//						maximum.put(i, aux2.get(i));
-	//					}
-	//				}else{
-	//					maximum.put(i, aux2.get(i));
-	//				}
-	//			}
-	//
-	//
-	//
-	//			//			maximum.putAll(getMaximumValues(cc, maximum));
-	//			//			maximum.putAll(getMaximumValues(cc.getPlatform().getPlatformContract(), maximum));
-	//		}
-	//
-	//		//		para cada argumento, buscar o maior valor em todos os candidatos e manter na tabela.
-	//		//		Será usado na normalização posteriormente
-	//
-	//		LogHandler.getLogger().info("getMaximumValues invocation in "+(System.currentTimeMillis()-start)+"ms");
-	//
-	//		return maximum;
-	//	}
+	private static Hashtable <Integer , MaxElement> getMaximumValues(CandidateListType cl){
+		long start = System.currentTimeMillis();
+		Hashtable <Integer , MaxElement> maximum = new Hashtable<Integer, MaxElement>();
+		for(ContextContract cc : cl.getCandidate()){
+			Hashtable <Integer , MaxElement> aux = getMaximumValues(cc, maximum);
+			for(Integer i:aux.keySet()){
+				if(maximum.containsKey(i)){
+					if(aux.get(i).getValue() > maximum.get(i).getValue()){
+						maximum.put(i, aux.get(i));
+					}
+				}else{
+					maximum.put(i, aux.get(i));
+				}
+			}
+
+			Hashtable <Integer , MaxElement> aux2 = getMaximumValues(cc.getPlatform().getPlatformContract(), maximum);
+			for(Integer i:aux2.keySet()){
+				if(maximum.containsKey(i)){
+					if(aux2.get(i).getValue() > maximum.get(i).getValue()){
+						maximum.put(i, aux2.get(i));
+					}
+				}else{
+					maximum.put(i, aux2.get(i));
+				}
+			}
+
+
+
+			//			maximum.putAll(getMaximumValues(cc, maximum));
+			//			maximum.putAll(getMaximumValues(cc.getPlatform().getPlatformContract(), maximum));
+		}
+
+		//		para cada argumento, buscar o maior valor em todos os candidatos e manter na tabela.
+		//		Será usado na normalização posteriormente
+
+		LogHandler.getLogger().info("getMaximumValues invocation in "+(System.currentTimeMillis()-start)+"ms");
+
+		return maximum;
+	}
 
 	public static CandidateListType rankCandidates(CandidateListType cl, Hashtable <Integer , Hashtable <Integer , ArgumentTable>> tableOfSWidArgumentTable){
-
+		long start = System.currentTimeMillis();
 
 		//		Hashtable <Integer , MaxElement> maximum = Resolution.getMaximumValues(cl);
 		//		for(int i = 0; i < cl.getCandidate().size(); i++){
@@ -1051,12 +917,14 @@ public class Resolution{
 		try {
 			Files.write(Paths.get("mcdm.log"), str.getBytes());// /home/wagner/Core/
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		LogHandler.getLogger().info("rankCandidates invocation in "+(System.currentTimeMillis()-start)+"ms");
 		return cl;
 	}
 
-
+	
 
 	public static CandidateListType rankCandidatesFloat(CandidateListType cl, Hashtable <Integer , Hashtable <Integer , ArgumentTable>> tableOfSWidArgumentTable){
 		long start = System.currentTimeMillis();
@@ -1065,30 +933,42 @@ public class Resolution{
 		try {
 			Files.write(Paths.get("spreadsheet_tables.log"), "".getBytes());
 			Files.write(Paths.get("Systat_tables.log"), "".getBytes());
-
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+		
 		try {
 			CalculatedArgumentHandler.calulateRankArguments(cl, tableOfSWidArgumentTable);
 		} catch (FunctionException e1) {
 			e1.printStackTrace();
 		}
-
+		
 		int col = 7;
 		for(int k = 0; k < CalculatedArgumentHandler.decisionMatrix.size(); k++){
 			DecisionMatrix d = CalculatedArgumentHandler.decisionMatrix.get(k);
-
+			
+//			str+=(d.toString());
+//
+//			str+=("\n----------------------------------------\n");
+//			str+=(d.toRmcdmFunction("TOPSISVector", null));
+//			str+=("\n----------------------------------------\n");
+//			str+=(d.toRmcdmFunction("VIKOR", (float) 0.5));
+//			str+=("\n----------------------------------------\n");
+//			str+=(d.toRmcdmFunction("WASPAS", (float) 0.0));
+//			str+=("\n----------------------------------------\n");
+//			str+=(d.toRmcdmFunction("TOPSISLinear", null));
+//			str+=("\n\n");
+			
 			double a [] = d.evalTOPSISVectorValue();
 			double b [] = d.evalVIKORValue((float) 0.5);
 			double c [] = d.evalWASPASValue((float) 0.0);
 			double e [] = d.evalTOPSISLinearValue();
-
-
+			
+			
 			d.evalLexicographic();
-
+			
 			double m[][] = d.getMatrix();
 			double compareMatrix[][] = new double[cl.getCandidate().size()][col];
 			for(int i = 0; i < cl.getCandidate().size(); i++){
@@ -1096,7 +976,7 @@ public class Resolution{
 					compareMatrix[i][j]=(float) m[i][j];
 				}
 			}
-
+			
 			for(int i = 0; i < cl.getCandidate().size(); i++){
 				compareMatrix[i][3]= a[i];
 				compareMatrix[i][4]=b[i];
@@ -1104,27 +984,80 @@ public class Resolution{
 				compareMatrix[i][6]=e[i];
 			}
 
-
+			
 			//This try_catch must be uncommented only for debug purpose
 			try {
-
+				
 				Files.write(Paths.get("spreadsheet_tables.log"), TextOutput.toSpreadshetTable(d).getBytes(),StandardOpenOption.APPEND);// /home/wagner/Core/
-				//				Files.write(Paths.get("latex_tables.log"), TextOutput.toLatexTable(cl, d, compareMatrix).getBytes());// /home/wagner/Core/
-				//				Files.write(Paths.get("R_tables.log"), TextOutput.toRInput(cl).getBytes());// /home/wagner/Core/
-				//				Files.write(Paths.get("Systat_tables.log"), TextOutput.toSystatInput(cl, d, compareMatrix).getBytes(),StandardOpenOption.APPEND);// /home/wagner/Core/
+//				Files.write(Paths.get("latex_tables.log"), TextOutput.toLatexTable(cl, d, compareMatrix).getBytes());// /home/wagner/Core/
+//				Files.write(Paths.get("R_tables.log"), TextOutput.toRInput(cl).getBytes());// /home/wagner/Core/
+//				Files.write(Paths.get("Systat_tables.log"), TextOutput.toSystatInput(cl, d, compareMatrix).getBytes(),StandardOpenOption.APPEND);// /home/wagner/Core/
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-
-
+			
+			
+			//			Printing
+//			System.out.println("\\begin{table}\n    \\centering\n    \\caption{Matriz de resultados do processo de classificação do \\alite}\\label{tab:rank"+k+"}\n    {\\tiny \\begin{tabular}{|c|c|c|c|c|c|c|c|c|}\n\\hline");
+//			System.out.println("%Rank "+k);
+//			System.out.print("        Alternativa "+separator);
+//			for(int i = 0; i < d.getCriterionList().size(); i++){
+//				System.out.print(d.getCriteriaName(i)+"["+d.getWeight()[i]+"] "+separator+" ");
+//			}
+//			System.out.println(" TOPSISVector"+separator+" VIKOR "+separator+" WPM"+separator+"TOPSISLinear\\\\");
+//
+//			for(int i = 0; i < compareMatrix.length; i++){
+//				System.out.printf("        %d "+separator+" ", i);
+//
+//				for(int j = 0; j < d.getCriterionList().size(); j++){
+//					System.out.print(compareMatrix[i][j]+" "+separator+" ");
+//				}
+//				for(int j = 3; j < compareMatrix[0].length; j++){
+//					System.out.print(compareMatrix[i][j]);
+//					if(j<compareMatrix[0].length-1){
+//						System.out.print(separator+" ");
+//					}else{
+//						System.out.print("\\\\");
+//					}
+//				}
+//				System.out.println("");
+//			}
+//			System.out.println("\\hline \n \\end{tabular}}\n\\begin{center}\n     Fonte: Próprio autor.\n\\end{center}\n\\end{table}");
+//			System.out.println("\n%--------------------------------------\n");
 		}
 		LogHandler.getLogger().info("rankCandidatesFloat invocation in "+(System.currentTimeMillis()-start)+"ms");
-		System.out.println("Calcula Rank Time: "+formatTime(System.currentTimeMillis() - start2));
+		System.out.println("Calcula Rank Time: "+getTime(start2, System.currentTimeMillis() - start2));
 		return cl;
 	}
+	
 
-
+//	/**
+//	 * 
+//	 * @param cc
+//	 * @param cp_id
+//	 * @return
+//	 */
+//	public static ContextArgumentType getArgumentRecursive(ContextContract cc, Integer cp_id){
+//		if(cc!=null){
+//			for(ContextArgumentType cat: cc.getContextArguments()){
+//				if(cat.getKind()==3 || cat.getKind()==4 || cat.getKind()==5){
+//					if(cat.getCpId() == cp_id){
+//						return cat;
+//					}
+//				}
+//			}
+//			for(ContextArgumentType cat: cc.getContextArguments()){
+//				if(cat.getKind()==1){
+//					return Resolution.getArgumentRecursive(cat.getContextContract(), cp_id);
+//				}
+//			}
+//
+//			return null;
+//		}else{
+//			return null;
+//		}
+//	}
 
 	/**
 	 * 
@@ -1178,7 +1111,6 @@ public class Resolution{
 		long start = System.currentTimeMillis();
 		boolean subtype = true;
 		ContextContract bound;
-
 		if(cp_id!=null){
 			bound = getBoundFromContextParameter(parentAc, cp_id);
 			int candidateContractIdAc = candidate.getAbstractComponent().getIdAc(); //ID_ac candidato
@@ -1310,7 +1242,7 @@ public class Resolution{
 		if(candidate.getContextArguments()!= null){
 			for(ContextArgumentType cat: candidate.getContextArguments()){
 				if(cat_from_app_var.getCpId().equals(cat.getCpId())){
-
+					
 					return cat.getContextContract();
 				}
 			}
@@ -1336,7 +1268,7 @@ public class Resolution{
 		}
 
 
-		LogHandler.getLogger().info("getValueFromCandidateArgument invocation in "+(System.currentTimeMillis()-start)+"ms");
+LogHandler.getLogger().info("getValueFromCandidateArgument invocation in "+(System.currentTimeMillis()-start)+"ms");
 		return null;
 	}
 

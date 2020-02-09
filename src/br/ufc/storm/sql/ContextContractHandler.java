@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.LinkedList;
 import java.util.List;
 
 import br.ufc.storm.exception.DBHandlerException;
@@ -18,6 +20,8 @@ import br.ufc.storm.jaxb.ContextContract;
 import br.ufc.storm.jaxb.ContextParameterType;
 import br.ufc.storm.jaxb.ContractList;
 import br.ufc.storm.jaxb.PlatformProfileType;
+import br.ufc.storm.model.ACCCPair;
+import br.ufc.storm.model.ResolutionNode;
 import br.ufc.storm.xml.XMLHandler;
 
 public class ContextContractHandler extends DBHandler{
@@ -31,17 +35,18 @@ public class ContextContractHandler extends DBHandler{
 	private static final String INSERT_INNER_COMPONENT = "INSERT INTO concrete_inner_contract  (parent_cc_id, inner_cc_id) VALUES (?,?) RETURNING id;";
 	private static final String SELECT_INNER_COMPONENT = "SELECT * FROM concrete_inner_contract  WHERE parent_cc_id = ?;";
 	private final static String SELECT_CONTEXT_CONTRACT_AC_ID = "select ac_id from context_contract where cc_id = ? AND enabled=true;";
-	
+	private final static String SELECT_ALL_CONTEXT_CONTRACT = "select ac_id, cc_id from context_contract where enabled=true;";
+	private final static String SELECT_ALL_CONTEXT_CONTRACT_LIST = "select * from context_contract where enabled=true and ac_id = ?;";
 	private static final int QUALIFIER = 1;
 	private static final int PLATFORM = 2;
 	private static final int DATASTRUCTURE = 3;
 	private static final int COMPUTATION = 4;
 	private static final int CONNECTOR = 5;
 	private static final int DATASOURCE = 6;
-	
+
 
 	private static Integer owner = null;
-	
+	private static Hashtable<Integer, ContextContract> tableOfContextContract;
 
 	public static void main(String[] args) {
 		for(int i = 0; i < 0; i++){
@@ -436,7 +441,7 @@ public class ContextContractHandler extends DBHandler{
 				CalculatedArgumentHandler.addCalculatedFunction(ca.getFunction(), 2);
 			}
 
-//			System.out.println(cc.getCcId());
+			//			System.out.println(cc.getCcId());
 			return cc.getCcId();
 		} catch (Exception e) {
 			throw new DBHandlerException("A sql error occurred: ", e);
@@ -451,50 +456,99 @@ public class ContextContractHandler extends DBHandler{
 	 * @throws DBHandlerException 
 	 */
 	public static ContextContract getContextContract(Integer cc_id) throws DBHandlerException {
-		try {
-			Connection con = getConnection();
-			int ac_id = 0;
-			String owner = null;
-			String name = null;
-			ContextContract cc = null;
-			PreparedStatement prepared = con.prepareStatement(SELECT_CONTEXT_CONTRACT); 
-			prepared.setInt(1, cc_id);
-			ResultSet resultSet = prepared.executeQuery(); 
-			if (resultSet.next()){
-				ac_id = resultSet.getInt("ac_id");
-				name=resultSet.getString("cc_name");
-				owner = resultSet.getString("owner_id");
-				cc = new ContextContract();
-				cc.setCcId(cc_id);
-				cc.setCcName(name);
-				cc.setKindId(resultSet.getInt("kind_id"));
-				cc.setOwnerId(Integer.parseInt(owner));
-				cc.setAbstractComponent(AbstractComponentHandler.getAbstractComponent(ac_id, true));
-				cc.getContextArguments().addAll(ContextArgumentHandler.getContextArguments(cc_id));
-				cc.getInnerComponents().addAll(getInnerCompponents(cc_id));
-				for(ContextArgumentType cat:cc.getContextArguments()){
-					//Creating a pointer into context parameter to context argument
-					for(ContextParameterType cpt : cc.getAbstractComponent().getContextParameter()){
-						if(cpt.getCpId()==cat.getCpId()){
-							cpt.setContextArgument(cat);
+		ContextContract cc = null;
+		if(tableOfContextContract==null) {
+			tableOfContextContract = new Hashtable<Integer, ContextContract>();
+		}
+		cc=tableOfContextContract.get(cc_id);
+		if(cc==null) {
+			try {
+				Connection con = getConnection();
+				int ac_id = 0;
+				String owner = null;
+				String name = null;
+				PreparedStatement prepared = con.prepareStatement(SELECT_CONTEXT_CONTRACT); 
+				prepared.setInt(1, cc_id);
+				ResultSet resultSet = prepared.executeQuery(); 
+				if (resultSet.next()){
+					ac_id = resultSet.getInt("ac_id");
+					name=resultSet.getString("cc_name");
+					owner = resultSet.getString("owner_id");
+					cc = new ContextContract();
+					cc.setCcId(cc_id);
+					cc.setCcName(name);
+					cc.setKindId(resultSet.getInt("kind_id"));
+					cc.setOwnerId(Integer.parseInt(owner));
+					cc.setAbstractComponent(AbstractComponentHandler.getAbstractComponent(ac_id, true));
+					cc.getContextArguments().addAll(ContextArgumentHandler.getContextArguments(cc_id));
+					cc.getInnerComponents().addAll(getInnerCompponents(cc_id));
+					for(ContextArgumentType cat:cc.getContextArguments()){
+						//Creating a pointer into context parameter to context argument
+						for(ContextParameterType cpt : cc.getAbstractComponent().getContextParameter()){
+							if(cpt.getCpId()==cat.getCpId()){
+								cpt.setContextArgument(cat);
+							}
+						}
+						//				end of pointer creation
+						if(cat.getContextContract()!=null){
+							completeContextContract(cat.getContextContract());
 						}
 					}
-					//				end of pointer creation
-					if(cat.getContextContract()!=null){
-						completeContextContract(cat.getContextContract());
+					if(cc.getCcId()!=null){
+						cc.getConcreteUnits().addAll(ConcreteUnitHandler.getConcreteUnits(cc.getCcId()));
 					}
+					tableOfContextContract.put(cc.getCcId(), cc);
+				}else{
+					throw new DBHandlerException("Context contract with id "+cc_id+" was not found");
 				}
-				if(cc.getCcId()!=null){
-					cc.getConcreteUnits().addAll(ConcreteUnitHandler.getConcreteUnits(cc.getCcId()));
-				}
-				return cc;
-			}else{
-				throw new DBHandlerException("Context contract with id "+cc_id+" was not found");
+			} catch (SQLException e) {
+				throw new DBHandlerException("GetContextContract sql error: ", e);
+			} 
+		}
+		return cc;
+	}
+
+	public static List<ACCCPair> getAllContextContract() throws DBHandlerException {
+		List<ACCCPair> l = new LinkedList<ACCCPair>();
+		try {
+			Connection con = getConnection();
+			PreparedStatement prepared = con.prepareStatement(SELECT_ALL_CONTEXT_CONTRACT); 
+			ResultSet resultSet = prepared.executeQuery(); 
+			while (resultSet.next()){
+				int ac = resultSet.getInt("ac_id");
+				int cc = resultSet.getInt("cc_id");
+				ACCCPair a = new ACCCPair(ac, cc);
+				l.add(a);
 			}
 		} catch (SQLException e) {
 			throw new DBHandlerException("GetContextContract sql error: ", e);
-		} 
+		}
+		return l; 
 	}
+
+
+	public static List<ContextContract> getAllContextContract(int ac_id) throws DBHandlerException {
+		List<ContextContract> l = new LinkedList<ContextContract>();
+		String str = "";
+		ContextContract cc;
+		try {
+			Connection con = getConnection();
+			PreparedStatement prepared = con.prepareStatement(SELECT_ALL_CONTEXT_CONTRACT_LIST); 
+			prepared.setInt(1, ac_id);
+			ResultSet resultSet = prepared.executeQuery(); 
+			while (resultSet.next()){
+				cc = new ContextContract();
+				cc.setAbstractComponent(ResolutionNode.treeTable.get(resultSet.getInt("ac_id")).getAc());
+				cc.setCcId(resultSet.getInt("cc_id"));
+				cc.setCcName(resultSet.getString("cc_name"));
+				cc.setKindId(resultSet.getInt("kind_id"));
+			}
+		} catch (SQLException e) {
+			throw new DBHandlerException("GetContextContract sql error: ", e);
+		}
+		return l; 
+	}
+
 
 	public static ContextContract getContextContractIncomplete(Integer cc_id) throws DBHandlerException {
 		ContextContract cc = null;
@@ -514,7 +568,7 @@ public class ContextContractHandler extends DBHandler{
 				cc.setCcId(cc_id);
 				cc.setCcName(name);
 				cc.setKindId(kind_id);
-				
+
 			}
 			if(ac_id != null){
 				cc.setAbstractComponent(AbstractComponentHandler.getAbstractComponentPartial(ac_id));
@@ -665,7 +719,7 @@ public class ContextContractHandler extends DBHandler{
 	/**
 	 * This method is responsible for populate the context contract from application, it is necessary to reduce the amount of
 	 * database queries
-	 * @param cc
+	 * @param second
 	 * @return
 	 * @throws DBHandlerException 
 	 */
@@ -673,7 +727,7 @@ public class ContextContractHandler extends DBHandler{
 		application.setAbstractComponent(AbstractComponentHandler.getAbstractComponent(application.getAbstractComponent().getIdAc(), true));
 		for(ContextArgumentType cat:application.getContextArguments()){
 			if(cat.getContextContract()!=null){
-//				System.out.println(cat.getContextContract().getCcId());
+				//				System.out.println(cat.getContextContract().getCcId());
 				cat.getContextContract().setCcName(ContextContractHandler.getContextContractName(cat.getContextContract().getCcId()));
 				AbstractComponentType ac = AbstractComponentHandler.getAbstractComponentFromContextContractID(cat.getContextContract().getCcId());
 				cat.getContextContract().setAbstractComponent(ac);

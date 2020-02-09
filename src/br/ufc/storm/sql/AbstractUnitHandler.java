@@ -5,18 +5,22 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+
+import org.eclipse.jdt.internal.compiler.problem.AbortCompilationUnit;
 
 import br.ufc.storm.exception.DBHandlerException;
 import br.ufc.storm.jaxb.AbstractUnitType;
 import br.ufc.storm.jaxb.ContextArgumentType;
+import br.ufc.storm.model.ACAUNIT;
 
 public class AbstractUnitHandler extends DBHandler {
 	private static final String INSERT_ABSTRACT_UNIT = "INSERT INTO abstract_unit ( ac_id, au_name) VALUES ((select ac_id from abstract_component where ac_name = ?), ?) RETURNING abstract_unit_id;";
 	private static final String SELECT_ABTRACT_UNIT_ID = "select abstract_unit_id from abstract_unit where au_name = ?;";
 	private static final String SELECT_ABTRACT_UNIT = "SELECT * FROM abstract_unit  WHERE abstract_unit_id = ?;";
 	private static final String SELECT_ALL_ABTRACT_UNIT = "SELECT * FROM abstract_unit WHERE ac_id = ?;";
-
+	private static final String SELECT_ALL_ABTRACT_UNITS = "SELECT * FROM abstract_unit A, abstract_component B WHERE A.ac_id=B.ac_id AND B.enabled=TRUE;";
 	/**
 	 * This method add a new abstract unit
 	 * @param ac_id Abstract component id
@@ -161,6 +165,26 @@ public class AbstractUnitHandler extends DBHandler {
 				aut.setAuName(resultSet.getString("au_name"));
 				aut.setAuId(resultSet.getInt("abstract_unit_id"));
 				auts.add(aut);
+			} 
+			return auts; 
+		} catch (SQLException e) {
+			throw new DBHandlerException("A sql error occurred: ", e);
+		}
+
+	}
+	
+	public static List<ACAUNIT> getAllAbstractUnits() throws DBHandlerException {
+
+		try {
+			Connection con = getConnection();
+			LinkedList<ACAUNIT> auts = new LinkedList<ACAUNIT>();
+			PreparedStatement prepared = con.prepareStatement(SELECT_ALL_ABTRACT_UNITS);
+			ResultSet resultSet = prepared.executeQuery();
+			while (resultSet.next()) {
+				AbstractUnitType aut = new AbstractUnitType(); 
+				aut.setAuName(resultSet.getString("au_name"));
+				aut.setAuId(resultSet.getInt("abstract_unit_id"));
+				auts.add(new ACAUNIT(resultSet.getInt("ac_id"), aut));
 			} 
 			return auts; 
 		} catch (SQLException e) {

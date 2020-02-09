@@ -164,7 +164,7 @@ public class DecisionMatrix {
 		//Inclusão da avaliação de matrizes com um único critério
 		//Se entrar nesse caso, basta retornar a propria matriz
 		if(criterionList.size()==1){
-			int r[] = rankVector(newlist);
+			int[] r = rankVector(newlist);
 			return r;
 		}
 		for(int i=0; i < criterionList.size();i++){
@@ -172,7 +172,7 @@ public class DecisionMatrix {
 		}
 		double w [] = new double[criterionList.size()];
 		if(criterionList.size()==1){
-			int r[] = rankVector(list);
+			int[] r = rankVector(list);
 			return r;
 		}
 		String cb [] = new String[criterionList.size()];
@@ -232,7 +232,8 @@ public class DecisionMatrix {
 		//Inclusão da avaliação de matrizes com um único critério
 		//Se entrar nesse caso, basta retornar a propria matriz
 		if(criterionList.size()==1){
-			int r[] = rankVector(list);
+			int[] r = rankVector(list);
+			
 			return r;
 		}
 		//
@@ -299,7 +300,7 @@ public class DecisionMatrix {
 
 		if(criterionList.size()==1){
 			double r[] = new double[list.length];
-			int x[] = rankVector(list);;
+			int[] x = rankVector(list);;
 			for(int i=0; i < list.length; i++){
 				r[i]=x[i];
 			}
@@ -370,7 +371,7 @@ public class DecisionMatrix {
 
 		if(criterionList.size()==1){
 			double r[] = new double[list.length];
-			int x[] = rankVector(list);;
+			int[] x = rankVector(list);;
 			for(int i=0; i < list.length; i++){
 				r[i]=x[i];
 			}
@@ -450,11 +451,11 @@ public class DecisionMatrix {
 			}
 			//			RList l = rResponseObject.asList();
 			int[] ret = rResponseObject.asIntegers();
-			System.out.println("Lexicographi Order Ranking");
-			for(Integer i: ret){
-				System.out.println(i);
-			}
-			System.out.println("----------------------");
+//			System.out.println("Lexicographi Order Ranking");
+//			for(Integer i: ret){
+//				System.out.println(i);
+//			}
+//			System.out.println("----------------------");
 
 			return ret;
 		} catch (RserveException e) {
@@ -612,12 +613,34 @@ public class DecisionMatrix {
 			l.add(new Pair(i, list2[i][0]));
 		}
 		Collections.sort (l, new ComparatorPairs(true));
-		int [] aux = new int[l.size()];
+		int[] aux = new int[l.size()];
 
 		for(int i = 0; i < l.size(); i++){
 			for(int j = 0; j < l.size(); j++){
 				if(l.get(j).getPos()==i){
 					aux[i]=j;
+				}
+			}
+		}
+		return aux;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private double[] rankVectorDouble(double[][] list2) {
+		if(list2[0].length!=1){
+			return null;
+		}
+		List<Pair> l = new ArrayList<>();
+		for(int i = 0; i < list2.length; i++){
+			l.add(new Pair(i, list2[i][0]));
+		}
+		Collections.sort (l, new ComparatorPairs(true));
+		double[] aux = new double[l.size()];
+
+		for(int i = 0; i < l.size(); i++){
+			for(int j = 0; j < l.size(); j++){
+				if(l.get(j).getPos()==i){
+					aux[i]=(double) j;
 				}
 			}
 		}

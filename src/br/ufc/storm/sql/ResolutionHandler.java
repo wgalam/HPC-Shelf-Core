@@ -45,7 +45,7 @@ public class ResolutionHandler extends DBHandler {
 	 * @throws DBHandlerException 
 	 */
 
-	public static List<ContextContract> generateCandidates(int supertypeID, int requiredID) throws DBHandlerException{
+	public static List<ContextContract> generateCandidates(int supertypeID, int requiredID){
 		PreparedStatement prepared;
 		ResultSet resultSet;
 		List<ContextContract> list = new ArrayList<ContextContract>();
@@ -63,7 +63,9 @@ public class ResolutionHandler extends DBHandler {
 					ContextContract cc = ContextContractHandler.getContextContract(cc_id);
 					cc.setPlatform(new PlatformProfileType());
 					cc.getPlatform().setPlatformContract(PlatformHandler.getPlatform(cc_id));
-					list.add(cc);
+					if(cc.getPlatform() != null){
+						list.add(cc);	
+					}
 				}
 				supertype = ResolutionNode.resolutionTree.findNode(list.get(list.size()-1).getAbstractComponent().getIdAc()).getSupertype().getAc_id();
 				history = aux;
@@ -72,8 +74,8 @@ public class ResolutionHandler extends DBHandler {
 			return list;
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new DBHandlerException("A sql error occurred: ", e);
 		}
+		return null;
 	}
 
 	/**
@@ -154,61 +156,63 @@ public class ResolutionHandler extends DBHandler {
 	 * @return
 	 * @throws DBHandlerException 
 	 */
-	public static ResolutionNode generateResolutionTree(Integer supertype_id, ResolutionNode tree, List<ContextParameterType> cps, List<CalculatedParameterType> qps, List<CalculatedParameterType> cops, List<CalculatedParameterType> rps, List<CalculatedParameterType> caps, String parentPath) throws DBHandlerException{
-		try {
-			Connection con = DBHandler.getConnection();
-			PreparedStatement prepared = con.prepareStatement(SELECT_ABSTRACT_COMPONENT_BY_SUPERTYPE_ID); 
-			prepared.setInt(1, supertype_id);
-			ResultSet resultSet = prepared.executeQuery(); 
-			while (resultSet.next()) {
-				if(resultSet.getBoolean("enabled") == false){
-					return null;
-				}
-				ResolutionNode node = new ResolutionNode();
-				AbstractComponentType ac = new AbstractComponentType();
-				ac.setName(resultSet.getString("ac_name"));
-				node.setPath(parentPath);
-				node.setAc_id(resultSet.getInt("ac_id"));
-				//Adição de parametros de contexto deve ser em lote
-//				node.setCps(ContextParameterHandler.getAllContextParameterFromAbstractComponent(node.getAc_id(),cps));
-//				//Fix parameter specialization
-//				node.setCps(ContextParameterHandler.mergeContextParameterFromAbstractComponent(node.getCps()));
-//
-//				node.setQps(CalculatedArgumentHandler.getCalculatedParameters(node.getAc_id()
-//						, ContextParameterHandler.QUALITY)); 
-//				if(qps.size() > 0){ ////
-//				node.getQps().addAll(qps); 
-//				} //// ////
-//				node.setCops(CalculatedArgumentHandler.getCalculatedParameters(node.getAc_id(
-//						), ContextParameterHandler.COST)); 
-//				if(cops.size() > 0){ ////
-//				node.getCops().addAll(cops); 
-//				} //// ////
-//				node.setRps(CalculatedArgumentHandler.getCalculatedParameters(node.getAc_id()
-//						, ContextParameterHandler.RANKING)); 
-//				if(rps.size() > 0){ ////
-//				node.getRps().addAll(rps); 
-//				} //// ////
-//				node.setCaps(CalculatedArgumentHandler.getCalculatedParameters(node.getAc_id(
-//						), ContextParameterHandler.CALCULATEDCONTEXT)); 
-//				if(caps.size() > 0){
-//				node.getCaps().addAll(caps); 
+//	public static ResolutionNode generateResolutionTree(Integer supertype_id, ResolutionNode tree, List<ContextParameterType> cps, List<CalculatedParameterType> qps, List<CalculatedParameterType> cops, List<CalculatedParameterType> rps, List<CalculatedParameterType> caps, String parentPath) throws DBHandlerException{
+//		try {
+//			Connection con = DBHandler.getConnection();
+//			PreparedStatement prepared = con.prepareStatement(SELECT_ABSTRACT_COMPONENT_BY_SUPERTYPE_ID); 
+//			prepared.setInt(1, supertype_id);
+//			ResultSet resultSet = prepared.executeQuery(); 
+//			
+//			while (resultSet.next()) {
+//				if(resultSet.getBoolean("enabled") == false){
+//					return null;
 //				}
-				node.setImplementationContracts(ContextContractHandler.getContextContractByAcId(node.getAc_id()));
-
-				node.setSupertype(tree);
-				tree.addSubtype(node);
-				ResolutionNode.addTable(node.getAc_id(), node);
-				generateResolutionTree(node.getAc_id(), node, node.getCps(), node.getQps(), node.getCops(), node.getRps(), node.getCaps(), node.getPath()+"."+node.getName());
-			} 
-			//29/01/2020
-			//TODO: Insert all context Contracts That implements each abstract parameter
-			return tree;
-		} catch (SQLException e) { 
-			throw new DBHandlerException("A sql error occurred: ", e);
-		} 	
-
-	}
+//				ResolutionNode node = new ResolutionNode();
+//				AbstractComponentType ac = new AbstractComponentType();
+//				ac.setName(resultSet.getString("ac_name"));
+//				node.setPath(parentPath);
+//				node.setAc_id(resultSet.getInt("ac_id"));
+//				//Adição de parametros de contexto deve ser em lote
+////				node.setCps(ContextParameterHandler.getAllContextParameterFromAbstractComponent(node.getAc_id(),cps));
+////				//Fix parameter specialization
+////				node.setCps(ContextParameterHandler.mergeContextParameterFromAbstractComponent(node.getCps()));
+////
+////				node.setQps(CalculatedArgumentHandler.getCalculatedParameters(node.getAc_id()
+////						, ContextParameterHandler.QUALITY)); 
+////				if(qps.size() > 0){ ////
+////				node.getQps().addAll(qps); 
+////				} //// ////
+////				node.setCops(CalculatedArgumentHandler.getCalculatedParameters(node.getAc_id(
+////						), ContextParameterHandler.COST)); 
+////				if(cops.size() > 0){ ////
+////				node.getCops().addAll(cops); 
+////				} //// ////
+////				node.setRps(CalculatedArgumentHandler.getCalculatedParameters(node.getAc_id()
+////						, ContextParameterHandler.RANKING)); 
+////				if(rps.size() > 0){ ////
+////				node.getRps().addAll(rps); 
+////				} //// ////
+////				node.setCaps(CalculatedArgumentHandler.getCalculatedParameters(node.getAc_id(
+////						), ContextParameterHandler.CALCULATEDCONTEXT)); 
+////				if(caps.size() > 0){
+////				node.getCaps().addAll(caps); 
+////				}
+//				node.setImplementationContracts(ContextContractHandler.getContextContractByAcId(node.getAc_id()));
+//
+//				node.setSupertype(tree);
+//				tree.addSubtype(node);
+//				ResolutionNode.addTable(node.getAc_id(), node);
+////				generateResolutionTree(node.getAc_id(), node, node.getCps(), node.getQps(), node.getCops(), node.getRps(), node.getCaps(), node.getPath()+"."+node.getName());
+//				
+//			} 
+//			//29/01/2020
+//			//TODO: Insert all context Contracts That implements each abstract parameter
+//			return tree;
+//		} catch (SQLException e) { 
+//			throw new DBHandlerException("A sql error occurred: ", e);
+//		} 	
+//
+//	}
 	/**
 	 * Get all parameters from database and bind them to respectively abstract component, decreasing the time to 
 	 * build the tree
