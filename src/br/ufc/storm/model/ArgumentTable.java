@@ -47,8 +47,8 @@ public class ArgumentTable {
 			for(ContextArgumentType cat:cc.getContextArguments()){
 				if(cat.getValue()!=null){
 					for(ContextParameterType cpt:cc.getAbstractComponent().getContextParameter()){
-						if(cpt.getCpId().equals(cat.getCpId())){
-							addNewArgument(cat.getCpId(), ""+cat.getValue().getValue(), cpt.getKind());
+						if(cpt.getCpId().equals(cat.getContextParameter().getCpId())){
+							addNewArgument(cat.getContextParameter().getCpId(), ""+cat.getValue().getValue(), cpt.getKind());
 						}
 					}
 	
@@ -89,7 +89,8 @@ public class ArgumentTable {
 		x.setValue(value);
 		cat.setValue(x);
 		cat.setKind(kind);
-		cat.setCpId(cp_id);
+		cat.setContextParameter(new ContextParameterType());
+		cat.getContextParameter().setCpId(cp_id);
 		argumentTable.put(cp_id, cat);
 	}
 
@@ -146,7 +147,8 @@ public class ArgumentTable {
 			}
 			cavt.setDataType("Double"); //Default data type
 			copy.setValue(cavt); 
-			copy.setCpId(cp_id);
+			copy.setContextParameter(new ContextParameterType());
+			copy.getContextParameter().setCpId(cp_id);
 		}
 
 		return copy;

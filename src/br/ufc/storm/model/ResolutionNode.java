@@ -43,7 +43,11 @@ public class ResolutionNode {
 		} catch (ResolveException e) {
 			e.printStackTrace();
 		}
-		System.out.println(ResolutionNode.resolutionTree.toString());
+//		System.out.println(ResolutionNode.resolutionTree.toString());
+		
+		
+		
+		
 	}
 
 	public ResolutionNode(){

@@ -15,6 +15,7 @@ import br.ufc.storm.jaxb.AbstractComponentType;
 import br.ufc.storm.jaxb.ContextArgumentType;
 import br.ufc.storm.jaxb.ContextArgumentValueType;
 import br.ufc.storm.jaxb.ContextContract;
+import br.ufc.storm.jaxb.ContextParameterType;
 import br.ufc.storm.sql.AbstractComponentHandler;
 import br.ufc.storm.sql.ContextParameterHandler;
 import br.ufc.storm.sql.DBHandler;
@@ -113,7 +114,8 @@ public class CsvHandler {
 			if(i==null){
 				System.out.println("Context Parameter "+cp_name+" missing in abstract component");
 			}
-			t.setCpId(i);
+			t.setContextParameter(new ContextParameterType());
+			t.getContextParameter().setCpId(i);
 			ContextArgumentValueType cavt = new ContextArgumentValueType();
 			cavt.setValue(cp_value);
 			t.setValue(cavt);
@@ -130,13 +132,17 @@ public class CsvHandler {
 			if(i==null){
 				System.out.println("Context Parameter "+cp_name+" missing in abstract component");
 			}
-			t.setCpId(i);
+			
+			t.setContextParameter(new ContextParameterType());
+			t.getContextParameter().setCpId(i);
 			t.setContextContract(cc_parameter);
 			cc.getContextArguments().add(t);
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+	
+
 	
 	public static boolean addPlatform(ContextContract cc){
 		//BEGIN PROCESSOR
@@ -145,37 +151,51 @@ public class CsvHandler {
 		processor.setAbstractComponent(new AbstractComponentType());
 		processor.getAbstractComponent().setName("XEON");
 		processor.getContextArguments().add(new ContextArgumentType());
-		processor.getContextArguments().get(0).setCpId(54);
+		processor.getContextArguments().get(0).setContextParameter(new ContextParameterType());
+		processor.getContextArguments().get(0).getContextParameter().setCpId(54);
+//		processor.getContextArguments().get(0).setCpId(54);
 		processor.getContextArguments().get(0).setValue(new ContextArgumentValueType());
 		processor.getContextArguments().get(0).getValue().setValue("20");
 		processor.getContextArguments().get(0).getValue().setDataType("Integer");
 		processor.getContextArguments().add(new ContextArgumentType());
-		processor.getContextArguments().get(1).setCpId(33);
+		processor.getContextArguments().get(1).setContextParameter(new ContextParameterType());
+		processor.getContextArguments().get(1).getContextParameter().setCpId(33);
+//		processor.getContextArguments().get(1).setCpId(33);
 		processor.getContextArguments().get(1).setValue(new ContextArgumentValueType());
 		processor.getContextArguments().get(1).getValue().setValue("10");
 		processor.getContextArguments().get(1).getValue().setDataType("Integer");
 		processor.getContextArguments().add(new ContextArgumentType());
-		processor.getContextArguments().get(2).setCpId(42);
+		processor.getContextArguments().get(2).setContextParameter(new ContextParameterType());
+		processor.getContextArguments().get(2).getContextParameter().setCpId(42);
+//		processor.getContextArguments().get(2).setCpId(42);
 		processor.getContextArguments().get(2).setValue(new ContextArgumentValueType());
 		processor.getContextArguments().get(2).getValue().setValue("2300");
 		processor.getContextArguments().get(2).getValue().setDataType("Integer");
 		processor.getContextArguments().add(new ContextArgumentType());
-		processor.getContextArguments().get(3).setCpId(43);
+		processor.getContextArguments().get(3).setContextParameter(new ContextParameterType());
+		processor.getContextArguments().get(3).getContextParameter().setCpId(43);
+//		processor.getContextArguments().get(3).setCpId(43);
 		processor.getContextArguments().get(3).setValue(new ContextArgumentValueType());
 		processor.getContextArguments().get(3).getValue().setValue("640");
 		processor.getContextArguments().get(3).getValue().setDataType("Integer");
 		processor.getContextArguments().add(new ContextArgumentType());
-		processor.getContextArguments().get(4).setCpId(44);
+		processor.getContextArguments().get(4).setContextParameter(new ContextParameterType());
+		processor.getContextArguments().get(4).getContextParameter().setCpId(44);
+//		processor.getContextArguments().get(4).setCpId(44);
 		processor.getContextArguments().get(4).setValue(new ContextArgumentValueType());
 		processor.getContextArguments().get(4).getValue().setValue("2560");
 		processor.getContextArguments().get(4).getValue().setDataType("Integer");
 		processor.getContextArguments().add(new ContextArgumentType());
-		processor.getContextArguments().get(5).setCpId(45);
+		processor.getContextArguments().get(5).setContextParameter(new ContextParameterType());
+		processor.getContextArguments().get(5).getContextParameter().setCpId(45);
+//		processor.getContextArguments().get(5).setCpId(45);
 		processor.getContextArguments().get(5).setValue(new ContextArgumentValueType());
 		processor.getContextArguments().get(5).getValue().setValue("25600");
 		processor.getContextArguments().get(5).getValue().setDataType("Integer");
 		processor.getContextArguments().add(new ContextArgumentType());
-		processor.getContextArguments().get(6).setCpId(28);
+		processor.getContextArguments().get(6).setContextParameter(new ContextParameterType());
+		processor.getContextArguments().get(6).getContextParameter().setCpId(28);
+//		processor.getContextArguments().get(6).setCpId(28);
 		processor.getContextArguments().get(6).setContextContract(new ContextContract());
 		processor.getContextArguments().get(6).getContextContract().setCcName("Intel");
 		//END PROCESSOR
@@ -186,24 +206,34 @@ public class CsvHandler {
 		node.setAbstractComponent(new AbstractComponentType());
 		node.getAbstractComponent().setName("Node");
 		node.getContextArguments().add(new ContextArgumentType());
-		node.getContextArguments().get(0).setCpId(28);
+		node.getContextArguments().get(0).setContextParameter(new ContextParameterType());
+		node.getContextArguments().get(0).getContextParameter().setCpId(28);
+//		node.getContextArguments().get(0).setCpId(28);
 		node.getContextArguments().get(0).setContextContract(processor);
 		node.getContextArguments().add(new ContextArgumentType());
-		node.getContextArguments().get(1).setCpId(49);
+		node.getContextArguments().get(1).setContextParameter(new ContextParameterType());
+		node.getContextArguments().get(1).getContextParameter().setCpId(49);
+//		node.getContextArguments().get(1).setCpId(49);
 		node.getContextArguments().get(1).setContextContract(new ContextContract());
 		node.getContextArguments().get(1).getContextContract().setCcId(234);
 		node.getContextArguments().add(new ContextArgumentType());
-		node.getContextArguments().get(2).setCpId(32);
+		node.getContextArguments().get(2).setContextParameter(new ContextParameterType());
+		node.getContextArguments().get(2).getContextParameter().setCpId(32);
+//		node.getContextArguments().get(2).setCpId(32);
 		node.getContextArguments().get(2).setValue(new ContextArgumentValueType());
 		node.getContextArguments().get(2).getValue().setValue("2");
 		node.getContextArguments().get(2).getValue().setDataType("Integer");
 		node.getContextArguments().add(new ContextArgumentType());
-		node.getContextArguments().get(3).setCpId(38);
+		node.getContextArguments().get(3).setContextParameter(new ContextParameterType());
+		node.getContextArguments().get(3).getContextParameter().setCpId(38);
+//		node.getContextArguments().get(3).setCpId(38);
 		node.getContextArguments().get(3).setValue(new ContextArgumentValueType());
 		node.getContextArguments().get(3).getValue().setValue("2048");
 		node.getContextArguments().get(3).getValue().setDataType("Integer");
 		node.getContextArguments().add(new ContextArgumentType());
-		node.getContextArguments().get(4).setCpId(36);
+		node.getContextArguments().get(4).setContextParameter(new ContextParameterType());
+		node.getContextArguments().get(4).getContextParameter().setCpId(36);
+//		node.getContextArguments().get(4).setCpId(36);
 		node.getContextArguments().get(4).setValue(new ContextArgumentValueType());
 		node.getContextArguments().get(4).getValue().setValue("64");
 		node.getContextArguments().get(4).getValue().setDataType("Integer");
@@ -220,17 +250,23 @@ public class CsvHandler {
 		interconnect.setAbstractComponent(new AbstractComponentType());
 		interconnect.getAbstractComponent().setName("GigabitEthernet");
 		interconnect.getContextArguments().add(new ContextArgumentType());
-		interconnect.getContextArguments().get(0).setCpId(98);
+		interconnect.getContextArguments().get(0).setContextParameter(new ContextParameterType());
+		interconnect.getContextArguments().get(0).getContextParameter().setCpId(98);
+//		interconnect.getContextArguments().get(0).setCpId(98);
 		interconnect.getContextArguments().get(0).setValue(new ContextArgumentValueType());
 		interconnect.getContextArguments().get(0).getValue().setValue("5");
 		interconnect.getContextArguments().get(0).getValue().setDataType("Integer");
 		interconnect.getContextArguments().add(new ContextArgumentType());
-		interconnect.getContextArguments().get(1).setCpId(99);
+		interconnect.getContextArguments().get(1).setContextParameter(new ContextParameterType());
+		interconnect.getContextArguments().get(1).getContextParameter().setCpId(99);
+//		interconnect.getContextArguments().get(1).setCpId(99);
 		interconnect.getContextArguments().get(1).setValue(new ContextArgumentValueType());
 		interconnect.getContextArguments().get(1).getValue().setValue("6.6");
 		interconnect.getContextArguments().get(1).getValue().setDataType("Float");
 		interconnect.getContextArguments().add(new ContextArgumentType());
-		interconnect.getContextArguments().get(2).setCpId(97);
+		interconnect.getContextArguments().get(2).setContextParameter(new ContextParameterType());
+		interconnect.getContextArguments().get(2).getContextParameter().setCpId(97);
+//		interconnect.getContextArguments().get(2).setCpId(97);
 		interconnect.getContextArguments().get(2).setContextContract(new ContextContract());
 		interconnect.getContextArguments().get(2).getContextContract().setCcName("Star");
 		interconnect.getContextArguments().get(2).getContextContract().setAbstractComponent(new AbstractComponentType());
@@ -244,22 +280,32 @@ public class CsvHandler {
 		ccc.setAbstractComponent(new AbstractComponentType());
 		ccc.getAbstractComponent().setName("Cluster");
 		ccc.getContextArguments().add(new ContextArgumentType());
-		ccc.getContextArguments().get(0).setCpId(23);
+		ccc.getContextArguments().get(0).setContextParameter(new ContextParameterType());
+		ccc.getContextArguments().get(0).getContextParameter().setCpId(23);
+//		ccc.getContextArguments().get(0).setCpId(23);
 		ccc.getContextArguments().get(0).setContextContract(node);
 		ccc.getContextArguments().add(new ContextArgumentType());
-		ccc.getContextArguments().get(1).setCpId(24);
+		ccc.getContextArguments().get(1).setContextParameter(new ContextParameterType());
+		ccc.getContextArguments().get(1).getContextParameter().setCpId(24);
+//		ccc.getContextArguments().get(1).setCpId(24);
 		ccc.getContextArguments().get(1).setContextContract(interconnect);
 		ccc.getContextArguments().add(new ContextArgumentType());
-		ccc.getContextArguments().get(2).setCpId(26);
+		ccc.getContextArguments().get(2).setContextParameter(new ContextParameterType());
+		ccc.getContextArguments().get(2).getContextParameter().setCpId(26);
+//		ccc.getContextArguments().get(2).setCpId(26);
 		ccc.getContextArguments().get(2).setContextContract(new ContextContract());
 		ccc.getContextArguments().get(2).getContextContract().setCcId(144);
 		ccc.getContextArguments().add(new ContextArgumentType());
-		ccc.getContextArguments().get(3).setCpId(27);
+		ccc.getContextArguments().get(3).setContextParameter(new ContextParameterType());
+		ccc.getContextArguments().get(3).getContextParameter().setCpId(27);
+//		ccc.getContextArguments().get(3).setCpId(27);
 		ccc.getContextArguments().get(3).setValue(new ContextArgumentValueType());
 		ccc.getContextArguments().get(3).getValue().setValue("8");
 		ccc.getContextArguments().get(3).getValue().setDataType("Double");
 		ccc.getContextArguments().add(new ContextArgumentType());
-		ccc.getContextArguments().get(4).setCpId(35);
+		ccc.getContextArguments().get(4).setContextParameter(new ContextParameterType());
+		ccc.getContextArguments().get(4).getContextParameter().setCpId(35);
+//		ccc.getContextArguments().get(4).setCpId(35);
 		ccc.getContextArguments().get(4).setContextContract(new ContextContract());
 		ccc.getContextArguments().get(4).getContextContract().setCcId(172);
 

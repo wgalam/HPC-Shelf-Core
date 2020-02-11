@@ -2,7 +2,7 @@
 // Este arquivo foi gerado pela Arquitetura JavaTM para Implementação de Referência (JAXB) de Bind XML, v2.4.0-b180830.0438 
 // Consulte <a href="https://javaee.github.io/jaxb-v2/">https://javaee.github.io/jaxb-v2/</a> 
 // Todas as modificações neste arquivo serão perdidas após a recompilação do esquema de origem. 
-// Gerado em: 2020.02.02 às 07:19:57 PM BRT 
+// Gerado em: 2020.02.11 às 01:54:38 PM BRT 
 //
 
 
@@ -30,9 +30,9 @@ import javax.xml.bind.annotation.XmlType;
  *           &lt;element name="context_contract" type="{http://storm.lia.ufc.br}context_contract"/&gt;
  *           &lt;element name="value" type="{http://storm.lia.ufc.br}context_argument_value_type"/&gt;
  *         &lt;/choice&gt;
+ *         &lt;element name="context_parameter" type="{http://storm.lia.ufc.br}context_parameter_type"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="cc_id" type="{http://www.w3.org/2001/XMLSchema}int" /&gt;
- *       &lt;attribute name="cp_id" type="{http://www.w3.org/2001/XMLSchema}int" /&gt;
  *       &lt;attribute name="ca_id" type="{http://www.w3.org/2001/XMLSchema}int" /&gt;
  *       &lt;attribute name="kind" type="{http://www.w3.org/2001/XMLSchema}int" /&gt;
  *     &lt;/restriction&gt;
@@ -46,7 +46,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "context_argument_type", propOrder = {
     "sharedVariableCpId",
     "contextContract",
-    "value"
+    "value",
+    "contextParameter"
 })
 public class ContextArgumentType {
 
@@ -55,10 +56,10 @@ public class ContextArgumentType {
     @XmlElement(name = "context_contract")
     protected ContextContract contextContract;
     protected ContextArgumentValueType value;
+    @XmlElement(name = "context_parameter", required = true)
+    protected ContextParameterType contextParameter;
     @XmlAttribute(name = "cc_id")
     protected Integer ccId;
-    @XmlAttribute(name = "cp_id")
-    protected Integer cpId;
     @XmlAttribute(name = "ca_id")
     protected Integer caId;
     @XmlAttribute(name = "kind")
@@ -137,6 +138,30 @@ public class ContextArgumentType {
     }
 
     /**
+     * Obtém o valor da propriedade contextParameter.
+     * 
+     * @return
+     *     possible object is
+     *     {@link ContextParameterType }
+     *     
+     */
+    public ContextParameterType getContextParameter() {
+        return contextParameter;
+    }
+
+    /**
+     * Define o valor da propriedade contextParameter.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link ContextParameterType }
+     *     
+     */
+    public void setContextParameter(ContextParameterType value) {
+        this.contextParameter = value;
+    }
+
+    /**
      * Obtém o valor da propriedade ccId.
      * 
      * @return
@@ -158,30 +183,6 @@ public class ContextArgumentType {
      */
     public void setCcId(Integer value) {
         this.ccId = value;
-    }
-
-    /**
-     * Obtém o valor da propriedade cpId.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Integer }
-     *     
-     */
-    public Integer getCpId() {
-        return cpId;
-    }
-
-    /**
-     * Define o valor da propriedade cpId.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Integer }
-     *     
-     */
-    public void setCpId(Integer value) {
-        this.cpId = value;
     }
 
     /**

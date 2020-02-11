@@ -90,9 +90,9 @@
     				type="tns:context_argument_value_type">
     			</element>
     		</choice>
+    		<element name="context_parameter" type="tns:context_parameter_type"></element>
     	</sequence>
     	<attribute name="cc_id" type="int"></attribute>
-    	<attribute name="cp_id" type="int"></attribute>
     	<attribute name="ca_id" type="int"></attribute>
     	<attribute name="kind" type="int"></attribute>
     </complexType>

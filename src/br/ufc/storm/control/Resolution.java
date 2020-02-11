@@ -1,18 +1,9 @@
 package br.ufc.storm.control;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.nio.file.FileSystem;
 import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.nio.file.WatchKey;
-import java.nio.file.WatchService;
-import java.nio.file.WatchEvent.Kind;
-import java.nio.file.WatchEvent.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -23,20 +14,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.postgresql.core.SetupQueryRunner;
-
-import br.ufc.shelf.util.MatrixOperations;
 import br.ufc.storm.exception.DBHandlerException;
 import br.ufc.storm.exception.FunctionException;
 import br.ufc.storm.exception.ResolveException;
 import br.ufc.storm.exception.ShelfException;
-import br.ufc.storm.exception.XMLException;
 import br.ufc.storm.export.FormalFormat;
 import br.ufc.storm.export.TextOutput;
 import br.ufc.storm.io.LogHandler;
 import br.ufc.storm.jaxb.AbstractComponentType;
 import br.ufc.storm.jaxb.CalculatedArgumentType;
-import br.ufc.storm.jaxb.CalculatedFunctionType;
 import br.ufc.storm.jaxb.CalculatedParameterType;
 import br.ufc.storm.jaxb.CandidateListType;
 import br.ufc.storm.jaxb.ContextArgumentType;
@@ -45,16 +31,12 @@ import br.ufc.storm.jaxb.ContextContract;
 import br.ufc.storm.jaxb.ContextParameterType;
 import br.ufc.storm.jaxb.PlatformProfileType;
 import br.ufc.storm.mcdm.DecisionMatrix;
-import br.ufc.storm.mcdm.InvokeRserve;
 import br.ufc.storm.model.ArgumentTable;
-import br.ufc.storm.model.MaxElement;
 import br.ufc.storm.model.ResolutionNode;
-import br.ufc.storm.model.Sort;
 import br.ufc.storm.sql.CalculatedArgumentHandler;
 import br.ufc.storm.sql.ContextContractHandler;
 import br.ufc.storm.sql.ContextParameterHandler;
 import br.ufc.storm.sql.ResolutionHandler;
-import br.ufc.storm.webservices.CoreServices;
 import br.ufc.storm.xml.XMLHandler;
 
 public class Resolution{
@@ -75,7 +57,7 @@ public class Resolution{
 
 
 	public static void main(String args[]) throws DBHandlerException{
-		int x = 0; //Indice do argumento de plataforma
+//		int x = 0; //Indice do argumento de plataforma
 		int y = 0; //Indice do argumento de contexto
 		//Executar R CMD Rserve
 		ContextContract cc = new ContextContract();
@@ -99,23 +81,33 @@ public class Resolution{
 		//				cc.getPlatform().getPlatformContract().getContextArguments().get(0).getContextContract().getContextArguments().get(0).setContextContract(new ContextContract());
 		//				cc.getPlatform().getPlatformContract().getContextArguments().get(0).getContextContract().getContextArguments().get(0).getContextContract().setCcId(181);
 
+		
+		
+		
+		
 		//[Argumento de Contexto] Definir o tipo de dado precisao simples
 		cc.getContextArguments().add(new ContextArgumentType());
-		cc.getContextArguments().get(y).setCpId(242);
+		cc.getContextArguments().get(y).setContextParameter(new ContextParameterType());
+		cc.getContextArguments().get(y).getContextParameter().setCpId(242);
+//		cc.getContextArguments().get(y).setCpId(242);
 		cc.getContextArguments().get(y).setContextContract(new ContextContract());
 		cc.getContextArguments().get(y).getContextContract().setCcId(195);
 		y++;
 
 		//[Argumento de Contexto] Definir genérico
 		cc.getContextArguments().add(new ContextArgumentType());
-		cc.getContextArguments().get(y).setCpId(243);
+		cc.getContextArguments().get(y).setContextParameter(new ContextParameterType());
+		cc.getContextArguments().get(y).getContextParameter().setCpId(243 );
+//		cc.getContextArguments().get(y).setCpId(243);
 		cc.getContextArguments().get(y).setContextContract(new ContextContract());
 		cc.getContextArguments().get(y).getContextContract().setCcId(198);
 		y++;
 
 		//Define tamanho da entrada	m	
 		cc.getContextArguments().add(new ContextArgumentType());
-		cc.getContextArguments().get(y).setCpId(247);
+		cc.getContextArguments().get(y).setContextParameter(new ContextParameterType());
+		cc.getContextArguments().get(y).getContextParameter().setCpId(247);
+//		cc.getContextArguments().get(y).setCpId(247);
 		cc.getContextArguments().get(y).setValue(new ContextArgumentValueType());
 		cc.getContextArguments().get(y).getValue().setDataType("Integer");
 		cc.getContextArguments().get(y).getValue().setValue("10000");
@@ -123,7 +115,9 @@ public class Resolution{
 
 		//Define tamanho da entrada	n	
 		cc.getContextArguments().add(new ContextArgumentType());
-		cc.getContextArguments().get(y).setCpId(248);
+		cc.getContextArguments().get(y).setContextParameter(new ContextParameterType());
+		cc.getContextArguments().get(y).getContextParameter().setCpId(248);
+//		cc.getContextArguments().get(y).setCpId(248);
 		cc.getContextArguments().get(y).setValue(new ContextArgumentValueType());
 		cc.getContextArguments().get(y).getValue().setDataType("Integer");
 		cc.getContextArguments().get(y).getValue().setValue("10000");
@@ -131,7 +125,9 @@ public class Resolution{
 
 		//Define tamanho da entrada	k	
 		cc.getContextArguments().add(new ContextArgumentType());
-		cc.getContextArguments().get(y).setCpId(249);
+		cc.getContextArguments().get(y).setContextParameter(new ContextParameterType());
+		cc.getContextArguments().get(y).getContextParameter().setCpId(249);
+//		cc.getContextArguments().get(y).setCpId(249);
 		cc.getContextArguments().get(y).setValue(new ContextArgumentValueType());
 		cc.getContextArguments().get(y).getValue().setDataType("Integer");
 		cc.getContextArguments().get(y).getValue().setValue("10000");
@@ -242,22 +238,22 @@ public class Resolution{
 			//Reordena conforme o preset 3
 
 			//			resolve = sortCandidateList(resolve, 3);
-			int cont = 0;
+//			int cont = 0;
 
 
 			String str="";
-			String log="";
+//			String log="";
 
 			for(ContextContract a:resolve.getCandidate()){
 				//				log+=(cont+" & ");
-				cont++;
-				for(int i = 0; i < a.getRankingArguments().size(); i++){
-					log+=(" "+a.getRankingArguments().get(i).getValue());
-					if(i!=a.getRankingArguments().size()-1){
-						log+=" & ";
-					}
-				}
-				log+="\n";
+//				cont++;
+//				for(int i = 0; i < a.getRankingArguments().size(); i++){
+//					log+=(" "+a.getRankingArguments().get(i).getValue());
+//					if(i!=a.getRankingArguments().size()-1){
+//						log+=" & ";
+//					}
+//				}
+//				log+="\n";
 				//				log+=("\\\\\n\\hline\n");
 				//				System.out.println(FormalFormat.exportContextContractWithIDs(a, null));
 				//				str+=FormalFormat.exportContextContractWithIDs(a, null)+"\n\n";
@@ -382,7 +378,6 @@ public class Resolution{
 
 		Resolution r = new Resolution();
 		List<ContextContract> concreteComponentCandidatesList;
-
 		ResolutionNode.setup();
 
 		Hashtable <Integer , Hashtable <Integer , ArgumentTable>> tableOfSWidArgumentTable = new Hashtable<Integer, Hashtable <Integer , ArgumentTable>>();
@@ -442,7 +437,8 @@ public class Resolution{
 				candidate = concreteComponentCandidatesList.get(i);
 				try {
 					if(componentSubTypeRecursiveTest(application, candidate, null, application.getAbstractComponent())){
-						Resolution.mergeContract(application, candidate);						
+						Resolution.mergeContract(application, candidate);	
+						
 
 						List<ContextContract> componentCandidatePlatformlist = null;
 						LogHandler.getLogger().info("Generating Hardware Candidate List for candidate: "+i);
@@ -534,11 +530,6 @@ public class Resolution{
 
 	public void rankCandidateList(Hashtable <Integer , Hashtable <Integer , ArgumentTable>> tableOfSWidArgumentTable) throws ResolveException {
 		long start = System.currentTimeMillis();
-		//		if(!FLOATRANK){
-		//			Resolution.rankCandidates(this.candidateList, tableOfSWidArgumentTable); //Rank all candidates
-		//		}else{
-		//			Resolution.rankCandidatesFloat(this.candidateList, tableOfSWidArgumentTable); //Rank all candidates
-		//		}
 		try {
 			Files.write(Paths.get("spreadsheet_tables.log"), "".getBytes());
 			Files.write(Paths.get("Systat_tables.log"), "".getBytes());
@@ -769,9 +760,9 @@ public class Resolution{
 				if(requiredPlatform.getContextArguments().size() > 0){
 					for(ContextArgumentType cat:requiredPlatform.getContextArguments()){
 						if(cat.getValue() == null){
-							subtype = subtype && isPlatformSubType(cat.getContextContract(), getContextContractFromArgument(cat,candidatePlatform), cat.getCpId());
+							subtype = subtype && isPlatformSubType(cat.getContextContract(), getContextContractFromArgument(cat,candidatePlatform), cat.getContextParameter().getCpId());
 						}else{
-							int kind = ContextParameterHandler.getKindFromContextParameter(cat.getCpId(), requiredPlatform.getAbstractComponent());
+							int kind = ContextParameterHandler.getKindFromContextParameter(cat.getContextParameter().getCpId(), requiredPlatform.getAbstractComponent());
 							subtype = subtype && isPlatformSubTypeNumeric(cat, getValueFromCandidateArgument(cat,candidatePlatform), kind);
 						}
 					}
@@ -819,6 +810,7 @@ public class Resolution{
 	}
 
 	private static void mergeContract(ContextContract application, ContextContract candidate){
+		
 		for(ContextArgumentType acat: application.getContextArguments()){
 			Integer i = findArgument(acat, candidate.getContextArguments());
 			if(i!=null){
@@ -835,7 +827,7 @@ public class Resolution{
 		ContextArgumentType ccat;
 		for(int i = 0; i < list.size(); i++){
 			ccat = list.get(i);
-			if(acat.getCpId()==ccat.getCpId()){
+			if(acat.getContextParameter().getCpId()==ccat.getContextParameter().getCpId()){
 				return i;
 			}
 		}
@@ -848,6 +840,7 @@ public class Resolution{
 	 * @param i
 	 * @return 
 	 */
+	@SuppressWarnings("unchecked")
 	public static CandidateListType sortCandidateList(CandidateListType cl, int i) {
 		long start = System.currentTimeMillis();
 		Collections.sort (cl.getCandidate(), new ComparatorCandidates(false, i));
@@ -1196,7 +1189,7 @@ public class Resolution{
 				for(ContextArgumentType cat:applicationContract.getContextArguments()){
 					if(cat.getContextContract()!=null){
 						//						if(getContextContractFromArgument(cat,candidate)!=null){ //Tentando corrigir erro cp 151
-						subtype = subtype && componentSubTypeRecursiveTest(cat.getContextContract(), getContextContractFromArgument(cat,candidate), cat.getCpId(), applicationContract.getAbstractComponent());
+						subtype = subtype && componentSubTypeRecursiveTest(cat.getContextContract(), getContextContractFromArgument(cat,candidate), cat.getContextParameter().getCpId(), applicationContract.getAbstractComponent());
 						//						}else{
 						//							System.out.println(cat.getCpId()+"  >>> "+cat.getContextContract().getCcName());
 						//							throw new DBHandlerException("Error in validating resolving contract constrain with cp_id = "+cat.getCpId());
@@ -1243,8 +1236,8 @@ public class Resolution{
 				break;
 			}
 			if(list.size() > 0){
-				for(CalculatedParameterType c: parametersList){
-				}
+//				for(CalculatedParameterType c: parametersList){
+//				}
 				for(CalculatedArgumentType qat:list){
 					CalculatedParameterType qpt = null;
 					if(qat.getValue()!=null){
@@ -1309,7 +1302,7 @@ public class Resolution{
 		long start = System.currentTimeMillis();
 		if(candidate.getContextArguments()!= null){
 			for(ContextArgumentType cat: candidate.getContextArguments()){
-				if(cat_from_app_var.getCpId().equals(cat.getCpId())){
+				if(cat_from_app_var.getContextParameter().getCpId().equals(cat.getContextParameter().getCpId())){
 
 					return cat.getContextContract();
 				}
@@ -1327,9 +1320,9 @@ public class Resolution{
 	 */
 	private static ContextArgumentType getValueFromCandidateArgument(ContextArgumentType cat, ContextContract candidate) {
 		long start = System.currentTimeMillis();
-		int cp_id = cat.getCpId();
+		int cp_id = cat.getContextParameter().getCpId();
 		for(ContextArgumentType app_cat: candidate.getContextArguments()){
-			if(app_cat.getCpId() == cp_id){
+			if(app_cat.getContextParameter().getCpId() == cp_id){
 				LogHandler.getLogger().info("getValueFromCandidateArgument invocation in "+(System.currentTimeMillis()-start)+"ms");
 				return app_cat;
 			}
@@ -1371,7 +1364,7 @@ public class Resolution{
 	 */
 	public static ContextArgumentType getArgument(ContextContract cc, Integer cp_id){
 		for(ContextArgumentType cat: cc.getContextArguments()){
-			if(cat.getCpId() == cp_id){
+			if(cat.getContextParameter().getCpId() == cp_id){
 				return cat;
 			}
 		}

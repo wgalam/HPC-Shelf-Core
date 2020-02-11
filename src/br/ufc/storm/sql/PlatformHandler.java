@@ -41,7 +41,7 @@ public class PlatformHandler extends DBHandler {
 				cc.setCcName(resultSet.getString("cc_name"));
 				cc.setKindId(resultSet.getInt("kind_id")); 
 				cc.setAbstractComponent(AbstractComponentHandler.getAbstractComponent(cc.getAbstractComponent().getIdAc(), false));
-				cc.getContextArguments().addAll(ContextArgumentHandler.getContextArguments(cc.getCcId()));
+				cc.getContextArguments().addAll(ContextArgumentHandler.getContextArguments(cc, cc.getCcId()));
 				return cc;
 			}else{
 				throw new DBHandlerException("Platform with abstract component id = "+cc_id+" was not found or platform not assigned for computation component");
@@ -116,7 +116,7 @@ public class PlatformHandler extends DBHandler {
 				cc.setKindId(resultSet.getInt("kind_id")); 
 				cc.setCcName(resultSet.getString("cc_name"));
 				cc.setAbstractComponent(AbstractComponentHandler.getAbstractComponent(cc.getAbstractComponent().getIdAc(), false));
-				cc.getContextArguments().addAll(ContextArgumentHandler.getContextArguments(cc.getCcId()));
+				cc.getContextArguments().addAll(ContextArgumentHandler.getContextArguments(cc, cc.getCcId()));
 				ppt.setPlatformContract(cc);
 				ppt.setNetworkIpAddress(resultSet.getString("ip"));
 				return ppt;

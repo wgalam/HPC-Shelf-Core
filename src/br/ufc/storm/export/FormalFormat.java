@@ -334,7 +334,7 @@ public class FormalFormat {
 		str+=cc.getCcName()+"[";
 		for(ContextParameterType cp: ac.getContextParameter()){
 			for(ContextArgumentType ca : cc.getContextArguments()){
-				if(cp.getCpId().equals(ca.getCpId())){
+				if(cp.getCpId().equals(ca.getContextParameter().getCpId())){
 					if(ca.getContextContract()!=null){
 						str+="\n"+space+cp.getName()+" = "+exportContextContract(ca.getContextContract(),space+"")+",";
 					}else{
@@ -344,7 +344,7 @@ public class FormalFormat {
 								str+=getComment()+cp.getCpUnit();  
 							}
 						}else{
-							if(ca.getCpId()!= null){
+							if(ca.getContextParameter().getCpId()!= null){
 								//Definir comportamento
 							}
 						}
@@ -393,7 +393,7 @@ public class FormalFormat {
 		return str;
 	}
 
-
+//TODO: refactor this method because a previous linked contaxt parameter to arguments
 	public static String exportContextContractWithIDs(ContextContract cc, String space){
 		if(space == null){
 			try {
@@ -419,7 +419,7 @@ public class FormalFormat {
 		str+=cc.getCcName()+"{"+cc.getCcId()+"}"+"[";
 		for(ContextParameterType cp: ac.getContextParameter()){
 			for(ContextArgumentType ca : cc.getContextArguments()){
-				if(cp.getCpId().equals(ca.getCpId())){
+				if(cp.getCpId().equals(ca.getContextParameter().getCpId())){
 					if(ca.getContextContract()!=null){
 						str+="\n"+space+cp.getName()+"{"+cp.getCpId()+"}"+" = "+exportContextContractWithIDs(ca.getContextContract(),space+"")+",";
 					}else{
@@ -427,7 +427,7 @@ public class FormalFormat {
 
 							str+="\n"+space+cp.getName()+"{"+cp.getCpId()+"}"+" = "+ca.getValue().getValue()+",";
 						}else{
-							if(ca.getCpId()!= null){
+							if(ca.getContextParameter().getCpId()!= null){
 								//Definir comportamento
 								System.out.println("aaaaaaaaaaaaaaaaa");
 							}
@@ -533,7 +533,7 @@ public class FormalFormat {
 		for(int i= 0; i < ac.getContextParameter().size(); i++){
 			ContextParameterType cp = ac.getContextParameter().get(i);
 			for(ContextArgumentType ca : cc.getContextArguments()){
-				if(cp.getCpId().equals(ca.getCpId())){
+				if(cp.getCpId().equals(ca.getContextParameter().getCpId())){
 					if(ca.getContextContract()!=null){
 						//						str+="\n"+space+cp.getName()+" = "+exportContextContract(ca.getContextContract(),space+"",3,true)+",";
 						if(type>2){
@@ -552,7 +552,7 @@ public class FormalFormat {
 							}
 							
 						}else{
-							if(ca.getCpId()!= null){
+							if(ca.getContextParameter().getCpId()!= null){
 								//Definir comportamento
 							}
 						}

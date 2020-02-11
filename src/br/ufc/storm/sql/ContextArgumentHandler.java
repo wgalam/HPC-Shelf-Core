@@ -5,11 +5,16 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Hashtable;
+
+import javax.swing.text.TabExpander;
 
 import br.ufc.storm.jaxb.AbstractComponentType;
 import br.ufc.storm.jaxb.ContextArgumentType;
 import br.ufc.storm.jaxb.ContextArgumentValueType;
 import br.ufc.storm.jaxb.ContextContract;
+import br.ufc.storm.jaxb.ContextParameterType;
+import br.ufc.storm.control.Resolution;
 import br.ufc.storm.exception.DBHandlerException;
 
 public class ContextArgumentHandler extends DBHandler {
@@ -25,6 +30,15 @@ public class ContextArgumentHandler extends DBHandler {
 	private static final String INSERT_CONTEXT_ARGUMENT_CONTEXT_CONTRACT = "INSERT INTO closed_arguments_context_contract (ca_id, target_cc_id)VALUES (?,?);";
 	private static final String SELECT_CA_ID_CC_ID = "SELECT * FROM context_argument WHERE variable_cp_id = ? AND cc_id = ?;";
 
+	public static void main(String[] args) {
+		try {
+			Resolution.main(args);
+		} catch (DBHandlerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	/**
 	 * This method adds a context argument
 	 * @param cc_name Instantiation type name 
@@ -44,7 +58,7 @@ public class ContextArgumentHandler extends DBHandler {
 			Connection con = getConnection();
 			PreparedStatement prepared = con.prepareStatement(INSERT_CONTEXT_ARGUMENT); 
 			prepared.setInt(1, cat.getCcId());
-			prepared.setInt(2, cat.getCpId()); 
+			prepared.setInt(2, cat.getContextParameter().getCpId()); 
 			ResultSet resultSet = prepared.executeQuery(); 
 			if(resultSet.next()){
 				cat.setCaId(resultSet.getInt("ca_id"));
@@ -66,7 +80,7 @@ public class ContextArgumentHandler extends DBHandler {
 		if(ca==null){
 			throw new DBHandlerException("Context argument null");
 		}else{
-			if(ca.getCpId()==null){
+			if(ca.getContextParameter().getCpId()==null){
 				throw new DBHandlerException("Context argument incomplete");
 			}
 		}
@@ -74,7 +88,7 @@ public class ContextArgumentHandler extends DBHandler {
 			Connection con = getConnection(); 
 			PreparedStatement prepared;
 			prepared = con.prepareStatement(SELECT_CA_ID_CC_ID);
-			prepared.setInt(1, ca.getCpId());
+			prepared.setInt(1, ca.getContextParameter().getCpId());
 			prepared.setInt(2, ca.getCcId());
 			ResultSet resultSet = prepared.executeQuery();
 			int cont = 0;
@@ -165,53 +179,82 @@ public class ContextArgumentHandler extends DBHandler {
 
 	/**
 	 * 
+	 * @param cc 
 	 * @param cc_id
 	 * @return
 	 * @throws SQLException 
 	 * @throws DBHandlerException 
 	 */
-	public static ArrayList<ContextArgumentType> getContextArguments(int cc_id) throws DBHandlerException{
+	public static ArrayList<ContextArgumentType> getContextArguments(ContextContract cc,  int cc_id) throws DBHandlerException{
+		if(cc.getAbstractComponent().getContextParameter()==null) {
+			throw new DBHandlerException("getContextArguments: no context parameter");
+		}
+		Hashtable<Integer, ContextParameterType> cpTable = new Hashtable<Integer, ContextParameterType>();
+		for(ContextParameterType cp:cc.getAbstractComponent().getContextParameter()) {
+			cpTable.put(cp.getCpId(), cp);
+			System.out.println("Added: cc= "+cc.getCcName()+cc.getCcId()+" cp_id:"+cp.getCpId());
+		}
+		//gerar tabela de cp
+		//o add cp id será feito a partir da busca na tabela
 		try {
+			System.out.println("Buscando Contrato: "+cc.getCcName());
 			Connection con = getConnection();
 			ArrayList<ContextArgumentType> cpl = new ArrayList<ContextArgumentType>(); 
-			PreparedStatement prepared = con.prepareStatement(SELECT_CONTEXT_ARGUMENT_BY_ID); 
+			PreparedStatement prepared = con.prepareStatement(SELECT_CONTEXT_ARGUMENT_BY_ID);
 			prepared.setInt(1, cc_id);
+			System.out.println(prepared);
 			ResultSet resultSet = prepared.executeQuery(); 
-			while (resultSet.next()) {
-				ContextArgumentType ca = new ContextArgumentType();
-				ca.setCcId(cc_id);
-				ca.setCpId(resultSet.getInt("variable_cp_id"));
-				ca.setCaId(resultSet.getInt("ca_id"));
-				ca.setKind(resultSet.getInt("variance_id"));
-				Object o;
-				o = getContextArgumentValue(ca.getCpId(), ca.getCcId());
-				if(o instanceof ContextContract){
-					ca.setContextContract((ContextContract) o);
-				}else if(o instanceof String){
-					ContextArgumentValueType value = new ContextArgumentValueType();
-					value.setDataType("String");
-					value.setValue((String)o);
-					ca.setValue(value);
-				}else if(o instanceof Double){
-					ContextArgumentValueType value = new ContextArgumentValueType();
-					value.setDataType("Double");
-					value.setValue((String)o);
-					ca.setValue(value);
-				}else if(o instanceof Integer){
-					ContextArgumentValueType value = new ContextArgumentValueType();
-					value.setDataType("Integer");
-					value.setValue((String)o);
-					ca.setValue(value);
-				}else if(o instanceof Float){
-					ContextArgumentValueType value = new ContextArgumentValueType();
-					value.setDataType("Float");
-					value.setValue((String)o);
-					ca.setValue(value);
-				}else{
-					throw new DBHandlerException("Context argument data type not recognized"); 
-				}
-				cpl.add(ca);
-			} 
+			
+			if(true) {
+				while (resultSet.next()) {
+					ContextArgumentType ca = new ContextArgumentType();
+					ca.setCcId(cc_id);
+					System.out.println(prepared);
+//					ca.setCpId();
+//					ca.setContextParameter(cpTable.get(resultSet.getInt("variable_cp_id")));
+					ca.setContextParameter(new ContextParameterType());
+					ca.getContextParameter().setCpId(resultSet.getInt("variable_cp_id"));
+					
+					ca.setCaId(resultSet.getInt("ca_id"));
+					ca.setKind(resultSet.getInt("variance_id"));
+					Object o;
+//					System.out.println("..."+cpTable.get(resultSet.getInt("variable_cp_id")));
+					
+//					if() {
+//						
+//					}
+					
+					//O problema está em buscar um parâmetro que é do ac 3
+					System.out.println("Finding for: "+ca.getContextParameter().getCpId()+" caid "+ca.getCaId()+" ac "+cc.getAbstractComponent().getName());
+					o = getContextArgumentValue(ca.getContextParameter().getCpId(), ca.getCcId());
+					if(o instanceof ContextContract){
+						ca.setContextContract((ContextContract) o);
+					}else if(o instanceof String){
+						ContextArgumentValueType value = new ContextArgumentValueType();
+						value.setDataType("String");
+						value.setValue((String)o);
+						ca.setValue(value);
+					}else if(o instanceof Double){
+						ContextArgumentValueType value = new ContextArgumentValueType();
+						value.setDataType("Double");
+						value.setValue((String)o);
+						ca.setValue(value);
+					}else if(o instanceof Integer){
+						ContextArgumentValueType value = new ContextArgumentValueType();
+						value.setDataType("Integer");
+						value.setValue((String)o);
+						ca.setValue(value);
+					}else if(o instanceof Float){
+						ContextArgumentValueType value = new ContextArgumentValueType();
+						value.setDataType("Float");
+						value.setValue((String)o);
+						ca.setValue(value);
+					}else{
+						throw new DBHandlerException("Context argument data type not recognized"); 
+					}
+					cpl.add(ca);
+				} 
+			}
 			return cpl;
 		} catch (SQLException e) {
 			throw new DBHandlerException("A sql error occurred: ", e);

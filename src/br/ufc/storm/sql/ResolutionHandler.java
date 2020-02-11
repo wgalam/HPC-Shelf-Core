@@ -119,13 +119,14 @@ public class ResolutionHandler extends DBHandler {
 	private static void mergeFreeParameters(ContextContract candidate) {
 		Hashtable <Integer , ContextArgumentType> tableOfArguments = new Hashtable<Integer , ContextArgumentType>();
 		for(ContextArgumentType arg:candidate.getContextArguments()){
-			tableOfArguments.put(arg.getCpId(), arg);
+			tableOfArguments.put(arg.getContextParameter().getCpId(), arg);
 		}
 		if(candidate.getAbstractComponent() != null ){
 			for(ContextParameterType cpt:candidate.getAbstractComponent().getContextParameter()){
 				if(tableOfArguments.get(cpt.getCpId())==null){
 					ContextArgumentType cat = new ContextArgumentType();
-					cat.setCpId(cpt.getCpId());
+					cat.setContextParameter(new ContextParameterType());
+					cat.getContextParameter().setCpId(cpt.getCpId());
 					cat.setCcId(candidate.getCcId());
 					cat.setKind(cpt.getKind());
 

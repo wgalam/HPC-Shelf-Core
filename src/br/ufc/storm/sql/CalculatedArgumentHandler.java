@@ -252,7 +252,7 @@ public class CalculatedArgumentHandler extends DBHandler{
 
 	public static Object getContractArgument(int cp_id, ContextContract cc){
 		for(ContextArgumentType cat : cc.getContextArguments()){
-			if(cat.getCpId()==cp_id){
+			if(cat.getContextParameter().getCpId()==cp_id){
 				return cat.getValue();
 			}else{
 				if(cat.getContextContract()!=null){
@@ -275,7 +275,7 @@ public class CalculatedArgumentHandler extends DBHandler{
 
 
 			for(ContextParameterType cpt:ResolutionNode.resolutionTree.findNode(cc.getAbstractComponent().getIdAc()).getCps()){
-				if(cpt.getCpId()==cat.getCpId()){
+				if(cpt.getCpId()==cat.getContextParameter().getCpId()){
 					kind = cpt.getKind();
 				}
 			}
@@ -573,7 +573,7 @@ public class CalculatedArgumentHandler extends DBHandler{
 
 			//Modificando os pesos para virem do banco e assim poder gerar a matriz de 
 			//    alternativas e poder usar qualquer biblioteca de MCDM
-			if(qft.getFunctionArguments().get(i).getCpId() !=null){
+			if(qft.getFunctionArguments().get(i).getContextParameter().getCpId() !=null){
 				//erro, faunções de qualidade e custo nao tem peso entao devem ser bloqueadas no processo de carregar os pesos
 				//incluir aqui a criação da matriz de alternativas e pesos para imprimir ou repassar a outras bibliotecas
 			}
